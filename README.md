@@ -57,4 +57,4 @@ npm run dev &
 ```
 
 ---
-*Desenvolvido como demonstração de boas práticas de Engenharia de Software por um Senior Developer.*
+
