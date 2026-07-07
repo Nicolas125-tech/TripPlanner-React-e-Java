@@ -9,6 +9,7 @@ const SearchBar = ({ value, onChange, onSearch, onKeyDown }) => {
         <MapPin className="text-gray-400 mr-3" size={20} />
         <input 
           type="text" 
+          aria-label="Buscar por cidade"
           placeholder="Busque por cidade (Ex: Dubai, Londres, Singapura...)" 
           className="bg-transparent w-full outline-none text-gray-800 placeholder-gray-400 font-medium"
           value={value}

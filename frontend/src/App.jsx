@@ -1,3 +1,4 @@
+import SearchBar from "./components/SearchBar";
 import React, { useState, useEffect } from 'react';
 import { 
   Plane, MapPin, Calendar, Search, Star, CheckCircle, User, 
@@ -183,25 +184,12 @@ const App = () => {
           <>
             <div className="bg-blue-900 py-20 px-4 text-center text-white mb-10">
               <h1 className="text-4xl md:text-5xl font-bold mb-4">Para onde você quer ir?</h1>
-              <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-lg flex gap-2 p-3">
-                <div className="flex-1 flex items-center px-4 py-2 bg-gray-50 rounded-lg">
-                  <MapPin className="text-gray-400 mr-3" size={20} />
-                  <input 
-                    type="text" 
-                    aria-label="Buscar por cidade" placeholder="Busque por cidade (Ex: Dubai, Londres, Singapura...)"
-                    className="bg-transparent w-full outline-none text-gray-800 placeholder-gray-400 font-medium"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && performSearch(search)}
-                  />
-                </div>
-                <button 
-                  onClick={() => performSearch(search)}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-2 rounded-lg font-bold transition-colors flex items-center justify-center gap-2 shadow-md"
-                >
-                  <Search size={20} /> Buscar
-                </button>
-              </div>
+              <SearchBar
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && performSearch(search)}
+                onSearch={() => performSearch(search)}
+              />
             </div>
 
             <main className="max-w-7xl mx-auto px-4">
