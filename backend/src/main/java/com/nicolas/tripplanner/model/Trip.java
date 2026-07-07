@@ -4,8 +4,16 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 
+// ⚡ Bolt Performance Optimization:
+// Added database indexes on 'category' and 'city' columns.
+// These fields are frequently used in WHERE clauses by TripRepository (findByCategory, findByCity).
+// This changes the DB lookup from an O(N) full table scan to an O(log N) index seek,
+// significantly improving read performance as the trips table grows.
 @Entity
-@Table(name = "trips")
+@Table(name = "trips", indexes = {
+    @Index(name = "idx_trip_category", columnList = "category"),
+    @Index(name = "idx_trip_city", columnList = "city")
+})
 public class Trip {
     
     @Id
