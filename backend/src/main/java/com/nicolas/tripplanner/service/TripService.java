@@ -8,6 +8,7 @@ import com.nicolas.tripplanner.repository.TripRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TripService {
@@ -17,28 +18,51 @@ public class TripService {
     public TripService(TripRepository tripRepository) {
         this.tripRepository = tripRepository;
     }
-    
-    public List<Trip> getAllTrips() {
-        return tripRepository.findAll();
+
+    private TripResponse mapToResponse(Trip trip) {
+        return new TripResponse(
+            trip.getId(),
+            trip.getCity(),
+            trip.getCountry(),
+            trip.getPrice(),
+            trip.getRating(),
+            trip.getCategory(),
+            trip.getDescription(),
+            trip.getImageUrl()
+        );
     }
     
-    public Trip getTripById(Long id) {
-        return tripRepository.findById(id)
+    public List<TripResponse> getAllTrips() {
+        return tripRepository.findAll()
+                .stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+    
+    public TripResponse getTripById(Long id) {
+        Trip trip = tripRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Trip not found with id: " + id));
+        return mapToResponse(trip);
     }
     
-    public List<Trip> searchTrips(String query) {
+    public List<TripResponse> searchTrips(String query) {
         if (query == null || query.isBlank()) {
             return getAllTrips();
         }
-        return tripRepository.searchTrips(query);
+        return tripRepository.searchTrips(query)
+                .stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
     }
     
-    public List<Trip> getTripsByCategory(String category) {
-        return tripRepository.findByCategory(category);
+    public List<TripResponse> getTripsByCategory(String category) {
+        return tripRepository.findByCategory(category)
+                .stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
     }
     
-    public Trip createTrip(TripRequest request) {
+    public TripResponse createTrip(TripRequest request) {
         Trip trip = new Trip(
             request.getCity(),
             request.getCountry(),
@@ -49,11 +73,13 @@ public class TripService {
         trip.setDescription(request.getDescription());
         trip.setImageUrl(request.getImageUrl());
         
-        return tripRepository.save(trip);
+        Trip savedTrip = tripRepository.save(trip);
+        return mapToResponse(savedTrip);
     }
     
-    public Trip updateTrip(Long id, TripRequest request) {
-        Trip trip = getTripById(id);
+    public TripResponse updateTrip(Long id, TripRequest request) {
+        Trip trip = tripRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Trip not found with id: " + id));
         
         trip.setCity(request.getCity());
         trip.setCountry(request.getCountry());
@@ -63,11 +89,13 @@ public class TripService {
         trip.setDescription(request.getDescription());
         trip.setImageUrl(request.getImageUrl());
         
-        return tripRepository.save(trip);
+        Trip updatedTrip = tripRepository.save(trip);
+        return mapToResponse(updatedTrip);
     }
     
     public void deleteTrip(Long id) {
-        Trip trip = getTripById(id);
+        Trip trip = tripRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Trip not found with id: " + id));
         tripRepository.delete(trip);
     }
 }

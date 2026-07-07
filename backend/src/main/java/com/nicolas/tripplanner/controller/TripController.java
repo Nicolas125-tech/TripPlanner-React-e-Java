@@ -2,7 +2,6 @@ package com.nicolas.tripplanner.controller;
 
 import com.nicolas.tripplanner.dto.TripRequest;
 import com.nicolas.tripplanner.dto.TripResponse;
-import com.nicolas.tripplanner.model.Trip;
 import com.nicolas.tripplanner.service.TripService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -10,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/trips")
@@ -24,41 +22,41 @@ public class TripController {
     }
     
     @GetMapping
-    public ResponseEntity<List<Trip>> getAllTrips() {
-        List<Trip> trips = tripService.getAllTrips();
+    public ResponseEntity<List<TripResponse>> getAllTrips() {
+        List<TripResponse> trips = tripService.getAllTrips();
         return ResponseEntity.ok(trips);
     }
     
     @GetMapping("/{id}")
-    public ResponseEntity<Trip> getTripById(@PathVariable Long id) {
-        Trip trip = tripService.getTripById(id);
+    public ResponseEntity<TripResponse> getTripById(@PathVariable Long id) {
+        TripResponse trip = tripService.getTripById(id);
         return ResponseEntity.ok(trip);
     }
     
     @GetMapping("/search")
-    public ResponseEntity<List<Trip>> searchTrips(
+    public ResponseEntity<List<TripResponse>> searchTrips(
             @RequestParam(value = "query", required = false) String query) {
-        List<Trip> trips = tripService.searchTrips(query);
+        List<TripResponse> trips = tripService.searchTrips(query);
         return ResponseEntity.ok(trips);
     }
     
     @GetMapping("/category/{category}")
-    public ResponseEntity<List<Trip>> getTripsByCategory(@PathVariable String category) {
-        List<Trip> trips = tripService.getTripsByCategory(category);
+    public ResponseEntity<List<TripResponse>> getTripsByCategory(@PathVariable String category) {
+        List<TripResponse> trips = tripService.getTripsByCategory(category);
         return ResponseEntity.ok(trips);
     }
     
     @PostMapping
-    public ResponseEntity<Trip> createTrip(@Valid @RequestBody TripRequest request) {
-        Trip trip = tripService.createTrip(request);
+    public ResponseEntity<TripResponse> createTrip(@Valid @RequestBody TripRequest request) {
+        TripResponse trip = tripService.createTrip(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(trip);
     }
     
     @PutMapping("/{id}")
-    public ResponseEntity<Trip> updateTrip(
+    public ResponseEntity<TripResponse> updateTrip(
             @PathVariable Long id,
             @Valid @RequestBody TripRequest request) {
-        Trip trip = tripService.updateTrip(id, request);
+        TripResponse trip = tripService.updateTrip(id, request);
         return ResponseEntity.ok(trip);
     }
     

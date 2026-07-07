@@ -1,8 +1,6 @@
 package com.nicolas.tripplanner.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Positive;
 
 @Entity
 @Table(name = "trips")
@@ -12,16 +10,16 @@ public class Trip {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @NotBlank(message = "City is required")
+    @Column(nullable = false)
     private String city;
     
-    @NotBlank(message = "Country is required")
+    @Column(nullable = false)
     private String country;
     
-    @Positive(message = "Price must be positive")
+    @Column(nullable = false)
     private Double price;
     
-    @Positive(message = "Rating must be positive")
+    @Column(nullable = false)
     private Double rating;
     
     private String category;
