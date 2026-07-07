@@ -4,6 +4,7 @@ import {
   Menu, X, ArrowRight, Heart, Users, Wifi, Coffee, Map as MapIcon, 
   LogOut, Shield, CreditCard, Sun, Mountain, Building, Clock
 } from 'lucide-react';
+import TripCard from './components/TripCard';
 
 // --- COMPONENTES AUXILIARES ---
 
@@ -217,23 +218,13 @@ const App = () => {
               {loading ? <div className="text-center py-10">Carregando destinos...</div> : (
                 <div className="grid md:grid-cols-3 gap-8">
                   {filteredDestinations.map(dest => (
-                    <div key={dest.id} onClick={() => { setSelectedDestination(dest); setShowDetailsModal(true); }} className="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-xl transition-all cursor-pointer group">
-                      <div className="relative h-56">
-                        <img src={dest.imageUrl || dest.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="" />
-                        <div className="absolute top-4 right-4 bg-white/90 px-2 py-1 rounded-lg text-xs font-bold flex gap-1"><Star size={12} className="text-yellow-500 fill-yellow-500" /> {dest.rating}</div>
-                        <button aria-label={favorites.includes(dest.id) ? "Remover dos favoritos" : "Adicionar aos favoritos"} onClick={(e) => { e.stopPropagation(); toggleFavorite(dest.id); }} className="absolute top-4 left-4 p-2 rounded-full bg-white/30 hover:bg-white text-white hover:text-red-500 transition-colors">
-                          <Heart size={18} className={favorites.includes(dest.id) ? "fill-red-500 text-red-500" : ""} />
-                        </button>
-                      </div>
-                      <div className="p-5">
-                        <h3 className="text-lg font-bold">{dest.city}</h3>
-                        <p className="text-gray-500 text-sm mb-4">{dest.country}</p>
-                        <div className="flex justify-between items-center">
-                          <span className="text-lg font-bold text-blue-600">R$ {dest.price}</span>
-                          <button className="text-blue-600 text-sm font-bold">Ver Detalhes</button>
-                        </div>
-                      </div>
-                    </div>
+                    <TripCard
+                      key={dest.id}
+                      trip={dest}
+                      isFavorite={favorites.includes(dest.id)}
+                      onFavoriteClick={toggleFavorite}
+                      onDetailsClick={() => { setSelectedDestination(dest); setShowDetailsModal(true); }}
+                    />
                   ))}
                 </div>
               )}
@@ -270,20 +261,13 @@ const App = () => {
             {favoritesList.length === 0 ? <p className="text-gray-500">Nenhum favorito ainda.</p> : (
               <div className="grid md:grid-cols-3 gap-8">
                 {favoritesList.map(dest => (
-                  <div key={dest.id} onClick={() => { setSelectedDestination(dest); setShowDetailsModal(true); }} className="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-xl transition-all cursor-pointer group">
-                    <div className="relative h-56">
-                      <img src={dest.imageUrl || dest.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="" />
-                      <div className="absolute top-4 right-4 bg-white/90 px-2 py-1 rounded-lg text-xs font-bold flex gap-1"><Star size={12} className="text-yellow-500 fill-yellow-500" /> {dest.rating}</div>
-                    </div>
-                    <div className="p-5">
-                      <h3 className="text-lg font-bold">{dest.city}</h3>
-                      <p className="text-gray-500 text-sm mb-4">{dest.country}</p>
-                      <div className="flex justify-between items-center">
-                        <span className="text-lg font-bold text-blue-600">R$ {dest.price}</span>
-                        <button className="text-blue-600 text-sm font-bold">Ver Detalhes</button>
-                      </div>
-                    </div>
-                  </div>
+                  <TripCard
+                    key={dest.id}
+                    trip={dest}
+                    isFavorite={true}
+                    onFavoriteClick={toggleFavorite}
+                    onDetailsClick={() => { setSelectedDestination(dest); setShowDetailsModal(true); }}
+                  />
                 ))}
               </div>
             )}
