@@ -5,16 +5,16 @@ import jakarta.validation.constraints.Positive;
 
 public class TripRequest {
     
-    @NotBlank(message = "City is required")
+    @NotBlank(message = "Cidade é obrigatória")
     private String city;
     
-    @NotBlank(message = "Country is required")
+    @NotBlank(message = "País é obrigatório")
     private String country;
     
-    @Positive(message = "Price must be positive")
+    @Positive(message = "Preço deve ser positivo")
     private Double price;
     
-    @Positive(message = "Rating must be positive")
+    @Positive(message = "Rating deve ser positivo")
     private Double rating;
     
     private String category;

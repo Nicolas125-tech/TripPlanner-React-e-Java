@@ -2,8 +2,8 @@ package com.nicolas.tripplanner.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nicolas.tripplanner.dto.TripRequest;
+import com.nicolas.tripplanner.dto.TripResponse;
 import com.nicolas.tripplanner.exception.ResourceNotFoundException;
-import com.nicolas.tripplanner.model.Trip;
 import com.nicolas.tripplanner.service.TripService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,8 +17,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -29,102 +28,115 @@ class TripControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
-    private TripService tripService;
-
     @Autowired
     private ObjectMapper objectMapper;
 
-    private Trip trip1;
-    private Trip trip2;
-    private TripRequest tripRequest;
+    @MockBean
+    private TripService tripService;
+
+    private TripResponse tripResponse1;
+    private TripResponse tripResponse2;
 
     @BeforeEach
     void setUp() {
-        trip1 = new Trip("Paris", "France", 1200.0, 4.8, "City");
-        trip1.setId(1L);
-
-        trip2 = new Trip("Tokyo", "Japan", 1500.0, 4.9, "City");
-        trip2.setId(2L);
-
-        tripRequest = new TripRequest("Rome", "Italy", 1000.0, 4.7, "City");
+        tripResponse1 = new TripResponse(1L, "Paris", "France", 1200.0, 4.8, "City", "Beautiful city", "paris.jpg");
+        tripResponse2 = new TripResponse(2L, "Tokyo", "Japan", 1500.0, 4.9, "City", "Bustling city", "tokyo.jpg");
     }
 
     @Test
-    void getAllTrips_shouldReturnTrips() throws Exception {
-        when(tripService.getAllTrips()).thenReturn(Arrays.asList(trip1, trip2));
+    void getAllTrips_shouldReturnListOfTrips() throws Exception {
+        when(tripService.getAllTrips()).thenReturn(Arrays.asList(tripResponse1, tripResponse2));
 
         mockMvc.perform(get("/api/trips"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()").value(2))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$[0].city").value("Paris"))
-                .andExpect(jsonPath("$[1].city").value("Tokyo"));
+                .andExpect(jsonPath("$[1].city").value("Tokyo"))
+                .andExpect(jsonPath("$.length()").value(2));
+
+        verify(tripService, times(1)).getAllTrips();
     }
 
     @Test
     void getTripById_shouldReturnTrip() throws Exception {
-        when(tripService.getTripById(1L)).thenReturn(trip1);
+        when(tripService.getTripById(1L)).thenReturn(tripResponse1);
 
         mockMvc.perform(get("/api/trips/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.city").value("Paris"))
-                .andExpect(jsonPath("$.country").value("France"));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.city").value("Paris"));
+
+        verify(tripService, times(1)).getTripById(1L);
     }
 
     @Test
     void getTripById_shouldReturn404_whenNotFound() throws Exception {
-        when(tripService.getTripById(99L)).thenThrow(new ResourceNotFoundException("Not found"));
+        when(tripService.getTripById(99L)).thenThrow(new ResourceNotFoundException("Trip not found"));
 
         mockMvc.perform(get("/api/trips/99"))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("Trip not found"));
+
+        verify(tripService, times(1)).getTripById(99L);
     }
 
     @Test
-    void searchTrips_shouldReturnTrips() throws Exception {
-        when(tripService.searchTrips("Paris")).thenReturn(Collections.singletonList(trip1));
+    void searchTrips_shouldReturnMatchingTrips() throws Exception {
+        when(tripService.searchTrips("Paris")).thenReturn(Collections.singletonList(tripResponse1));
 
         mockMvc.perform(get("/api/trips/search").param("query", "Paris"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()").value(1))
-                .andExpect(jsonPath("$[0].city").value("Paris"));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$[0].city").value("Paris"))
+                .andExpect(jsonPath("$.length()").value(1));
+
+        verify(tripService, times(1)).searchTrips("Paris");
     }
 
     @Test
-    void getTripsByCategory_shouldReturnTrips() throws Exception {
-        when(tripService.getTripsByCategory("City")).thenReturn(Arrays.asList(trip1, trip2));
+    void getTripsByCategory_shouldReturnMatchingTrips() throws Exception {
+        when(tripService.getTripsByCategory("City")).thenReturn(Arrays.asList(tripResponse1, tripResponse2));
 
         mockMvc.perform(get("/api/trips/category/City"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()").value(2));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$[0].city").value("Paris"))
+                .andExpect(jsonPath("$.length()").value(2));
+
+        verify(tripService, times(1)).getTripsByCategory("City");
     }
 
     @Test
     void createTrip_shouldReturnCreatedTrip() throws Exception {
-        Trip createdTrip = new Trip("Rome", "Italy", 1000.0, 4.7, "City");
-        createdTrip.setId(3L);
+        TripRequest request = new TripRequest("Rome", "Italy", 1000.0, 4.7, "City");
+        TripResponse response = new TripResponse(3L, "Rome", "Italy", 1000.0, 4.7, "City", null, null);
 
-        when(tripService.createTrip(any(TripRequest.class))).thenReturn(createdTrip);
+        when(tripService.createTrip(any(TripRequest.class))).thenReturn(response);
 
         mockMvc.perform(post("/api/trips")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(tripRequest)))
+                .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(3))
                 .andExpect(jsonPath("$.city").value("Rome"));
+
+        verify(tripService, times(1)).createTrip(any(TripRequest.class));
     }
 
     @Test
     void updateTrip_shouldReturnUpdatedTrip() throws Exception {
-        Trip updatedTrip = new Trip("Rome Updated", "Italy", 1100.0, 4.8, "City");
-        updatedTrip.setId(1L);
+        TripRequest request = new TripRequest("Paris Updated", "France Updated", 1300.0, 4.9, "City Plus");
+        TripResponse response = new TripResponse(1L, "Paris Updated", "France Updated", 1300.0, 4.9, "City Plus", null, null);
 
-        when(tripService.updateTrip(eq(1L), any(TripRequest.class))).thenReturn(updatedTrip);
+        when(tripService.updateTrip(eq(1L), any(TripRequest.class))).thenReturn(response);
 
         mockMvc.perform(put("/api/trips/1")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(tripRequest)))
+                .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.city").value("Rome Updated"));
+                .andExpect(jsonPath("$.city").value("Paris Updated"));
+
+        verify(tripService, times(1)).updateTrip(eq(1L), any(TripRequest.class));
     }
 
     @Test

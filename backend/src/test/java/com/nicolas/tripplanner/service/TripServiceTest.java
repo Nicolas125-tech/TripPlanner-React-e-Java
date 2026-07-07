@@ -1,6 +1,7 @@
 package com.nicolas.tripplanner.service;
 
 import com.nicolas.tripplanner.dto.TripRequest;
+import com.nicolas.tripplanner.dto.TripResponse;
 import com.nicolas.tripplanner.exception.ResourceNotFoundException;
 import com.nicolas.tripplanner.model.Trip;
 import com.nicolas.tripplanner.repository.TripRepository;
@@ -47,7 +48,7 @@ class TripServiceTest {
     void getAllTrips_shouldReturnAllTrips() {
         when(tripRepository.findAll()).thenReturn(Arrays.asList(trip1, trip2));
 
-        List<Trip> trips = tripService.getAllTrips();
+        List<TripResponse> trips = tripService.getAllTrips();
 
         assertEquals(2, trips.size());
         assertEquals("Paris", trips.get(0).getCity());
@@ -59,7 +60,7 @@ class TripServiceTest {
     void getTripById_shouldReturnTrip_whenTripExists() {
         when(tripRepository.findById(1L)).thenReturn(Optional.of(trip1));
 
-        Trip result = tripService.getTripById(1L);
+        TripResponse result = tripService.getTripById(1L);
 
         assertNotNull(result);
         assertEquals(1L, result.getId());
@@ -79,7 +80,7 @@ class TripServiceTest {
     void searchTrips_shouldReturnAll_whenQueryIsBlank() {
         when(tripRepository.findAll()).thenReturn(Arrays.asList(trip1, trip2));
 
-        List<Trip> trips = tripService.searchTrips("  ");
+        List<TripResponse> trips = tripService.searchTrips("  ");
 
         assertEquals(2, trips.size());
         verify(tripRepository, times(1)).findAll();
@@ -90,7 +91,7 @@ class TripServiceTest {
     void searchTrips_shouldReturnMatchingTrips_whenQueryIsNotBlank() {
         when(tripRepository.searchTrips("Paris")).thenReturn(Collections.singletonList(trip1));
 
-        List<Trip> trips = tripService.searchTrips("Paris");
+        List<TripResponse> trips = tripService.searchTrips("Paris");
 
         assertEquals(1, trips.size());
         assertEquals("Paris", trips.get(0).getCity());
@@ -101,7 +102,7 @@ class TripServiceTest {
     void getTripsByCategory_shouldReturnMatchingTrips() {
         when(tripRepository.findByCategory("City")).thenReturn(Arrays.asList(trip1, trip2));
 
-        List<Trip> trips = tripService.getTripsByCategory("City");
+        List<TripResponse> trips = tripService.getTripsByCategory("City");
 
         assertEquals(2, trips.size());
         verify(tripRepository, times(1)).findByCategory("City");
@@ -120,7 +121,7 @@ class TripServiceTest {
 
         when(tripRepository.save(any(Trip.class))).thenReturn(savedTrip);
 
-        Trip result = tripService.createTrip(request);
+        TripResponse result = tripService.createTrip(request);
 
         assertNotNull(result);
         assertEquals(3L, result.getId());
@@ -136,7 +137,7 @@ class TripServiceTest {
         when(tripRepository.findById(1L)).thenReturn(Optional.of(trip1));
         when(tripRepository.save(any(Trip.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        Trip result = tripService.updateTrip(1L, request);
+        TripResponse result = tripService.updateTrip(1L, request);
 
         assertNotNull(result);
         assertEquals("Paris Updated", result.getCity());
