@@ -28,7 +28,7 @@ const Modal = ({ isOpen, onClose, title, children }) => {
       <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
         <div className="flex justify-between items-center p-6 border-b border-gray-100">
           <h3 className="text-xl font-bold text-gray-800">{title}</h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 bg-gray-100 hover:bg-gray-200 p-2 rounded-full transition-colors">
+          <button aria-label="Fechar" onClick={onClose} className="text-gray-400 hover:text-gray-600 bg-gray-100 hover:bg-gray-200 p-2 rounded-full transition-colors">
             <X size={20} />
           </button>
         </div>
@@ -188,7 +188,7 @@ const App = () => {
                   <MapPin className="text-gray-400 mr-3" size={20} />
                   <input 
                     type="text" 
-                    placeholder="Busque por cidade (Ex: Dubai, Londres, Singapura...)" 
+                    aria-label="Buscar por cidade" placeholder="Busque por cidade (Ex: Dubai, Londres, Singapura...)"
                     className="bg-transparent w-full outline-none text-gray-800 placeholder-gray-400 font-medium"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
@@ -221,7 +221,7 @@ const App = () => {
                       <div className="relative h-56">
                         <img src={dest.imageUrl || dest.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="" />
                         <div className="absolute top-4 right-4 bg-white/90 px-2 py-1 rounded-lg text-xs font-bold flex gap-1"><Star size={12} className="text-yellow-500 fill-yellow-500" /> {dest.rating}</div>
-                        <button onClick={(e) => { e.stopPropagation(); toggleFavorite(dest.id); }} className="absolute top-4 left-4 p-2 rounded-full bg-white/30 hover:bg-white text-white hover:text-red-500 transition-colors">
+                        <button aria-label={favorites.includes(dest.id) ? "Remover dos favoritos" : "Adicionar aos favoritos"} onClick={(e) => { e.stopPropagation(); toggleFavorite(dest.id); }} className="absolute top-4 left-4 p-2 rounded-full bg-white/30 hover:bg-white text-white hover:text-red-500 transition-colors">
                           <Heart size={18} className={favorites.includes(dest.id) ? "fill-red-500 text-red-500" : ""} />
                         </button>
                       </div>
@@ -294,8 +294,8 @@ const App = () => {
       {/* MODALS (Login, Booking, Details) */}
       <Modal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} title="Acesse sua conta">
         <form onSubmit={handleLogin} className="space-y-4">
-          <input type="text" placeholder="Nome" className="w-full border p-2 rounded" onChange={e => setAuthForm({...authForm, name: e.target.value})} />
-          <input type="email" placeholder="Email" className="w-full border p-2 rounded" onChange={e => setAuthForm({...authForm, email: e.target.value})} />
+          <input aria-label="Nome" type="text" placeholder="Nome" className="w-full border p-2 rounded" onChange={e => setAuthForm({...authForm, name: e.target.value})} />
+          <input aria-label="Email" type="email" placeholder="Email" className="w-full border p-2 rounded" onChange={e => setAuthForm({...authForm, email: e.target.value})} />
           <button className="w-full bg-blue-600 text-white py-2 rounded font-bold">Entrar</button>
         </form>
       </Modal>
@@ -319,10 +319,10 @@ const App = () => {
       <Modal isOpen={showBookingModal} onClose={() => setShowBookingModal(false)} title="Confirmar Reserva">
         <form onSubmit={confirmBooking} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
-            <div><label className="text-sm">Ida</label><input type="date" required className="w-full border p-2 rounded" onChange={e => setBookingData({...bookingData, dateStart: e.target.value})} /></div>
-            <div><label className="text-sm">Volta</label><input type="date" required className="w-full border p-2 rounded" onChange={e => setBookingData({...bookingData, dateEnd: e.target.value})} /></div>
+            <div><label htmlFor="dateStart" className="text-sm">Ida</label><input id="dateStart" type="date" required className="w-full border p-2 rounded" onChange={e => setBookingData({...bookingData, dateStart: e.target.value})} /></div>
+            <div><label htmlFor="dateEnd" className="text-sm">Volta</label><input id="dateEnd" type="date" required className="w-full border p-2 rounded" onChange={e => setBookingData({...bookingData, dateEnd: e.target.value})} /></div>
           </div>
-          <div><label className="text-sm">Hóspedes</label><input type="number" min="1" className="w-full border p-2 rounded" value={bookingData.guests} onChange={e => setBookingData({...bookingData, guests: Number(e.target.value)})} /></div>
+          <div><label htmlFor="guests" className="text-sm">Hóspedes</label><input id="guests" type="number" min="1" className="w-full border p-2 rounded" value={bookingData.guests} onChange={e => setBookingData({...bookingData, guests: Number(e.target.value)})} /></div>
           <button className="w-full bg-green-600 text-white py-3 rounded-lg font-bold">Confirmar Pagamento</button>
         </form>
       </Modal>
