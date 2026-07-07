@@ -19,6 +19,7 @@ const TripCard = ({ trip, isFavorite, onFavoriteClick, onDetailsClick }) => {
           {trip.rating?.toFixed(1)}
         </div>
         <button 
+          aria-label={isFavorite ? "Remover dos favoritos" : "Adicionar aos favoritos"}
           onClick={(e) => { 
             e.stopPropagation(); 
             onFavoriteClick(trip.id); 
@@ -35,7 +36,7 @@ const TripCard = ({ trip, isFavorite, onFavoriteClick, onDetailsClick }) => {
         <h3 className="text-lg font-bold text-gray-900">{trip.city}</h3>
         <p className="text-gray-500 text-sm mb-4">{trip.country}</p>
         <div className="flex justify-between items-center">
-          <span className="text-lg font-bold text-blue-600">R$ {Math.round(trip.price)}</span>
+          <span className="text-lg font-bold text-blue-600">R$ {trip.price}</span>
           <button className="text-blue-600 text-sm font-bold hover:underline">Ver Detalhes</button>
         </div>
       </div>
