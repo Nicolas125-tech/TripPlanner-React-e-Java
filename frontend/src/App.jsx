@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import LoadingSpinner from './components/LoadingSpinner';
 import { 
   Plane, MapPin, Calendar, Search, Star, CheckCircle, User, 
   Menu, X, ArrowRight, Heart, Users, Wifi, Coffee, Map as MapIcon, 
@@ -214,7 +215,7 @@ const App = () => {
                 ].map(cat => <CategoryPill key={cat.label} {...cat} active={categoryFilter === cat.label} onClick={() => setCategoryFilter(cat.label)} />)}
               </div>
 
-              {loading ? <div className="text-center py-10">Carregando destinos...</div> : (
+              {loading ? <LoadingSpinner text="Carregando destinos..." /> : (
                 <div className="grid md:grid-cols-3 gap-8">
                   {filteredDestinations.map(dest => (
                     <div key={dest.id} onClick={() => { setSelectedDestination(dest); setShowDetailsModal(true); }} className="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-xl transition-all cursor-pointer group">
