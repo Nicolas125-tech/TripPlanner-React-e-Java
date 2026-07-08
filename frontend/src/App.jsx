@@ -53,7 +53,7 @@ const mockDestinations = [
 
 const App = () => {
   const [activeTab, setActiveTab] = useState('home');
-  const [search, setSearch] = useState("");
+  // ⚡ Bolt: Removed 'search' state to prevent unnecessary re-renders of App on every keystroke. State is now handled locally in SearchBar.
   const [categoryFilter, setCategoryFilter] = useState("Todos");
   
   // Dados
@@ -185,12 +185,7 @@ const App = () => {
           <>
             <div className="bg-blue-900 py-20 px-4 text-center text-white mb-10">
               <h1 className="text-4xl md:text-5xl font-bold mb-4">Para onde você quer ir?</h1>
-              <SearchBar
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && performSearch(search)}
-                onSearch={() => performSearch(search)}
-              />
+              <SearchBar onSearch={performSearch} />
             </div>
 
             <main className="max-w-7xl mx-auto px-4">
