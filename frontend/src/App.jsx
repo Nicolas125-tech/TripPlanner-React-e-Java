@@ -6,6 +6,8 @@ import {
   LogOut, Shield, CreditCard, Sun, Mountain, Building, Clock
 } from 'lucide-react';
 import TripCard from './components/TripCard';
+import AuthForm from './components/AuthForm';
+import BookingForm from './components/BookingForm';
 
 // --- COMPONENTES AUXILIARES ---
 
@@ -71,8 +73,6 @@ const App = () => {
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [selectedDestination, setSelectedDestination] = useState(null);
   const [notification, setNotification] = useState(null);
-  const [bookingData, setBookingData] = useState({ dateStart: '', dateEnd: '', guests: 1 });
-  const [authForm, setAuthForm] = useState({ name: '', email: '', password: '' });
 
   // Buscar dados da API JAVA
   const performSearch = async (searchTerm) => {
@@ -109,9 +109,8 @@ const App = () => {
     setTimeout(() => setNotification(null), 3000);
   };
 
-  const handleLogin = (e) => {
-    e.preventDefault();
-    const userData = { name: authForm.name || "Visitante", email: authForm.email, avatar: `https://ui-avatars.com/api/?name=${authForm.name}&background=2563eb&color=fff` };
+  const handleLogin = (formData) => {
+    const userData = { name: formData.name || "Visitante", email: formData.email, avatar: `https://ui-avatars.com/api/?name=${formData.name}&background=2563eb&color=fff` };
     setUser(userData);
     setShowAuthModal(false);
     showNotification(`Bem-vindo, ${userData.name}!`);
@@ -127,8 +126,7 @@ const App = () => {
     }
   };
 
-  const confirmBooking = (e) => {
-    e.preventDefault();
+  const confirmBooking = (bookingData) => {
     const newTrip = {
       ...selectedDestination,
       bookingId: Date.now(),
@@ -260,11 +258,7 @@ const App = () => {
 
       {/* MODALS (Login, Booking, Details) */}
       <Modal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} title="Acesse sua conta">
-        <form onSubmit={handleLogin} className="space-y-4">
-          <input aria-label="Nome" type="text" placeholder="Nome" className="w-full border p-2 rounded" onChange={e => setAuthForm({...authForm, name: e.target.value})} />
-          <input aria-label="Email" type="email" placeholder="Email" className="w-full border p-2 rounded" onChange={e => setAuthForm({...authForm, email: e.target.value})} />
-          <button className="w-full bg-blue-600 text-white py-2 rounded font-bold">Entrar</button>
-        </form>
+        <AuthForm onSubmit={handleLogin} />
       </Modal>
 
       <Modal isOpen={showDetailsModal} onClose={() => setShowDetailsModal(false)} title={selectedDestination?.city}>
@@ -284,14 +278,7 @@ const App = () => {
       </Modal>
 
       <Modal isOpen={showBookingModal} onClose={() => setShowBookingModal(false)} title="Confirmar Reserva">
-        <form onSubmit={confirmBooking} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div><label htmlFor="dateStart" className="text-sm">Ida</label><input id="dateStart" type="date" required className="w-full border p-2 rounded" onChange={e => setBookingData({...bookingData, dateStart: e.target.value})} /></div>
-            <div><label htmlFor="dateEnd" className="text-sm">Volta</label><input id="dateEnd" type="date" required className="w-full border p-2 rounded" onChange={e => setBookingData({...bookingData, dateEnd: e.target.value})} /></div>
-          </div>
-          <div><label htmlFor="guests" className="text-sm">Hóspedes</label><input id="guests" type="number" min="1" className="w-full border p-2 rounded" value={bookingData.guests} onChange={e => setBookingData({...bookingData, guests: Number(e.target.value)})} /></div>
-          <button className="w-full bg-green-600 text-white py-3 rounded-lg font-bold">Confirmar Pagamento</button>
-        </form>
+        <BookingForm onSubmit={confirmBooking} />
       </Modal>
 
       {notification && <div className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-6 py-3 rounded-full animate-bounce z-50">{notification}</div>}
