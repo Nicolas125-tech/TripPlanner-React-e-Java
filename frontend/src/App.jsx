@@ -117,15 +117,23 @@ const App = () => {
     showNotification(`Bem-vindo, ${userData.name}!`);
   };
 
-  const toggleFavorite = (id) => {
-    if (favorites.includes(id)) {
-      setFavorites(favorites.filter(favId => favId !== id));
+  const toggleFavorite = React.useCallback((id, isCurrentlyFavorite) => {
+    setFavorites(prevFavorites => {
+      const isFav = prevFavorites.includes(id);
+      return isFav ? prevFavorites.filter(favId => favId !== id) : [...prevFavorites, id];
+    });
+
+    if (isCurrentlyFavorite) {
       showNotification("Removido dos favoritos");
     } else {
-      setFavorites([...favorites, id]);
       showNotification("Adicionado aos favoritos ❤️");
     }
-  };
+  }, []);
+
+  const handleDetailsClick = React.useCallback((dest) => {
+    setSelectedDestination(dest);
+    setShowDetailsModal(true);
+  }, []);
 
   const confirmBooking = (e) => {
     e.preventDefault();
@@ -206,7 +214,7 @@ const App = () => {
                       trip={dest}
                       isFavorite={favorites.includes(dest.id)}
                       onFavoriteClick={toggleFavorite}
-                      onDetailsClick={() => { setSelectedDestination(dest); setShowDetailsModal(true); }}
+                      onDetailsClick={handleDetailsClick}
                     />
                   ))}
                 </div>
@@ -249,7 +257,7 @@ const App = () => {
                     trip={dest}
                     isFavorite={true}
                     onFavoriteClick={toggleFavorite}
-                    onDetailsClick={() => { setSelectedDestination(dest); setShowDetailsModal(true); }}
+                    onDetailsClick={handleDetailsClick}
                   />
                 ))}
               </div>
