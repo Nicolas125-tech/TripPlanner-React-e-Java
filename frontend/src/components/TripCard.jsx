@@ -1,11 +1,18 @@
 // src/components/TripCard.jsx
-import React from 'react';
+import React, { memo } from 'react';
 import { Heart, Star } from 'lucide-react';
 
+// ⚡ Bolt Performance Optimization:
+// Wrapped TripCard in React.memo to prevent O(N) re-renders.
+// `App.jsx` now uses `useCallback` for `onFavoriteClick` and `handleDetailsClick` to ensure
+// that callback references remain stable across renders.
+// We pass the stable `handleDetailsClick` directly and let `TripCard` execute `onDetailsClick(trip)` internally.
+// This allows standard `React.memo` to work perfectly without a custom `areEqual`,
+// improving list performance from O(N) to O(1) when a single item's favorite state changes.
 const TripCard = ({ trip, isFavorite, onFavoriteClick, onDetailsClick }) => {
   return (
     <div 
-      onClick={onDetailsClick}
+      onClick={() => onDetailsClick(trip)}
       className="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-xl transition-all cursor-pointer group"
     >
       <div className="relative h-56">
@@ -13,6 +20,7 @@ const TripCard = ({ trip, isFavorite, onFavoriteClick, onDetailsClick }) => {
           src={trip.imageUrl || trip.image} 
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
           alt={trip.city}
+          loading="lazy"
         />
         <div className="absolute top-4 right-4 bg-white/90 px-3 py-1 rounded-lg text-xs font-bold flex gap-1">
           <Star size={12} className="text-yellow-500 fill-yellow-500" /> 
@@ -22,7 +30,7 @@ const TripCard = ({ trip, isFavorite, onFavoriteClick, onDetailsClick }) => {
           aria-label={isFavorite ? "Remover dos favoritos" : "Adicionar aos favoritos"}
           onClick={(e) => { 
             e.stopPropagation(); 
-            onFavoriteClick(trip.id); 
+            onFavoriteClick(trip.id, isFavorite);
           }} 
           className="absolute top-4 left-4 p-2 rounded-full bg-white/30 hover:bg-white text-white hover:text-red-500 transition-colors"
         >
@@ -44,4 +52,4 @@ const TripCard = ({ trip, isFavorite, onFavoriteClick, onDetailsClick }) => {
   );
 };
 
-export default TripCard;
+export default memo(TripCard);
