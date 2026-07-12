@@ -5,3 +5,7 @@
 ## 2026-07-08 - useCallback vs Custom areEqual
 **Learning:** When inline functions are passed as props to child components rendered within a large list (like `TripCard` inside `App.jsx`), they defeat standard `React.memo` because the function reference changes on every parent render.
 **Action:** Always prioritize `useCallback` in the parent component to pass stable function references to children. If the callback depends on state, use functional state updates (e.g., `setFavorites(prev => ...)`). Moreover, ensure the callback doesn't needlessly depend on external state by passing required contextual information directly from the child (e.g. passing `isCurrentlyFavorite` back to the callback rather than including the whole `favorites` array in the callback's dependencies). This ensures standard `React.memo` works properly and safely prevents O(N) re-renders without stale closure bugs.
+
+## 2026-07-12 - HTTP Compression Threshold Optimization
+**Learning:** Enabling HTTP compression is effective, but setting the `min-response-size` too low (e.g., 10 bytes) is an anti-pattern. Compressing very small strings requires CPU cycles and frequently results in a larger payload due to the overhead of compression headers and dictionaries.
+**Action:** Always set a reasonable threshold (like 1024 or 2048 bytes) for `server.compression.min-response-size` to ensure we don't waste CPU and increase response sizes for tiny data payloads.
