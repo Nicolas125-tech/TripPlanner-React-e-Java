@@ -155,7 +155,13 @@ const App = () => {
     return matchesCategory;
   });
 
-  const favoritesList = destinations.filter(d => favorites.includes(d.id));
+  // ⚡ Bolt Performance Optimization:
+  // Converted the 'favorites' array to a Set to enable O(1) lookups during rendering.
+  // Previously, Array.includes() caused an O(N) lookup for every item in the list,
+  // resulting in O(N*M) time complexity. Using a Set reduces this to O(N).
+  const favoriteSet = React.useMemo(() => new Set(favorites), [favorites]);
+
+  const favoritesList = destinations.filter(d => favoriteSet.has(d.id));
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans text-gray-900 pb-20">
@@ -212,7 +218,7 @@ const App = () => {
                     <TripCard
                       key={dest.id}
                       trip={dest}
-                      isFavorite={favorites.includes(dest.id)}
+                      isFavorite={favoriteSet.has(dest.id)}
                       onFavoriteClick={toggleFavorite}
                       onDetailsClick={handleDetailsClick}
                     />
