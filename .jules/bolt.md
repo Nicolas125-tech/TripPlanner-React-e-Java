@@ -9,3 +9,6 @@
 ## 2026-07-12 - HTTP Compression Threshold Optimization
 **Learning:** Enabling HTTP compression is effective, but setting the `min-response-size` too low (e.g., 10 bytes) is an anti-pattern. Compressing very small strings requires CPU cycles and frequently results in a larger payload due to the overhead of compression headers and dictionaries.
 **Action:** Always set a reasonable threshold (like 1024 or 2048 bytes) for `server.compression.min-response-size` to ensure we don't waste CPU and increase response sizes for tiny data payloads.
+## 2026-07-14 - Transactional Read-Only Optimization
+**Learning:** In Spring Boot/Hibernate backend architectures, read-only operations that do not modify data can be optimized by adding `@Transactional(readOnly = true)`. This provides a measurable performance boost by disabling Hibernate's dirty checking mechanism, which saves significant CPU cycles and memory overhead, especially for operations returning lists.
+**Action:** When working on backend performance optimizations involving read-only operations in a Spring Boot application, ensure they are annotated with `@Transactional(readOnly = true)`.
