@@ -9,3 +9,7 @@
 ## 2026-07-12 - HTTP Compression Threshold Optimization
 **Learning:** Enabling HTTP compression is effective, but setting the `min-response-size` too low (e.g., 10 bytes) is an anti-pattern. Compressing very small strings requires CPU cycles and frequently results in a larger payload due to the overhead of compression headers and dictionaries.
 **Action:** Always set a reasonable threshold (like 1024 or 2048 bytes) for `server.compression.min-response-size` to ensure we don't waste CPU and increase response sizes for tiny data payloads.
+
+## 2024-07-13 - [Performance Optimization] useMemo for array filtering
+**Learning:** For relatively small lists, React.useMemo around Array.prototype.filter gives a decent performance boost by caching the filtered list over consecutive renders if dependencies (`destinations`, `categoryFilter`) do not change.
+**Action:** Use `React.useMemo` for filtering operations over arrays to avoid recalculating the filter over each render cycle.
