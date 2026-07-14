@@ -9,3 +9,7 @@
 ## 2026-07-12 - HTTP Compression Threshold Optimization
 **Learning:** Enabling HTTP compression is effective, but setting the `min-response-size` too low (e.g., 10 bytes) is an anti-pattern. Compressing very small strings requires CPU cycles and frequently results in a larger payload due to the overhead of compression headers and dictionaries.
 **Action:** Always set a reasonable threshold (like 1024 or 2048 bytes) for `server.compression.min-response-size` to ensure we don't waste CPU and increase response sizes for tiny data payloads.
+
+## 2026-07-13 - DataSeeder N+1 Query Optimization
+**Learning:** Initializing data using multiple individual `repository.save()` calls in a loop or sequential block generates an N+1 insertion pattern, increasing the number of database round-trips.
+**Action:** Replace individual `save()` calls with a single `saveAll(Iterable<T>)` call to batch the insert operations, reducing the number of queries and transaction overhead.
