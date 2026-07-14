@@ -150,10 +150,14 @@ const App = () => {
     showNotification("Viagem reservada com sucesso! ✈️");
   };
 
-  const filteredDestinations = destinations.filter(d => {
-    const matchesCategory = categoryFilter === "Todos" || d.category === categoryFilter;
-    return matchesCategory;
-  });
+  // ⚡ Bolt Performance Optimization:
+  // Wrapped the destinations filter in `React.useMemo` to cache the filtered array
+  // and avoid O(N) recalculations on every render when destinations and categoryFilter haven't changed.
+  const filteredDestinations = React.useMemo(() => {
+    return destinations.filter(d => {
+      return categoryFilter === "Todos" || d.category === categoryFilter;
+    });
+  }, [destinations, categoryFilter]);
 
   // ⚡ Bolt Performance Optimization:
   // Converted the 'favorites' array to a Set to enable O(1) lookups during rendering.
