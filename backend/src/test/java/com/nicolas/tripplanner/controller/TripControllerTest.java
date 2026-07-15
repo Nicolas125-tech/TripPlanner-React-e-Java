@@ -82,6 +82,20 @@ class TripControllerTest {
     }
 
     @Test
+    void searchTrips_shouldReturnTrips_whenQueryIsMissing() throws Exception {
+        when(tripService.searchTrips(null)).thenReturn(Arrays.asList(tripResponse1, tripResponse2));
+
+        mockMvc.perform(get("/api/trips/search"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$[0].city").value("Paris"))
+                .andExpect(jsonPath("$[1].city").value("Tokyo"))
+                .andExpect(jsonPath("$.length()").value(2));
+
+        verify(tripService, times(1)).searchTrips(null);
+    }
+
+    @Test
     void searchTrips_shouldReturnMatchingTrips() throws Exception {
         when(tripService.searchTrips("Paris")).thenReturn(Collections.singletonList(tripResponse1));
 
