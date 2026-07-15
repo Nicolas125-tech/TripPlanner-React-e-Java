@@ -50,6 +50,17 @@ class TripRepositoryTest {
     }
 
     @Test
+    void findByCity_shouldReturnTrips_whenCityExists() {
+        List<Trip> parisTrips = tripRepository.findByCity("Paris");
+
+        assertEquals(1, parisTrips.size());
+        assertEquals("Paris", parisTrips.get(0).getCity());
+
+        List<Trip> nonExistentTrips = tripRepository.findByCity("UnknownCity");
+        assertTrue(nonExistentTrips.isEmpty());
+    }
+
+    @Test
     void searchTrips_shouldReturnTrips_matchingCityOrCountry() {
         List<Trip> result = tripRepository.searchTrips("rio");
 
