@@ -6,6 +6,7 @@ import com.nicolas.tripplanner.exception.ResourceNotFoundException;
 import com.nicolas.tripplanner.model.Trip;
 import com.nicolas.tripplanner.repository.TripRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,6 +33,10 @@ public class TripService {
         );
     }
     
+    // ⚡ Bolt Performance Optimization:
+    // Added @Transactional(readOnly = true) to read-only database operations.
+    // This provides a measurable performance boost by disabling Hibernate's dirty checking mechanism and reducing CPU/memory overhead.
+    @Transactional(readOnly = true)
     public List<TripResponse> getAllTrips() {
         return tripRepository.findAll()
                 .stream()
@@ -39,12 +44,14 @@ public class TripService {
                 .collect(Collectors.toList());
     }
     
+    @Transactional(readOnly = true)
     public TripResponse getTripById(Long id) {
         Trip trip = tripRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Trip not found with id: " + id));
         return mapToResponse(trip);
     }
     
+    @Transactional(readOnly = true)
     public List<TripResponse> searchTrips(String query) {
         if (query == null || query.isBlank()) {
             return getAllTrips();
@@ -55,6 +62,7 @@ public class TripService {
                 .collect(Collectors.toList());
     }
     
+    @Transactional(readOnly = true)
     public List<TripResponse> getTripsByCategory(String category) {
         return tripRepository.findByCategory(category)
                 .stream()
@@ -62,6 +70,7 @@ public class TripService {
                 .collect(Collectors.toList());
     }
     
+    @Transactional
     public TripResponse createTrip(TripRequest request) {
         Trip trip = new Trip(
             request.getCity(),
@@ -77,6 +86,7 @@ public class TripService {
         return mapToResponse(savedTrip);
     }
     
+    @Transactional
     public TripResponse updateTrip(Long id, TripRequest request) {
         Trip trip = tripRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Trip not found with id: " + id));
@@ -93,6 +103,7 @@ public class TripService {
         return mapToResponse(updatedTrip);
     }
     
+    @Transactional
     public void deleteTrip(Long id) {
         Trip trip = tripRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Trip not found with id: " + id));
