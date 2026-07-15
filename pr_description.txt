@@ -1,0 +1,3 @@
+🎯 **What:** The `TripCard` component was missing test coverage. This PR introduces tests using Vitest and React Testing Library.
+📊 **Coverage:** The new tests verify that the component correctly renders trip details (city, country, price, rating), fires the `onDetailsClick` handler when clicked, fires the `onFavoriteClick` handler when the favorite button is clicked, and dynamically updates its `aria-label` based on the `isFavorite` state.
+✨ **Result:** Test coverage improved for a core UI component, providing safety for future refactoring.
