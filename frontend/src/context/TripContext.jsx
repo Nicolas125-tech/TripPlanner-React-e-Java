@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
 
 // Criar contexto
 const TripContext = createContext();
@@ -88,7 +88,13 @@ export const TripProvider = ({ children }) => {
     return newTrip;
   }, [myTrips, updateMyTrips]);
 
-  const value = {
+  // ⚡ Bolt Performance Optimization:
+  // Wrapped the context value in `useMemo` to prevent unnecessary re-renders.
+  // Previously, the `value` object was recreated on every render of TripProvider,
+  // causing all consuming components to re-render even if the specific state they
+  // needed hadn't changed. Now, the context value is only recreated when one of its
+  // dependencies changes.
+  const value = useMemo(() => ({
     // Estado
     destinations,
     loading,
@@ -104,7 +110,20 @@ export const TripProvider = ({ children }) => {
     logout,
     bookTrip,
     updateMyTrips
-  };
+  }), [
+    destinations,
+    loading,
+    error,
+    user,
+    myTrips,
+    favorites,
+    searchDestinations,
+    toggleFavorite,
+    login,
+    logout,
+    bookTrip,
+    updateMyTrips
+  ]);
 
   return <TripContext.Provider value={value}>{children}</TripContext.Provider>;
 };
