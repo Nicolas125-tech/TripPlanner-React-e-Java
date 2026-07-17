@@ -74,8 +74,21 @@ const App = () => {
   const [bookingData, setBookingData] = useState({ dateStart: '', dateEnd: '', guests: 1 });
   const [authForm, setAuthForm] = useState({ name: '', email: '', password: '' });
 
+  // ⚡ Bolt Performance Optimization:
+  // Added a local cache (searchCache) for API responses.
+  // This avoids redundant network requests for identical searches (e.g., clearing the search bar or typing a previously searched term).
+  // It provides instant (0ms) results for cached queries, reducing server load and drastically improving perceived frontend responsiveness.
+  const searchCache = React.useRef(new Map());
+
   // Buscar dados da API JAVA
   const performSearch = async (searchTerm) => {
+    const cacheKey = searchTerm || 'ALL';
+
+    if (searchCache.current.has(cacheKey)) {
+      setDestinations(searchCache.current.get(cacheKey));
+      return;
+    }
+
     setLoading(true);
     try {
       // Se tiver termo, busca específico. Se não, busca tudo.
@@ -85,6 +98,8 @@ const App = () => {
       
       const res = await fetch(url);
       const data = await res.json();
+
+      searchCache.current.set(cacheKey, data);
       setDestinations(data);
     } catch (err) {
       console.error("Erro ao buscar:", err);
