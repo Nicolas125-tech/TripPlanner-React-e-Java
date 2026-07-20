@@ -49,6 +49,44 @@ const mockDestinations = [
   { id: 3, city: "Rio de Janeiro", country: "Brasil", price: 1800, rating: 4.7, category: "Praia", image: "https://images.unsplash.com/photo-1483729558449-99ef09a8c325?auto=format&fit=crop&q=80&w=800", description: "Cidade Maravilhosa.", amenities: ["Piscina", "Mar"], reviews: 3200 }
 ];
 
+// --- COMPONENTES DE FORMULÁRIO (Para evitar re-render do App) ---
+const AuthForm = ({ onLogin }) => {
+  const [authForm, setAuthForm] = React.useState({ name: '', email: '', password: '' });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onLogin(authForm);
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <input aria-label="Nome" type="text" placeholder="Nome" className="w-full border p-2 rounded" onChange={e => setAuthForm({...authForm, name: e.target.value})} />
+      <input aria-label="Email" type="email" placeholder="Email" className="w-full border p-2 rounded" onChange={e => setAuthForm({...authForm, email: e.target.value})} />
+      <button className="w-full bg-blue-600 text-white py-2 rounded font-bold">Entrar</button>
+    </form>
+  );
+};
+
+const BookingForm = ({ onConfirm }) => {
+  const [bookingData, setBookingData] = React.useState({ dateStart: '', dateEnd: '', guests: 1 });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onConfirm(bookingData);
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="grid grid-cols-2 gap-4">
+        <div><label htmlFor="dateStart" className="text-sm">Ida</label><input id="dateStart" type="date" required className="w-full border p-2 rounded" onChange={e => setBookingData({...bookingData, dateStart: e.target.value})} /></div>
+        <div><label htmlFor="dateEnd" className="text-sm">Volta</label><input id="dateEnd" type="date" required className="w-full border p-2 rounded" onChange={e => setBookingData({...bookingData, dateEnd: e.target.value})} /></div>
+      </div>
+      <div><label htmlFor="guests" className="text-sm">Hóspedes</label><input id="guests" type="number" min="1" className="w-full border p-2 rounded" value={bookingData.guests} onChange={e => setBookingData({...bookingData, guests: Number(e.target.value)})} /></div>
+      <button className="w-full bg-green-600 text-white py-3 rounded-lg font-bold">Confirmar Pagamento</button>
+    </form>
+  );
+};
+
 // --- APP PRINCIPAL ---
 
 const App = () => {
@@ -71,8 +109,6 @@ const App = () => {
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [selectedDestination, setSelectedDestination] = useState(null);
   const [notification, setNotification] = useState(null);
-  const [bookingData, setBookingData] = useState({ dateStart: '', dateEnd: '', guests: 1 });
-  const [authForm, setAuthForm] = useState({ name: '', email: '', password: '' });
 
   // ⚡ Bolt Performance Optimization:
   // Added a local cache (searchCache) for API responses.
@@ -124,9 +160,8 @@ const App = () => {
     setTimeout(() => setNotification(null), 3000);
   };
 
-  const handleLogin = (e) => {
-    e.preventDefault();
-    const userData = { name: authForm.name || "Visitante", email: authForm.email, avatar: `https://ui-avatars.com/api/?name=${authForm.name}&background=2563eb&color=fff` };
+  const handleLogin = (authFormData) => {
+    const userData = { name: authFormData.name || "Visitante", email: authFormData.email, avatar: `https://ui-avatars.com/api/?name=${authFormData.name}&background=2563eb&color=fff` };
     setUser(userData);
     setShowAuthModal(false);
     showNotification(`Bem-vindo, ${userData.name}!`);
@@ -150,13 +185,12 @@ const App = () => {
     setShowDetailsModal(true);
   }, []);
 
-  const confirmBooking = (e) => {
-    e.preventDefault();
+  const confirmBooking = (bookingFormData) => {
     const newTrip = {
       ...selectedDestination,
       bookingId: Date.now(),
-      ...bookingData,
-      totalPrice: selectedDestination.price * bookingData.guests,
+      ...bookingFormData,
+      totalPrice: selectedDestination.price * bookingFormData.guests,
       status: 'Confirmado'
     };
     setMyTrips([...myTrips, newTrip]);
@@ -293,11 +327,7 @@ const App = () => {
 
       {/* MODALS (Login, Booking, Details) */}
       <Modal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} title="Acesse sua conta">
-        <form onSubmit={handleLogin} className="space-y-4">
-          <input aria-label="Nome" type="text" placeholder="Nome" className="w-full border p-2 rounded" onChange={e => setAuthForm({...authForm, name: e.target.value})} />
-          <input aria-label="Email" type="email" placeholder="Email" className="w-full border p-2 rounded" onChange={e => setAuthForm({...authForm, email: e.target.value})} />
-          <button className="w-full bg-blue-600 text-white py-2 rounded font-bold">Entrar</button>
-        </form>
+        <AuthForm onLogin={handleLogin} />
       </Modal>
 
       <Modal isOpen={showDetailsModal} onClose={() => setShowDetailsModal(false)} title={selectedDestination?.city}>
@@ -317,14 +347,7 @@ const App = () => {
       </Modal>
 
       <Modal isOpen={showBookingModal} onClose={() => setShowBookingModal(false)} title="Confirmar Reserva">
-        <form onSubmit={confirmBooking} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div><label htmlFor="dateStart" className="text-sm">Ida</label><input id="dateStart" type="date" required className="w-full border p-2 rounded" onChange={e => setBookingData({...bookingData, dateStart: e.target.value})} /></div>
-            <div><label htmlFor="dateEnd" className="text-sm">Volta</label><input id="dateEnd" type="date" required className="w-full border p-2 rounded" onChange={e => setBookingData({...bookingData, dateEnd: e.target.value})} /></div>
-          </div>
-          <div><label htmlFor="guests" className="text-sm">Hóspedes</label><input id="guests" type="number" min="1" className="w-full border p-2 rounded" value={bookingData.guests} onChange={e => setBookingData({...bookingData, guests: Number(e.target.value)})} /></div>
-          <button className="w-full bg-green-600 text-white py-3 rounded-lg font-bold">Confirmar Pagamento</button>
-        </form>
+        <BookingForm onConfirm={confirmBooking} />
       </Modal>
 
       {notification && <div className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-6 py-3 rounded-full animate-bounce z-50">{notification}</div>}

@@ -13,3 +13,6 @@
 ## 2024-07-13 - [Performance Optimization] useMemo for array filtering
 **Learning:** For relatively small lists, React.useMemo around Array.prototype.filter gives a decent performance boost by caching the filtered list over consecutive renders if dependencies (`destinations`, `categoryFilter`) do not change.
 **Action:** Use `React.useMemo` for filtering operations over arrays to avoid recalculating the filter over each render cycle.
+## 2026-07-19 - [Performance Optimization] Colocating Form State
+**Learning:** Hoisting highly active state, such as form input keystrokes, to a top-level component like App.jsx causes the entire application tree to unnecessarily re-render on every keystroke.
+**Action:** Colocate state associated with forms into dedicated child functional components (e.g., AuthForm, BookingForm) to prevent O(N) re-renders in large top-level components and improve application responsiveness.
