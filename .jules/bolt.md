@@ -16,3 +16,7 @@
 ## 2026-07-19 - [Performance Optimization] Colocating Form State
 **Learning:** Hoisting highly active state, such as form input keystrokes, to a top-level component like App.jsx causes the entire application tree to unnecessarily re-render on every keystroke.
 **Action:** Colocate state associated with forms into dedicated child functional components (e.g., AuthForm, BookingForm) to prevent O(N) re-renders in large top-level components and improve application responsiveness.
+
+## 2024-07-20 - Disable Open Session In View (OSIV)
+**Learning:** Spring Boot enables Open Session In View (OSIV) by default, which holds database connections open during the entire HTTP response rendering phase (JSON serialization). This is an anti-pattern that can exhaust the database connection pool under load.
+**Action:** Always disable OSIV (`spring.jpa.open-in-view=false`) in the backend's `application.properties` to release database connections immediately after the service layer transaction completes.
