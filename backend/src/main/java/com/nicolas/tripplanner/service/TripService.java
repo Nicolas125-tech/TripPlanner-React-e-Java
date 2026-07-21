@@ -5,6 +5,8 @@ import com.nicolas.tripplanner.dto.TripResponse;
 import com.nicolas.tripplanner.exception.ResourceNotFoundException;
 import com.nicolas.tripplanner.model.Trip;
 import com.nicolas.tripplanner.repository.TripRepository;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,8 +36,9 @@ public class TripService {
     }
     
     // ⚡ Bolt Performance Optimization:
-    // Added @Transactional(readOnly = true) to read-only database operations.
-    // This provides a measurable performance boost by disabling Hibernate's dirty checking mechanism and reducing CPU/memory overhead.
+    // Added Spring Cache (@Cacheable) for frequent database reads and @CacheEvict for writes.
+    // This reduces the number of queries reaching the database and provides O(1) in-memory lookup times for repeated queries.
+    @Cacheable("allTrips")
     @Transactional(readOnly = true)
     public List<TripResponse> getAllTrips() {
         return tripRepository.findAll()
@@ -44,6 +47,7 @@ public class TripService {
                 .collect(Collectors.toList());
     }
     
+    @Cacheable(value = "trip", key = "#id")
     @Transactional(readOnly = true)
     public TripResponse getTripById(Long id) {
         Trip trip = tripRepository.findById(id)
@@ -51,6 +55,7 @@ public class TripService {
         return mapToResponse(trip);
     }
     
+    @Cacheable(value = "searchTrips", key = "#query")
     @Transactional(readOnly = true)
     public List<TripResponse> searchTrips(String query) {
         if (query == null || query.isBlank()) {
@@ -62,6 +67,7 @@ public class TripService {
                 .collect(Collectors.toList());
     }
     
+    @Cacheable(value = "tripsByCategory", key = "#category")
     @Transactional(readOnly = true)
     public List<TripResponse> getTripsByCategory(String category) {
         return tripRepository.findByCategory(category)
@@ -70,6 +76,7 @@ public class TripService {
                 .collect(Collectors.toList());
     }
     
+    @CacheEvict(value = {"allTrips", "searchTrips", "tripsByCategory"}, allEntries = true)
     @Transactional
     public TripResponse createTrip(TripRequest request) {
         Trip trip = new Trip(
@@ -86,6 +93,7 @@ public class TripService {
         return mapToResponse(savedTrip);
     }
     
+    @CacheEvict(value = {"allTrips", "searchTrips", "tripsByCategory", "trip"}, allEntries = true)
     @Transactional
     public TripResponse updateTrip(Long id, TripRequest request) {
         Trip trip = tripRepository.findById(id)
@@ -103,6 +111,7 @@ public class TripService {
         return mapToResponse(updatedTrip);
     }
     
+    @CacheEvict(value = {"allTrips", "searchTrips", "tripsByCategory", "trip"}, allEntries = true)
     @Transactional
     public void deleteTrip(Long id) {
         Trip trip = tripRepository.findById(id)
