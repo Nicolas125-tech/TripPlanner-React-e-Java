@@ -118,7 +118,12 @@ const App = () => {
 
   // Buscar dados da API JAVA
   const performSearch = async (searchTerm) => {
-    const cacheKey = searchTerm || 'ALL';
+    // ⚡ Bolt Performance Optimization:
+    // Normalized the search term (trimmed whitespace and lowercased) before generating the cache key.
+    // This dramatically increases cache hit rates by treating equivalent searches (like "Paris", "paris", and " Paris ")
+    // as identical, avoiding unnecessary API requests and subsequent React re-renders.
+    const normalizedTerm = searchTerm ? searchTerm.trim() : "";
+    const cacheKey = normalizedTerm.toLowerCase() || 'ALL';
 
     if (searchCache.current.has(cacheKey)) {
       setDestinations(searchCache.current.get(cacheKey));
@@ -128,8 +133,8 @@ const App = () => {
     setLoading(true);
     try {
       // Se tiver termo, busca específico. Se não, busca tudo.
-      const url = searchTerm 
-        ? `http://localhost:8080/api/trips/search?query=${encodeURIComponent(searchTerm)}` 
+      const url = normalizedTerm
+        ? `http://localhost:8080/api/trips/search?query=${encodeURIComponent(normalizedTerm)}`
         : 'http://localhost:8080/api/trips';
       
       const res = await fetch(url);
