@@ -55,7 +55,11 @@ public class TripService {
         return mapToResponse(trip);
     }
     
-    @Cacheable(value = "searchTrips", key = "#query")
+    // ⚡ Bolt Performance Optimization:
+    // Normalized the cache key for searchTrips using SpEL: `#query != null ? #query.trim().toLowerCase() : ''`
+    // Previously, the key was just `#query`, meaning "Paris", "paris", and " Paris " generated different cache entries,
+    // leading to redundant database queries. This normalization significantly improves cache hit rates and memory efficiency.
+    @Cacheable(value = "searchTrips", key = "#query != null ? #query.trim().toLowerCase() : ''")
     @Transactional(readOnly = true)
     public List<TripResponse> searchTrips(String query) {
         if (query == null || query.isBlank()) {
