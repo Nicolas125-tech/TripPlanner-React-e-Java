@@ -208,9 +208,8 @@ const App = () => {
   // Wrapped the destinations filter in `React.useMemo` to cache the filtered array
   // and avoid O(N) recalculations on every render when destinations and categoryFilter haven't changed.
   const filteredDestinations = React.useMemo(() => {
-    return destinations.filter(d => {
-      return categoryFilter === "Todos" || d.category === categoryFilter;
-    });
+    if (categoryFilter === "Todos") return destinations;
+    return destinations.filter(d => d.category === categoryFilter);
   }, [destinations, categoryFilter]);
 
   // ⚡ Bolt Performance Optimization:
@@ -219,7 +218,13 @@ const App = () => {
   // resulting in O(N*M) time complexity. Using a Set reduces this to O(N).
   const favoriteSet = React.useMemo(() => new Set(favorites), [favorites]);
 
-  const favoritesList = destinations.filter(d => favoriteSet.has(d.id));
+  // ⚡ Bolt Performance Optimization:
+  // Wrapped favoritesList in useMemo to prevent O(N) recalculations on every render.
+  // Added an early return for the default empty state, making it O(1) instead of O(N).
+  const favoritesList = React.useMemo(() => {
+    if (favoriteSet.size === 0) return [];
+    return destinations.filter(d => favoriteSet.has(d.id));
+  }, [destinations, favoriteSet]);
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans text-gray-900 pb-20">

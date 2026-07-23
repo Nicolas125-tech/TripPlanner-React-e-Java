@@ -26,3 +26,6 @@
 ## 2024-07-22 - [Performance Optimization] Cache Key Normalization
 **Learning:** When users search, they often type with varying cases or trailing spaces (e.g., "Paris", "paris", " Paris "). If cache keys (both in frontend local maps and backend Spring Cache) use the exact raw string, these variations generate multiple cache misses, triggering redundant API calls and database queries for the same logical search.
 **Action:** Always normalize search terms (trim whitespace and convert to lowercase) before generating cache keys or sending them as API parameters. In Spring `@Cacheable`, use a SpEL expression like `key = "#query != null ? #query.trim().toLowerCase() : ''"` to deduplicate these equivalent queries at the service layer.
+## 2026-07-23 - [Performance Optimization] useMemo for array filtering early return
+**Learning:** When using `useMemo` for filtering operations over arrays, adding an early return for simple or empty cases (e.g. `if (categoryFilter === "Todos") return destinations;` or `if (favoriteSet.size === 0) return [];`) improves performance from O(N) to O(1) for those cases. This avoids unnecessary recalculations and maintains referential stability.
+**Action:** Always consider early returns in `useMemo` blocks for default or empty states.
