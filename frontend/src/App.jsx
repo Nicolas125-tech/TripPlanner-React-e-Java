@@ -117,7 +117,11 @@ const App = () => {
   const searchCache = React.useRef(new Map());
 
   // Buscar dados da API JAVA
-  const performSearch = async (searchTerm) => {
+  // ⚡ Bolt Performance Optimization:
+  // Wrapped performSearch in useCallback to prevent it from being recreated on every render.
+  // This ensures that the reference to performSearch is stable, preventing unnecessary re-renders
+  // of children components (like SearchBar) that receive it as a prop.
+  const performSearch = React.useCallback(async (searchTerm) => {
     // ⚡ Bolt Performance Optimization:
     // Normalized the search term (trimmed whitespace and lowercased) before generating the cache key.
     // This dramatically increases cache hit rates by treating equivalent searches (like "Paris", "paris", and " Paris ")
@@ -149,12 +153,12 @@ const App = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   // Carregamento inicial
   useEffect(() => {
     performSearch("");
-  }, []);
+  }, [performSearch]);
 
   useEffect(() => localStorage.setItem('trip_user', JSON.stringify(user)), [user]);
   useEffect(() => localStorage.setItem('trip_bookings', JSON.stringify(myTrips)), [myTrips]);
