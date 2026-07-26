@@ -281,13 +281,14 @@ const App = () => {
 
               {loading ? <div className="text-center py-10">Carregando destinos...</div> : (
                 <div className="grid md:grid-cols-3 gap-8">
-                  {filteredDestinations.map(dest => (
+                  {filteredDestinations.map((dest, index) => (
                     <TripCard
                       key={dest.id}
                       trip={dest}
                       isFavorite={favoriteSet.has(dest.id)}
                       onFavoriteClick={toggleFavorite}
                       onDetailsClick={handleDetailsClick}
+                      priority={index < 3}
                     />
                   ))}
                 </div>
@@ -324,13 +325,14 @@ const App = () => {
             <h2 className="text-2xl font-bold mb-6">Meus Favoritos</h2>
             {favoritesList.length === 0 ? <p className="text-gray-500">Nenhum favorito ainda.</p> : (
               <div className="grid md:grid-cols-3 gap-8">
-                {favoritesList.map(dest => (
+                {favoritesList.map((dest, index) => (
                   <TripCard
                     key={dest.id}
                     trip={dest}
                     isFavorite={true}
                     onFavoriteClick={toggleFavorite}
                     onDetailsClick={handleDetailsClick}
+                    priority={index < 3}
                   />
                 ))}
               </div>
