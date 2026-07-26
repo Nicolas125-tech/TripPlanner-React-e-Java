@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   Plane, MapPin, Calendar, Search, Star, CheckCircle, User, 
   Menu, X, ArrowRight, Users, Wifi, Coffee, Map as MapIcon,
-  LogOut, Shield, CreditCard, Sun, Mountain, Building, Clock
+  LogOut, Shield, Sun, Mountain, Building, Clock
 } from 'lucide-react';
 import TripCard from './components/TripCard';
 
