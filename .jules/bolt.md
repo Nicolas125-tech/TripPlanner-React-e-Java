@@ -29,3 +29,6 @@
 ## 2026-07-23 - [Performance Optimization] useMemo for array filtering early return
 **Learning:** When using `useMemo` for filtering operations over arrays, adding an early return for simple or empty cases (e.g. `if (categoryFilter === "Todos") return destinations;` or `if (favoriteSet.size === 0) return [];`) improves performance from O(N) to O(1) for those cases. This avoids unnecessary recalculations and maintains referential stability.
 **Action:** Always consider early returns in `useMemo` blocks for default or empty states.
+## 2026-07-24 - [Performance Optimization] LCP Image Optimization
+**Learning:** By default, lazy loading all images (`loading="lazy"`) in lists delays the Largest Contentful Paint (LCP) because the browser waits until layout is complete to fetch above-the-fold images.
+**Action:** Always eagerly load (`loading="eager"`) and prioritize (`fetchpriority="high"`) images that are likely to appear above the fold (e.g., the first 2-3 items in a grid/list) to minimize render blocking and fetching delays, significantly improving the LCP metric.

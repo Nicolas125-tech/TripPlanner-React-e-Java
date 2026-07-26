@@ -9,7 +9,12 @@ import { Heart, Star } from 'lucide-react';
 // We pass the stable `handleDetailsClick` directly and let `TripCard` execute `onDetailsClick(trip)` internally.
 // This allows standard `React.memo` to work perfectly without a custom `areEqual`,
 // improving list performance from O(N) to O(1) when a single item's favorite state changes.
-const TripCard = ({ trip, isFavorite, onFavoriteClick, onDetailsClick }) => {
+//
+// ⚡ Bolt Performance Optimization:
+// Added LCP (Largest Contentful Paint) image optimization.
+// Images that appear above the fold (priority prop = true) use eager loading and high fetchpriority
+// to minimize render blocking and fetching delays, improving the LCP metric.
+const TripCard = ({ trip, isFavorite, onFavoriteClick, onDetailsClick, priority }) => {
   return (
     <div 
       onClick={() => onDetailsClick(trip)}
@@ -20,7 +25,8 @@ const TripCard = ({ trip, isFavorite, onFavoriteClick, onDetailsClick }) => {
           src={trip.imageUrl || trip.image} 
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
           alt={trip.city}
-          loading="lazy"
+          loading={priority ? "eager" : "lazy"}
+          fetchpriority={priority ? "high" : "auto"}
         />
         <div className="absolute top-4 right-4 bg-white/90 px-3 py-1 rounded-lg text-xs font-bold flex gap-1">
           <Star size={12} className="text-yellow-500 fill-yellow-500" /> 
