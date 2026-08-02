@@ -12,7 +12,7 @@ import { Heart, Star } from 'lucide-react';
 //
 // ⚡ Bolt Performance Optimization:
 // Added LCP (Largest Contentful Paint) image optimization.
-// Images that appear above the fold (priority prop = true) use eager loading and high fetchpriority
+// Images that appear above the fold (priority prop = true) use eager loading and high fetchPriority
 // to minimize render blocking and fetching delays, improving the LCP metric.
 const TripCard = ({ trip, isFavorite, onFavoriteClick, onDetailsClick, priority }) => {
   return (
@@ -26,7 +26,7 @@ const TripCard = ({ trip, isFavorite, onFavoriteClick, onDetailsClick, priority 
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
           alt={trip.city}
           loading={priority ? "eager" : "lazy"}
-          fetchpriority={priority ? "high" : "auto"}
+          fetchPriority={priority ? "high" : "auto"}
         />
         <div className="absolute top-4 right-4 bg-white/90 px-3 py-1 rounded-lg text-xs font-bold flex gap-1">
           <Star size={12} className="text-yellow-500 fill-yellow-500" /> 
