@@ -1,5 +1,5 @@
-🧪 Add test for missing query in search trips
+# 🔒 [security fix] Disable H2 database console
 
-🎯 **What:** The testing gap in `TripController.java` regarding the `searchTrips` endpoint has been addressed.
-📊 **Coverage:** A new test `searchTrips_shouldReturnTrips_whenQueryIsMissing` has been added to `TripControllerTest.java` that covers the scenario when the query parameter is omitted (is `null`), validating the correct handling of this edge case in the API endpoint.
-✨ **Result:** Test coverage for `TripController` has improved to cover the case where a search query parameter is null, enhancing the reliability of the application's search feature.
+🎯 **What:** Disabled the H2 database console in `application.properties`.
+⚠️ **Risk:** If left enabled, the H2 console could be exposed (since no secure password was set and it was enabled), potentially allowing unauthorized access to the database depending on routing and deployment setup.
+🛡️ **Solution:** Set `spring.h2.console.enabled=false` to completely disable the H2 console.
