@@ -121,6 +121,18 @@ class TripControllerTest {
         verify(tripService, times(1)).getTripsByCategory("City");
     }
 
+
+    @Test
+    void createTrip_shouldReturn400_whenImageUrlIsInvalid() throws Exception {
+        TripRequest request = new TripRequest("Rome", "Italy", 1000.0, 4.7, "City");
+        request.setImageUrl("not-a-valid-url");
+
+        mockMvc.perform(post("/api/trips")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+    }
+
     @Test
     void createTrip_shouldReturnCreatedTrip() throws Exception {
         TripRequest request = new TripRequest("Rome", "Italy", 1000.0, 4.7, "City");

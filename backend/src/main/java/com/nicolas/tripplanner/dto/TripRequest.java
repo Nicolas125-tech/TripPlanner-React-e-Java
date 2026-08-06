@@ -2,6 +2,8 @@ package com.nicolas.tripplanner.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
+import org.hibernate.validator.constraints.URL;
 
 public class TripRequest {
     
@@ -21,6 +23,8 @@ public class TripRequest {
     
     private String description;
     
+    @URL(message = "URL da imagem inválida")
+    @Size(max = 2048, message = "URL da imagem deve ter no máximo 2048 caracteres")
     private String imageUrl;
     
     public TripRequest() {
