@@ -36,7 +36,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ApiErrorResponse errorResponse = new ApiErrorResponse(
             HttpStatus.INTERNAL_SERVER_ERROR.value(),
             "Internal Server Error",
-            ex.getMessage(),
+            "An unexpected error occurred",
             request.getDescription(false).replace("uri=", "")
         );
         
