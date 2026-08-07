@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
@@ -54,7 +55,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             .getFieldErrors()
             .stream()
             .map(error -> error.getField() + ": " + error.getDefaultMessage())
-            .reduce("", (acc, msg) -> acc + "\n" + msg);
+            .collect(Collectors.joining("\n"));
         
         ApiErrorResponse errorResponse = new ApiErrorResponse(
             HttpStatus.BAD_REQUEST.value(),
