@@ -89,6 +89,9 @@ const BookingForm = ({ onConfirm }) => {
 
 // --- APP PRINCIPAL ---
 
+
+const NAV_TABS = ['home', 'my-trips', 'favorites'];
+
 const App = () => {
   const [activeTab, setActiveTab] = useState('home');
   // ⚡ Bolt: Removed 'search' state to prevent unnecessary re-renders of App on every keystroke. State is now handled locally in SearchBar.
@@ -241,7 +244,7 @@ const App = () => {
             <span className="text-xl font-bold">Trip<span className="text-blue-600">Planner</span></span>
           </div>
           <div className="hidden md:flex space-x-8">
-            {['home', 'my-trips', 'favorites'].map(tab => (
+            {NAV_TABS.map(tab => (
               <button key={tab} onClick={() => setActiveTab(tab)} className={`text-sm font-medium ${activeTab === tab ? 'text-blue-600' : 'text-gray-500'}`}>
                 {tab === 'home' ? 'Explorar' : tab === 'my-trips' ? 'Minhas Viagens' : 'Favoritos'}
               </button>
