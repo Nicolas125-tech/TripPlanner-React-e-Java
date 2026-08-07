@@ -92,6 +92,13 @@ const BookingForm = ({ onConfirm }) => {
 
 const NAV_TABS = ['home', 'my-trips', 'favorites'];
 
+const TRIP_CATEGORIES = [
+  { label: "Todos", icon: <MapIcon size={16} /> },
+  { label: "Praia", icon: <Sun size={16} /> },
+  { label: "Cidade", icon: <Building size={16} /> },
+  { label: "Montanha", icon: <Mountain size={16} /> }
+];
+
 const App = () => {
   const [activeTab, setActiveTab] = useState('home');
   // ⚡ Bolt: Removed 'search' state to prevent unnecessary re-renders of App on every keystroke. State is now handled locally in SearchBar.
@@ -274,12 +281,7 @@ const App = () => {
 
             <main className="max-w-7xl mx-auto px-4">
               <div className="flex gap-4 overflow-x-auto pb-6 mb-4">
-                {[
-                  { label: "Todos", icon: <MapIcon size={16} /> },
-                  { label: "Praia", icon: <Sun size={16} /> },
-                  { label: "Cidade", icon: <Building size={16} /> },
-                  { label: "Montanha", icon: <Mountain size={16} /> }
-                ].map(cat => <CategoryPill key={cat.label} {...cat} active={categoryFilter === cat.label} onClick={() => setCategoryFilter(cat.label)} />)}
+                {TRIP_CATEGORIES.map(cat => <CategoryPill key={cat.label} {...cat} active={categoryFilter === cat.label} onClick={() => setCategoryFilter(cat.label)} />)}
               </div>
 
               {loading ? <div className="text-center py-10">Carregando destinos...</div> : (
