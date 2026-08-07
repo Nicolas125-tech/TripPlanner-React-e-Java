@@ -1,46 +1,16 @@
 import SearchBar from "./components/SearchBar";
 import React, { useState, useEffect } from 'react';
 import { 
-  Plane, MapPin, Calendar, Search, Star, CheckCircle, User, 
-  X, ArrowRight, Users, Wifi, Coffee, Map as MapIcon,
+  Plane, MapPin, Calendar, Search, Star, CheckCircle, User, ArrowRight, Users, Wifi, Coffee, Map as MapIcon,
   LogOut, Shield, CreditCard, Sun, Mountain, Building, Clock
 } from 'lucide-react';
 import TripCard from './components/TripCard';
 
-// --- COMPONENTES AUXILIARES ---
+import CategoryPill from './components/CategoryPill';
+import Modal from './components/Modal';
+import AuthForm from './components/AuthForm';
+import BookingForm from './components/BookingForm';
 
-const CategoryPill = ({ icon, label, active, onClick }) => (
-  <button 
-    onClick={onClick}
-    className={`flex items-center gap-2 px-4 py-2 rounded-full border transition-all ${
-      active 
-      ? 'bg-blue-600 text-white border-blue-600 shadow-md transform scale-105' 
-      : 'bg-white text-gray-600 border-gray-200 hover:border-blue-300 hover:bg-blue-50'
-    }`}
-  >
-    {icon}
-    <span className="text-sm font-medium">{label}</span>
-  </button>
-);
-
-const Modal = ({ isOpen, onClose, title, children }) => {
-  if (!isOpen) return null;
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
-        <div className="flex justify-between items-center p-6 border-b border-gray-100">
-          <h3 className="text-xl font-bold text-gray-800">{title}</h3>
-          <button aria-label="Fechar" onClick={onClose} className="text-gray-400 hover:text-gray-600 bg-gray-100 hover:bg-gray-200 p-2 rounded-full transition-colors">
-            <X size={20} />
-          </button>
-        </div>
-        <div className="p-6 overflow-y-auto max-h-[80vh]">
-          {children}
-        </div>
-      </div>
-    </div>
-  );
-};
 
 // --- DADOS DE FALLBACK (Caso o Java não esteja rodando) ---
 const mockDestinations = [
@@ -48,44 +18,6 @@ const mockDestinations = [
   { id: 2, city: "Tóquio", country: "Japão", price: 6200, rating: 4.9, category: "Cidade", image: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&q=80&w=800", description: "Futuro e tradição.", amenities: ["Spa", "Academia"], reviews: 850 },
   { id: 3, city: "Rio de Janeiro", country: "Brasil", price: 1800, rating: 4.7, category: "Praia", image: "https://images.unsplash.com/photo-1483729558449-99ef09a8c325?auto=format&fit=crop&q=80&w=800", description: "Cidade Maravilhosa.", amenities: ["Piscina", "Mar"], reviews: 3200 }
 ];
-
-// --- COMPONENTES DE FORMULÁRIO (Para evitar re-render do App) ---
-const AuthForm = ({ onLogin }) => {
-  const [authForm, setAuthForm] = React.useState({ name: '', email: '', password: '' });
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onLogin(authForm);
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <input aria-label="Nome" type="text" placeholder="Nome" className="w-full border p-2 rounded" onChange={e => setAuthForm({...authForm, name: e.target.value})} />
-      <input aria-label="Email" type="email" placeholder="Email" className="w-full border p-2 rounded" onChange={e => setAuthForm({...authForm, email: e.target.value})} />
-      <button className="w-full bg-blue-600 text-white py-2 rounded font-bold">Entrar</button>
-    </form>
-  );
-};
-
-const BookingForm = ({ onConfirm }) => {
-  const [bookingData, setBookingData] = React.useState({ dateStart: '', dateEnd: '', guests: 1 });
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onConfirm(bookingData);
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="grid grid-cols-2 gap-4">
-        <div><label htmlFor="dateStart" className="text-sm">Ida</label><input id="dateStart" type="date" required className="w-full border p-2 rounded" onChange={e => setBookingData({...bookingData, dateStart: e.target.value})} /></div>
-        <div><label htmlFor="dateEnd" className="text-sm">Volta</label><input id="dateEnd" type="date" required className="w-full border p-2 rounded" onChange={e => setBookingData({...bookingData, dateEnd: e.target.value})} /></div>
-      </div>
-      <div><label htmlFor="guests" className="text-sm">Hóspedes</label><input id="guests" type="number" min="1" className="w-full border p-2 rounded" value={bookingData.guests} onChange={e => setBookingData({...bookingData, guests: Number(e.target.value)})} /></div>
-      <button className="w-full bg-green-600 text-white py-3 rounded-lg font-bold">Confirmar Pagamento</button>
-    </form>
-  );
-};
 
 // --- APP PRINCIPAL ---
 
