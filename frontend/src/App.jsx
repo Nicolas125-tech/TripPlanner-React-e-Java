@@ -6,6 +6,9 @@ import {
   LogOut, Shield, CreditCard, Sun, Mountain, Building, Clock
 } from 'lucide-react';
 import TripCard from './components/TripCard';
+import AuthModal from './components/AuthModal';
+import BookingModal from './components/BookingModal';
+import DetailsModal from './components/DetailsModal';
 
 // --- COMPONENTES AUXILIARES ---
 
@@ -23,24 +26,6 @@ const CategoryPill = ({ icon, label, active, onClick }) => (
   </button>
 );
 
-const Modal = ({ isOpen, onClose, title, children }) => {
-  if (!isOpen) return null;
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
-        <div className="flex justify-between items-center p-6 border-b border-gray-100">
-          <h3 className="text-xl font-bold text-gray-800">{title}</h3>
-          <button aria-label="Fechar" onClick={onClose} className="text-gray-400 hover:text-gray-600 bg-gray-100 hover:bg-gray-200 p-2 rounded-full transition-colors">
-            <X size={20} />
-          </button>
-        </div>
-        <div className="p-6 overflow-y-auto max-h-[80vh]">
-          {children}
-        </div>
-      </div>
-    </div>
-  );
-};
 
 // --- DADOS DE FALLBACK (Caso o Java não esteja rodando) ---
 const mockDestinations = [
@@ -50,42 +35,7 @@ const mockDestinations = [
 ];
 
 // --- COMPONENTES DE FORMULÁRIO (Para evitar re-render do App) ---
-const AuthForm = ({ onLogin }) => {
-  const [authForm, setAuthForm] = React.useState({ name: '', email: '', password: '' });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onLogin(authForm);
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <input aria-label="Nome" type="text" placeholder="Nome" className="w-full border p-2 rounded" onChange={e => setAuthForm({...authForm, name: e.target.value})} />
-      <input aria-label="Email" type="email" placeholder="Email" className="w-full border p-2 rounded" onChange={e => setAuthForm({...authForm, email: e.target.value})} />
-      <button className="w-full bg-blue-600 text-white py-2 rounded font-bold">Entrar</button>
-    </form>
-  );
-};
-
-const BookingForm = ({ onConfirm }) => {
-  const [bookingData, setBookingData] = React.useState({ dateStart: '', dateEnd: '', guests: 1 });
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onConfirm(bookingData);
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="grid grid-cols-2 gap-4">
-        <div><label htmlFor="dateStart" className="text-sm">Ida</label><input id="dateStart" type="date" required className="w-full border p-2 rounded" onChange={e => setBookingData({...bookingData, dateStart: e.target.value})} /></div>
-        <div><label htmlFor="dateEnd" className="text-sm">Volta</label><input id="dateEnd" type="date" required className="w-full border p-2 rounded" onChange={e => setBookingData({...bookingData, dateEnd: e.target.value})} /></div>
-      </div>
-      <div><label htmlFor="guests" className="text-sm">Hóspedes</label><input id="guests" type="number" min="1" className="w-full border p-2 rounded" value={bookingData.guests} onChange={e => setBookingData({...bookingData, guests: Number(e.target.value)})} /></div>
-      <button className="w-full bg-green-600 text-white py-3 rounded-lg font-bold">Confirmar Pagamento</button>
-    </form>
-  );
-};
 
 // --- APP PRINCIPAL ---
 
@@ -347,29 +297,16 @@ const App = () => {
       </div>
 
       {/* MODALS (Login, Booking, Details) */}
-      <Modal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} title="Acesse sua conta">
-        <AuthForm onLogin={handleLogin} />
-      </Modal>
-
-      <Modal isOpen={showDetailsModal} onClose={() => setShowDetailsModal(false)} title={selectedDestination?.city}>
-        {selectedDestination && (
-          <div>
-            <img src={selectedDestination.imageUrl || selectedDestination.image} className="w-full h-56 object-cover rounded-lg mb-4" alt="" />
-            <p className="text-gray-600 mb-4">{selectedDestination.description}</p>
-            <div className="flex gap-2 mb-6">
-              {selectedDestination.amenities?.map((am, i) => <span key={i} className="bg-gray-100 text-xs px-2 py-1 rounded">{am}</span>)}
-            </div>
-            <button onClick={() => { 
-              if(!user) { setShowDetailsModal(false); setShowAuthModal(true); return; }
-              setShowDetailsModal(false); setShowBookingModal(true); 
-            }} className="w-full bg-blue-600 text-white py-3 rounded-lg font-bold">Reservar Agora</button>
-          </div>
-        )}
-      </Modal>
-
-      <Modal isOpen={showBookingModal} onClose={() => setShowBookingModal(false)} title="Confirmar Reserva">
-        <BookingForm onConfirm={confirmBooking} />
-      </Modal>
+      <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} onLogin={handleLogin} />
+      <DetailsModal
+        isOpen={showDetailsModal}
+        onClose={() => setShowDetailsModal(false)}
+        destination={selectedDestination}
+        user={user}
+        onBookingClick={() => setShowBookingModal(true)}
+        onAuthClick={() => setShowAuthModal(true)}
+      />
+      <BookingModal isOpen={showBookingModal} onClose={() => setShowBookingModal(false)} onConfirm={confirmBooking} />
 
       {notification && <div className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-6 py-3 rounded-full animate-bounce z-50">{notification}</div>}
     </div>
