@@ -3,6 +3,12 @@ import React from 'react';
 import { Plane, LogOut } from 'lucide-react';
 import { useTrips } from '../context/TripContext';
 
+const NAVBAR_TABS = [
+  { id: 'home', label: 'Explorar' },
+  { id: 'my-trips', label: 'Minhas Viagens' },
+  { id: 'favorites', label: 'Favoritos' }
+];
+
 const Navbar = ({ activeTab, onTabChange }) => {
   const { user, logout: handleLogout } = useTrips();
 
@@ -22,11 +28,7 @@ const Navbar = ({ activeTab, onTabChange }) => {
         </div>
 
         <div className="hidden md:flex space-x-8">
-          {[
-            { id: 'home', label: 'Explorar' },
-            { id: 'my-trips', label: 'Minhas Viagens' },
-            { id: 'favorites', label: 'Favoritos' }
-          ].map(tab => (
+          {NAVBAR_TABS.map(tab => (
             <button 
               key={tab.id}
               onClick={() => onTabChange(tab.id)} 

@@ -32,3 +32,7 @@
 ## 2026-07-24 - [Performance Optimization] LCP Image Optimization
 **Learning:** By default, lazy loading all images (`loading="lazy"`) in lists delays the Largest Contentful Paint (LCP) because the browser waits until layout is complete to fetch above-the-fold images.
 **Action:** Always eagerly load (`loading="eager"`) and prioritize (`fetchpriority="high"`) images that are likely to appear above the fold (e.g., the first 2-3 items in a grid/list) to minimize render blocking and fetching delays, significantly improving the LCP metric.
+
+## 2026-07-25 - [Performance Optimization] Extracting Static Arrays from React Components
+**Learning:** Defining static arrays inline within JSX inside a React functional component causes the array (and any objects within it) to be recreated on every single render. This triggers unnecessary garbage collection and can cause unnecessary re-renders in child components that receive the array as a prop.
+**Action:** Extract static data structures (arrays, objects) that do not depend on component state or props to module-level constants outside the component definition.
