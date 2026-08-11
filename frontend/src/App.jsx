@@ -129,6 +129,11 @@ const App = () => {
     setTimeout(() => setNotification(null), 3000);
   }, []);
 
+  const handleLogout = React.useCallback(() => {
+    setUser(null);
+    showNotification("Logout realizado");
+  }, [showNotification]);
+
   const handleLogin = React.useCallback((authFormData) => {
     const userData = { name: authFormData.name || "Visitante", email: authFormData.email, avatar: `https://ui-avatars.com/api/?name=${authFormData.name}&background=2563eb&color=fff` };
     setUser(userData);
@@ -213,7 +218,7 @@ const App = () => {
             {user ? (
               <div className="flex items-center gap-3">
                 <span className="text-sm font-bold hidden sm:block">{user.name}</span>
-                <img src={user.avatar} className="w-8 h-8 rounded-full cursor-pointer" alt="" onClick={() => {setUser(null); showNotification("Logout realizado");}} />
+                <img src={user.avatar} className="w-8 h-8 rounded-full cursor-pointer" alt="" onClick={handleLogout} />
               </div>
             ) : (
               <button onClick={() => setShowAuthModal(true)} className="bg-gray-900 text-white px-5 py-2 rounded-full text-sm font-bold">Entrar</button>
