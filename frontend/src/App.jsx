@@ -124,17 +124,17 @@ const App = () => {
   useEffect(() => localStorage.setItem('trip_bookings', JSON.stringify(myTrips)), [myTrips]);
   useEffect(() => localStorage.setItem('trip_favorites', JSON.stringify(favorites)), [favorites]);
 
-  const showNotification = (msg) => {
+  const showNotification = React.useCallback((msg) => {
     setNotification(msg);
     setTimeout(() => setNotification(null), 3000);
-  };
+  }, []);
 
-  const handleLogin = (authFormData) => {
+  const handleLogin = React.useCallback((authFormData) => {
     const userData = { name: authFormData.name || "Visitante", email: authFormData.email, avatar: `https://ui-avatars.com/api/?name=${authFormData.name}&background=2563eb&color=fff` };
     setUser(userData);
     setShowAuthModal(false);
     showNotification(`Bem-vindo, ${userData.name}!`);
-  };
+  }, [showNotification]);
 
   const toggleFavorite = React.useCallback((id, isCurrentlyFavorite) => {
     setFavorites(prevFavorites => {
@@ -147,7 +147,7 @@ const App = () => {
     } else {
       showNotification("Adicionado aos favoritos ❤️");
     }
-  }, []);
+  }, [showNotification]);
 
   const handleDetailsClick = React.useCallback((dest) => {
     setSelectedDestination(dest);
