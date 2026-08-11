@@ -35,3 +35,6 @@
 ## 2024-08-07 - Add test suite for TripContext
 **Learning:** Testing React Context efficiently involves creating a dummy test component that wraps `useContext` to expose its values and functions for interaction and assertion, alongside thoroughly mocking external APIs like `fetch` and browser APIs like `localStorage`.
 **Action:** Consistently employ dummy consumer components combined with robust Vitest module/global mocks when asserting logic tightly coupled within custom hooks and providers.
+## 2026-08-11 - [Performance Optimization] O(1) Set Lookup for Favorites
+**Learning:** Checking for membership in an array using `Array.includes()` is an O(N) operation. When this is done repeatedly or for large datasets (like checking if an ID is in a favorites list), it can become a performance bottleneck.
+**Action:** Convert arrays to `Set`s when performing frequent membership checks, as `Set.has()` offers O(1) time complexity. This is especially useful in React callbacks or rendering logic that processes lists of items.

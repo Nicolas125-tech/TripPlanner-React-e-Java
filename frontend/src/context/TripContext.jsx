@@ -52,7 +52,10 @@ export const TripProvider = ({ children }) => {
 
   // Toggle favorito
   const toggleFavorite = useCallback((id) => {
-    if (favorites.includes(id)) {
+    // ⚡ Bolt Performance Optimization:
+    // Converted the membership check to use a Set, reducing time complexity from O(N) to O(1).
+    const favoriteSet = new Set(favorites);
+    if (favoriteSet.has(id)) {
       updateFavorites(favorites.filter(favId => favId !== id));
     } else {
       updateFavorites([...favorites, id]);
