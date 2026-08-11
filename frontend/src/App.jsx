@@ -168,7 +168,7 @@ const App = () => {
     setShowBookingModal(false);
     setActiveTab('my-trips');
     showNotification("Viagem reservada com sucesso! ✈️");
-  }, [selectedDestination, myTrips]);
+  }, [selectedDestination, myTrips, showNotification]);
 
   // ⚡ Bolt Performance Optimization:
   // Wrapped the destinations filter in `React.useMemo` to cache the filtered array
