@@ -154,7 +154,9 @@ const App = () => {
     setShowDetailsModal(true);
   }, []);
 
-  const confirmBooking = (bookingFormData) => {
+  // ⚡ Bolt Performance Optimization:
+  // Wrapped confirmBooking in React.useCallback to prevent unnecessary re-renders of BookingModal
+  const confirmBooking = React.useCallback((bookingFormData) => {
     const newTrip = {
       ...selectedDestination,
       bookingId: Date.now(),
@@ -166,7 +168,7 @@ const App = () => {
     setShowBookingModal(false);
     setActiveTab('my-trips');
     showNotification("Viagem reservada com sucesso! ✈️");
-  };
+  }, [selectedDestination, myTrips]);
 
   // ⚡ Bolt Performance Optimization:
   // Wrapped the destinations filter in `React.useMemo` to cache the filtered array
