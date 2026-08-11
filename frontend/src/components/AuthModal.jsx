@@ -26,4 +26,4 @@ const AuthModal = ({ isOpen, onClose, onLogin }) => {
   );
 };
 
-export default AuthModal;
+export default React.memo(AuthModal);

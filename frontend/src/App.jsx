@@ -124,17 +124,17 @@ const App = () => {
   useEffect(() => localStorage.setItem('trip_bookings', JSON.stringify(myTrips)), [myTrips]);
   useEffect(() => localStorage.setItem('trip_favorites', JSON.stringify(favorites)), [favorites]);
 
-  const showNotification = (msg) => {
+  const showNotification = React.useCallback((msg) => {
     setNotification(msg);
     setTimeout(() => setNotification(null), 3000);
-  };
+  }, []);
 
-  const handleLogin = (authFormData) => {
+  const handleLogin = React.useCallback((authFormData) => {
     const userData = { name: authFormData.name || "Visitante", email: authFormData.email, avatar: `https://ui-avatars.com/api/?name=${authFormData.name}&background=2563eb&color=fff` };
     setUser(userData);
     setShowAuthModal(false);
     showNotification(`Bem-vindo, ${userData.name}!`);
-  };
+  }, [showNotification]);
 
   const toggleFavorite = React.useCallback((id, isCurrentlyFavorite) => {
     setFavorites(prevFavorites => {
@@ -147,14 +147,16 @@ const App = () => {
     } else {
       showNotification("Adicionado aos favoritos ❤️");
     }
-  }, []);
+  }, [showNotification]);
 
   const handleDetailsClick = React.useCallback((dest) => {
     setSelectedDestination(dest);
     setShowDetailsModal(true);
   }, []);
 
-  const confirmBooking = (bookingFormData) => {
+  // ⚡ Bolt Performance Optimization:
+  // Wrapped confirmBooking in React.useCallback to prevent unnecessary re-renders of BookingModal
+  const confirmBooking = React.useCallback((bookingFormData) => {
     const newTrip = {
       ...selectedDestination,
       bookingId: Date.now(),
@@ -166,7 +168,7 @@ const App = () => {
     setShowBookingModal(false);
     setActiveTab('my-trips');
     showNotification("Viagem reservada com sucesso! ✈️");
-  };
+  }, [selectedDestination, myTrips]);
 
   // ⚡ Bolt Performance Optimization:
   // Wrapped the destinations filter in `React.useMemo` to cache the filtered array
