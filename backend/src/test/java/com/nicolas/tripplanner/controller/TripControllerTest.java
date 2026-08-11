@@ -12,6 +12,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.context.annotation.Import;
+import org.springframework.security.test.context.support.WithMockUser;
+import com.nicolas.tripplanner.config.SecurityConfig;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -22,7 +25,8 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(TripController.class)
+@WebMvcTest(value = TripController.class, properties = {"ADMIN_USERNAME=admin", "ADMIN_PASSWORD=admin"})
+@Import(SecurityConfig.class)
 class TripControllerTest {
 
     @Autowired
@@ -123,6 +127,7 @@ class TripControllerTest {
 
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void createTrip_shouldReturn400_whenImageUrlIsInvalid() throws Exception {
         TripRequest request = new TripRequest("Rome", "Italy", 1000.0, 4.7, "City");
         request.setImageUrl("not-a-valid-url");
@@ -134,6 +139,7 @@ class TripControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void createTrip_shouldReturnCreatedTrip() throws Exception {
         TripRequest request = new TripRequest("Rome", "Italy", 1000.0, 4.7, "City");
         TripResponse response = new TripResponse(3L, "Rome", "Italy", 1000.0, 4.7, "City", null, null);
@@ -150,6 +156,7 @@ class TripControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void updateTrip_shouldReturnUpdatedTrip() throws Exception {
         TripRequest request = new TripRequest("Paris Updated", "France Updated", 1300.0, 4.9, "City Plus");
         TripResponse response = new TripResponse(1L, "Paris Updated", "France Updated", 1300.0, 4.9, "City Plus", null, null);
@@ -166,6 +173,7 @@ class TripControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void deleteTrip_shouldReturnNoContent() throws Exception {
         doNothing().when(tripService).deleteTrip(1L);
 
