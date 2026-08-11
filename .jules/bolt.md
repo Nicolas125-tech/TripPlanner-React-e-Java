@@ -35,3 +35,7 @@
 ## 2024-08-07 - Add test suite for TripContext
 **Learning:** Testing React Context efficiently involves creating a dummy test component that wraps `useContext` to expose its values and functions for interaction and assertion, alongside thoroughly mocking external APIs like `fetch` and browser APIs like `localStorage`.
 **Action:** Consistently employ dummy consumer components combined with robust Vitest module/global mocks when asserting logic tightly coupled within custom hooks and providers.
+
+## 2026-08-11 - Add Spring Security authentication for sensitive trip endpoints
+**Learning:** Hardcoding default credentials in production configuration files (like `application.properties`) introduces a critical vulnerability (CWE-1188 / CWE-798). Default configurations should be secure by default.
+**Action:** When injecting secrets via `@Value`, use environment variables without defaults (e.g., `@Value("${ADMIN_USERNAME}")`) to ensure the application fails to start if not explicitly configured securely by the deployment environment. Provide dummy values in test contexts (e.g., `@SpringBootTest(properties = {...})`) to keep tests running. Always add negative tests (verifying 401 Unauthorized) when adding authentication filters.
