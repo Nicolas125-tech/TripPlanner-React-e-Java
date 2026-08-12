@@ -111,9 +111,23 @@ const App = () => {
     performSearch("");
   }, [performSearch]);
 
-  useEffect(() => localStorage.setItem('trip_user', JSON.stringify(user)), [user]);
-  useEffect(() => localStorage.setItem('trip_bookings', JSON.stringify(myTrips)), [myTrips]);
-  useEffect(() => localStorage.setItem('trip_favorites', JSON.stringify(favorites)), [favorites]);
+  // ⚡ Bolt Performance Optimization:
+  // Debounced localStorage writes to prevent synchronous JSON.stringify and
+  // localStorage.setItem from blocking the main thread during render.
+  useEffect(() => {
+    const id = setTimeout(() => localStorage.setItem('trip_user', JSON.stringify(user)), 500);
+    return () => clearTimeout(id);
+  }, [user]);
+
+  useEffect(() => {
+    const id = setTimeout(() => localStorage.setItem('trip_bookings', JSON.stringify(myTrips)), 500);
+    return () => clearTimeout(id);
+  }, [myTrips]);
+
+  useEffect(() => {
+    const id = setTimeout(() => localStorage.setItem('trip_favorites', JSON.stringify(favorites)), 500);
+    return () => clearTimeout(id);
+  }, [favorites]);
 
   const showNotification = React.useCallback((msg) => {
     setNotification(msg);
