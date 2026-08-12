@@ -12,8 +12,26 @@ const BookingForm = ({ onConfirm }) => {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
-        <div><label htmlFor="dateStart" className="text-sm">Ida</label><input id="dateStart" type="date" required className="w-full border p-2 rounded" onChange={e => setBookingData({...bookingData, dateStart: e.target.value})} /></div>
-        <div><label htmlFor="dateEnd" className="text-sm">Volta</label><input id="dateEnd" type="date" required className="w-full border p-2 rounded" onChange={e => setBookingData({...bookingData, dateEnd: e.target.value})} /></div>
+        <div>
+          <label htmlFor="dateStart" className="text-sm">Ida</label>
+          <input
+            id="dateStart"
+            type="date"
+            required
+            className="w-full border p-2 rounded"
+            onChange={e => setBookingData({...bookingData, dateStart: e.target.value})}
+          />
+        </div>
+        <div>
+          <label htmlFor="dateEnd" className="text-sm">Volta</label>
+          <input
+            id="dateEnd"
+            type="date"
+            required
+            className="w-full border p-2 rounded"
+            onChange={e => setBookingData({...bookingData, dateEnd: e.target.value})}
+          />
+        </div>
       </div>
       <div>
         <label htmlFor="guests" className="text-sm">Hóspedes</label>
