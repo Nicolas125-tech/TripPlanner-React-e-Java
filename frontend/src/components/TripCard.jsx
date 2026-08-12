@@ -26,7 +26,7 @@ const TripCard = ({ trip, isFavorite, onFavoriteClick, onDetailsClick, priority 
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
           alt={trip.city}
           loading={priority ? "eager" : "lazy"}
-          fetchpriority={priority ? "high" : "auto"} // ⚡ Bolt Performance Optimization: lowercase fetchpriority to avoid React warnings in v18.2 while still providing the LCP hint to the browser
+          fetchpriority={priority ? "high" : "auto"} /* eslint-disable-line react/no-unknown-property */
         />
         <div className="absolute top-4 right-4 bg-white/90 px-3 py-1 rounded-lg text-xs font-bold flex gap-1">
           <Star size={12} className="text-yellow-500 fill-yellow-500" /> 
