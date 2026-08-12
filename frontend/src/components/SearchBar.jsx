@@ -41,4 +41,9 @@ const SearchBar = ({ onSearch }) => {
   );
 };
 
-export default SearchBar;
+// ⚡ Bolt Performance Optimization:
+// Wrapped SearchBar in React.memo() to complete the optimization started in App.jsx.
+// In App.jsx, `performSearch` was wrapped in useCallback, but without wrapping the receiving
+// child component (SearchBar) in React.memo(), SearchBar would still unnecessarily re-render
+// alongside the parent on every tab change or other unrelated state updates in App.jsx.
+export default React.memo(SearchBar);
