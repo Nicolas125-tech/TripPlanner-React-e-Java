@@ -1,10 +1,6 @@
 import SearchBar from "./components/SearchBar";
 import React, { useState, useEffect } from 'react';
-import { 
-  Plane, MapPin, Calendar, Search, Star, CheckCircle, User, 
-  X, ArrowRight, Users, Wifi, Coffee, Map as MapIcon,
-  LogOut, Shield, CreditCard, Sun, Mountain, Building, Clock
-} from 'lucide-react';
+import { Plane, Map as MapIcon, Sun, Mountain, Building } from 'lucide-react';
 import TripCard from './components/TripCard';
 import AuthModal from './components/AuthModal';
 import BookingModal from './components/BookingModal';
