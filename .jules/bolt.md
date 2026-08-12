@@ -39,3 +39,6 @@
 ## 2026-08-11 - Add Spring Security authentication for sensitive trip endpoints
 **Learning:** Hardcoding default credentials in production configuration files (like `application.properties`) introduces a critical vulnerability (CWE-1188 / CWE-798). Default configurations should be secure by default.
 **Action:** When injecting secrets via `@Value`, use environment variables without defaults (e.g., `@Value("${ADMIN_USERNAME}")`) to ensure the application fails to start if not explicitly configured securely by the deployment environment. Provide dummy values in test contexts (e.g., `@SpringBootTest(properties = {...})`) to keep tests running. Always add negative tests (verifying 401 Unauthorized) when adding authentication filters.
+## 2024-08-13 - [Performance Optimization] useCallback vs React.memo Completeness
+**Learning:** In App.jsx, `performSearch` was correctly wrapped in `useCallback` to provide a stable reference, but the receiving component, `SearchBar`, was not wrapped in `React.memo()`. A stable callback prop is ineffective at preventing re-renders if the child component itself isn't memoized. Thus, `SearchBar` was still re-rendering needlessly whenever `App.jsx` re-rendered.
+**Action:** Always ensure that when using `useCallback` to optimize parent-to-child prop passing, the receiving child component is also wrapped in `React.memo()`.
