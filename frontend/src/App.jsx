@@ -135,7 +135,11 @@ const App = () => {
   }, [showNotification]);
 
   const handleLogin = React.useCallback((authFormData) => {
-    const userData = { name: authFormData.name || "Visitante", email: authFormData.email, avatar: `https://ui-avatars.com/api/?name=${authFormData.name}&background=2563eb&color=fff` };
+    const userData = {
+      name: authFormData.name || "Visitante",
+      email: authFormData.email,
+      avatar: `https://ui-avatars.com/api/?name=${authFormData.name}&background=2563eb&color=fff`
+    };
     setUser(userData);
     setShowAuthModal(false);
     showNotification(`Bem-vindo, ${userData.name}!`);
