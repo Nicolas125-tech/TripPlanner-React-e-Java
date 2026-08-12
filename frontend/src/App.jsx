@@ -238,7 +238,14 @@ const App = () => {
 
             <main className="max-w-7xl mx-auto px-4">
               <div className="flex gap-4 overflow-x-auto pb-6 mb-4">
-                {TRIP_CATEGORIES.map(cat => <CategoryPill key={cat.label} {...cat} active={categoryFilter === cat.label} onClick={() => setCategoryFilter(cat.label)} />)}
+                {TRIP_CATEGORIES.map(cat => (
+                  <CategoryPill
+                    key={cat.label}
+                    {...cat}
+                    active={categoryFilter === cat.label}
+                    onClick={() => setCategoryFilter(cat.label)}
+                  />
+                ))}
               </div>
 
               {loading ? <div className="text-center py-10">Carregando destinos...</div> : (
