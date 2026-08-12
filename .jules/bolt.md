@@ -42,3 +42,7 @@
 ## 2024-08-13 - [Performance Optimization] useCallback vs React.memo Completeness
 **Learning:** In App.jsx, `performSearch` was correctly wrapped in `useCallback` to provide a stable reference, but the receiving component, `SearchBar`, was not wrapped in `React.memo()`. A stable callback prop is ineffective at preventing re-renders if the child component itself isn't memoized. Thus, `SearchBar` was still re-rendering needlessly whenever `App.jsx` re-rendered.
 **Action:** Always ensure that when using `useCallback` to optimize parent-to-child prop passing, the receiving child component is also wrapped in `React.memo()`.
+
+## 2024-08-14 - [Performance Optimization] Modal Re-renders and fetchPriority
+**Learning:** React versions prior to 18.3.0 do not fully support the camelCase `fetchPriority` prop and will warn and strip it. Using the lowercase `fetchpriority` acts as a custom attribute workaround, safely passing the LCP hint to the browser. Furthermore, passing inline functions (like `() => setShowModal(false)`) as props to Modals in a top-level component (`App.jsx`) breaks `React.memo` on those Modals, causing O(N) evaluations when unrelated state changes.
+**Action:** Use `React.useCallback` for all modal toggle functions in parent components and wrap the child Modal components in `React.memo()`. For React < 18.3.0, strictly use lowercase `fetchpriority` for image LCP optimization.
