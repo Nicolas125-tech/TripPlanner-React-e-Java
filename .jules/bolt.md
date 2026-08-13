@@ -50,3 +50,6 @@ cat .jules/bolt.md
 ## 2024-08-16 - [Performance Optimization] useCallback for Modal Toggles
 **Learning:** Passing inline arrow functions (e.g., `() => setShowModal(false)`) as props to React Modal components defeats `React.memo()` because the function reference changes on every render of the parent component. This causes Modals to re-render unnecessarily.
 **Action:** Extract modal toggle functions into `React.useCallback` hooks with empty dependency arrays `[]` in the parent component and ensure child Modal components are wrapped in `React.memo()`.
+## 2024-08-17 - [Performance Optimization] State Updates in useCallback
+**Learning:** Depending on state variables within a `useCallback` dependency array causes the callback to be recreated whenever that state changes. This defeats the purpose of the callback when passing it to memoized child components, as they will still re-render due to the new callback reference.
+**Action:** Use functional state updates (`setState(prev => ...)`) to eliminate state variables from the `useCallback` dependency array, keeping the callback reference stable and preventing unnecessary re-renders of memoized child components.
