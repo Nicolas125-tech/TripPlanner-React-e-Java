@@ -278,7 +278,7 @@ const App = () => {
             {myTrips.length === 0 ? <p className="text-gray-500">Nenhuma viagem agendada.</p> : (
               <div className="space-y-4">
                 {myTrips.map((trip, i) => (
-                  <div key={i} className="bg-white p-4 rounded-xl border flex gap-4">
+                  <div key={trip.bookingId} className="bg-white p-4 rounded-xl border flex gap-4">
                     <img src={trip.imageUrl || trip.image} className="w-24 h-24 object-cover rounded-lg" alt="" />
                     <div>
                       <h3 className="font-bold">{trip.city}</h3>
