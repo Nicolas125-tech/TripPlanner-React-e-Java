@@ -50,3 +50,6 @@ cat .jules/bolt.md
 ## 2024-08-16 - [Performance Optimization] useCallback for Modal Toggles
 **Learning:** Passing inline arrow functions (e.g., `() => setShowModal(false)`) as props to React Modal components defeats `React.memo()` because the function reference changes on every render of the parent component. This causes Modals to re-render unnecessarily.
 **Action:** Extract modal toggle functions into `React.useCallback` hooks with empty dependency arrays `[]` in the parent component and ensure child Modal components are wrapped in `React.memo()`.
+## 2024-08-16 - [Performance Optimization] O(1) Lookups with Sets
+**Learning:** Using an Array to store and check for existence (e.g., `favorites.includes(id)`) inside a component render cycle results in O(N) time complexity. When this check is performed for every item in a list (e.g., inside `map`), it becomes an O(N*M) operation, severely degrading render performance as lists grow.
+**Action:** Migrate such existence-checking state variables from Arrays to Sets (`new Set()`). Checking existence in a Set (`favorites.has(id)`) is O(1), improving the overall render loop complexity to O(N). When persisting to JSON or localStorage, briefly convert the Set back to an array (`[...favorites]`).

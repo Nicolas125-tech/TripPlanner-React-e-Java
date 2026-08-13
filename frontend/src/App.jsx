@@ -52,7 +52,7 @@ const App = () => {
   // Persistence
   const [user, setUser] = useState(() => JSON.parse(localStorage.getItem('trip_user')) || null);
   const [myTrips, setMyTrips] = useState(() => JSON.parse(localStorage.getItem('trip_bookings')) || []);
-  const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('trip_favorites')) || []);
+  const [favorites, setFavorites] = useState(() => new Set(JSON.parse(localStorage.getItem('trip_favorites')) || []));
   
   // Modals state
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -123,7 +123,7 @@ const App = () => {
 
   useEffect(() => localStorage.setItem('trip_user', JSON.stringify(user)), [user]);
   useEffect(() => localStorage.setItem('trip_bookings', JSON.stringify(myTrips)), [myTrips]);
-  useEffect(() => localStorage.setItem('trip_favorites', JSON.stringify(favorites)), [favorites]);
+  useEffect(() => localStorage.setItem('trip_favorites', JSON.stringify([...favorites])), [favorites]);
 
   const showNotification = React.useCallback((msg) => {
     setNotification(msg);
@@ -148,8 +148,13 @@ const App = () => {
 
   const toggleFavorite = React.useCallback((id, isCurrentlyFavorite) => {
     setFavorites(prevFavorites => {
-      const isFav = prevFavorites.includes(id);
-      return isFav ? prevFavorites.filter(favId => favId !== id) : [...prevFavorites, id];
+      const newFavorites = new Set(prevFavorites);
+      if (newFavorites.has(id)) {
+        newFavorites.delete(id);
+      } else {
+        newFavorites.add(id);
+      }
+      return newFavorites;
     });
 
     if (isCurrentlyFavorite) {
@@ -188,19 +193,15 @@ const App = () => {
     return destinations.filter(d => d.category === categoryFilter);
   }, [destinations, categoryFilter]);
 
-  // ⚡ Bolt Performance Optimization:
-  // Converted the 'favorites' array to a Set to enable O(1) lookups during rendering.
-  // Previously, Array.includes() caused an O(N) lookup for every item in the list,
-  // resulting in O(N*M) time complexity. Using a Set reduces this to O(N).
-  const favoriteSet = React.useMemo(() => new Set(favorites), [favorites]);
+  // favoriteSet has been removed as favorites is now already a Set.
 
   // ⚡ Bolt Performance Optimization:
   // Wrapped favoritesList in useMemo to prevent O(N) recalculations on every render.
   // Added an early return for the default empty state, making it O(1) instead of O(N).
   const favoritesList = React.useMemo(() => {
-    if (favoriteSet.size === 0) return [];
-    return destinations.filter(d => favoriteSet.has(d.id));
-  }, [destinations, favoriteSet]);
+    if (favorites.size === 0) return [];
+    return destinations.filter(d => favorites.has(d.id));
+  }, [destinations, favorites]);
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans text-gray-900 pb-20">
@@ -259,7 +260,7 @@ const App = () => {
                     <TripCard
                       key={dest.id}
                       trip={dest}
-                      isFavorite={favoriteSet.has(dest.id)}
+                      isFavorite={favorites.has(dest.id)}
                       onFavoriteClick={toggleFavorite}
                       onDetailsClick={handleDetailsClick}
                       priority={index < 3}
