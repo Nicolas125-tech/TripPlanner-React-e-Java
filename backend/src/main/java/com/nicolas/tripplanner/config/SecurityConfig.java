@@ -28,7 +28,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable()) // Disable CSRF for stateless API
+            .csrf(org.springframework.security.config.Customizer.withDefaults())
             .authorizeHttpRequests(authz -> authz
                 .requestMatchers(HttpMethod.GET, "/api/trips/**").permitAll() // Allow read operations
                 .requestMatchers(HttpMethod.POST, "/api/trips/**").hasRole("ADMIN")

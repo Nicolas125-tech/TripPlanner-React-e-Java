@@ -23,6 +23,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(value = TripController.class, properties = {"ADMIN_USERNAME=admin", "ADMIN_PASSWORD=admin"})
@@ -132,7 +133,7 @@ class TripControllerTest {
         TripRequest request = new TripRequest("Rome", "Italy", 1000.0, 4.7, "City");
         request.setImageUrl("not-a-valid-url");
 
-        mockMvc.perform(post("/api/trips")
+        mockMvc.perform(post("/api/trips").with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest());
@@ -146,7 +147,7 @@ class TripControllerTest {
 
         when(tripService.createTrip(any(TripRequest.class))).thenReturn(response);
 
-        mockMvc.perform(post("/api/trips")
+        mockMvc.perform(post("/api/trips").with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
@@ -163,7 +164,7 @@ class TripControllerTest {
 
         when(tripService.updateTrip(eq(1L), any(TripRequest.class))).thenReturn(response);
 
-        mockMvc.perform(put("/api/trips/1")
+        mockMvc.perform(put("/api/trips/1").with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
@@ -177,7 +178,7 @@ class TripControllerTest {
     void deleteTrip_shouldReturnNoContent() throws Exception {
         doNothing().when(tripService).deleteTrip(1L);
 
-        mockMvc.perform(delete("/api/trips/1"))
+        mockMvc.perform(delete("/api/trips/1").with(csrf()))
                 .andExpect(status().isNoContent());
 
         verify(tripService, times(1)).deleteTrip(1L);
