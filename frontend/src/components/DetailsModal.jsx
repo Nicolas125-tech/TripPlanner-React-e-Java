@@ -35,4 +35,4 @@ const DetailsModal = ({ isOpen, onClose, destination, user, onBookingClick, onAu
   );
 };
 
-export default DetailsModal;
+export default React.memo(DetailsModal);

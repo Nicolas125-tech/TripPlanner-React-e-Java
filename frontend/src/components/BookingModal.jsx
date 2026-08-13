@@ -57,4 +57,4 @@ const BookingModal = ({ isOpen, onClose, onConfirm }) => {
   );
 };
 
-export default BookingModal;
+export default React.memo(BookingModal);
