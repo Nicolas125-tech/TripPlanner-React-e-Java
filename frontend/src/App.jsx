@@ -154,6 +154,13 @@ const App = () => {
     setShowDetailsModal(true);
   }, []);
 
+
+  const handleOpenAuthModal = React.useCallback(() => setShowAuthModal(true), []);
+  const handleCloseAuthModal = React.useCallback(() => setShowAuthModal(false), []);
+  const handleCloseDetailsModal = React.useCallback(() => setShowDetailsModal(false), []);
+  const handleOpenBookingModal = React.useCallback(() => setShowBookingModal(true), []);
+  const handleCloseBookingModal = React.useCallback(() => setShowBookingModal(false), []);
+
   // ⚡ Bolt Performance Optimization:
   // Wrapped confirmBooking in React.useCallback to prevent unnecessary re-renders of BookingModal
   const confirmBooking = React.useCallback((bookingFormData) => {
@@ -216,7 +223,7 @@ const App = () => {
                 <img src={user.avatar} className="w-8 h-8 rounded-full cursor-pointer" alt="" onClick={handleLogout} />
               </div>
             ) : (
-              <button onClick={() => setShowAuthModal(true)} className="bg-gray-900 text-white px-5 py-2 rounded-full text-sm font-bold">Entrar</button>
+              <button onClick={handleOpenAuthModal} className="bg-gray-900 text-white px-5 py-2 rounded-full text-sm font-bold">Entrar</button>
             )}
           </div>
         </div>
@@ -306,16 +313,16 @@ const App = () => {
       </div>
 
       {/* MODALS (Login, Booking, Details) */}
-      <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} onLogin={handleLogin} />
+      <AuthModal isOpen={showAuthModal} onClose={handleCloseAuthModal} onLogin={handleLogin} />
       <DetailsModal
         isOpen={showDetailsModal}
-        onClose={() => setShowDetailsModal(false)}
+        onClose={handleCloseDetailsModal}
         destination={selectedDestination}
         user={user}
-        onBookingClick={() => setShowBookingModal(true)}
-        onAuthClick={() => setShowAuthModal(true)}
+        onBookingClick={handleOpenBookingModal}
+        onAuthClick={handleOpenAuthModal}
       />
-      <BookingModal isOpen={showBookingModal} onClose={() => setShowBookingModal(false)} onConfirm={confirmBooking} />
+      <BookingModal isOpen={showBookingModal} onClose={handleCloseBookingModal} onConfirm={confirmBooking} />
 
       {notification && <div className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-6 py-3 rounded-full animate-bounce z-50">{notification}</div>}
     </div>
