@@ -1,3 +1,4 @@
+cat .jules/bolt.md
 ## 2026-07-07 - React Micro-optimization Rejection
 **Learning:** Wrapping a simple `Array.prototype.filter` operation in `useMemo` for a small, statically-fetched list of items (like a fallback destination array) is considered a premature micro-optimization. It adds unnecessary complexity and does not resolve a measurable bottleneck, violating strict performance optimization boundaries. Furthermore, automated "clean up" of seemingly unused imports in large monolithic components (like a main `App.jsx` handling routing/layout) is highly dangerous and can easily lead to `ReferenceError` crashes.
 **Action:** Focus on structural bottlenecks first (like database indexes or N+1 query problems). Never assume an import is unused just because the Linter says so within a localized view, especially without verifying the full file context and running the complete build/test cycle. Always prefer backend structural optimizations (like JPA `@Index` on queried fields) when the frontend lacks a provably slow rendering path.
@@ -46,3 +47,6 @@
 ## 2024-08-14 - [Performance Optimization] Modal Re-renders and fetchPriority
 **Learning:** React versions prior to 18.3.0 do not fully support the camelCase `fetchPriority` prop and will warn and strip it. Using the lowercase `fetchpriority` acts as a custom attribute workaround, safely passing the LCP hint to the browser. Furthermore, passing inline functions (like `() => setShowModal(false)`) as props to Modals in a top-level component (`App.jsx`) breaks `React.memo` on those Modals, causing O(N) evaluations when unrelated state changes.
 **Action:** Use `React.useCallback` for all modal toggle functions in parent components and wrap the child Modal components in `React.memo()`. For React < 18.3.0, strictly use lowercase `fetchpriority` for image LCP optimization.
+## 2024-08-16 - [Performance Optimization] useCallback for Modal Toggles
+**Learning:** Passing inline arrow functions (e.g., `() => setShowModal(false)`) as props to React Modal components defeats `React.memo()` because the function reference changes on every render of the parent component. This causes Modals to re-render unnecessarily.
+**Action:** Extract modal toggle functions into `React.useCallback` hooks with empty dependency arrays `[]` in the parent component and ensure child Modal components are wrapped in `React.memo()`.
