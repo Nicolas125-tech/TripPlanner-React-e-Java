@@ -53,3 +53,7 @@ cat .jules/bolt.md
 ## 2024-08-16 - [Performance Optimization] O(1) Lookups with Sets
 **Learning:** Using an Array to store and check for existence (e.g., `favorites.includes(id)`) inside a component render cycle results in O(N) time complexity. When this check is performed for every item in a list (e.g., inside `map`), it becomes an O(N*M) operation, severely degrading render performance as lists grow.
 **Action:** Migrate such existence-checking state variables from Arrays to Sets (`new Set()`). Checking existence in a Set (`favorites.has(id)`) is O(1), improving the overall render loop complexity to O(N). When persisting to JSON or localStorage, briefly convert the Set back to an array (`[...favorites]`).
+
+## 2026-08-14 - [Performance Optimization] Prevent Full Table Scan in Search
+**Learning:** In standard JPA with relational databases like H2, using a leading wildcard in a `LIKE` query (e.g., `LIKE '%query%'`) prevents the database from using B-Tree indexes, forcing a full table scan.
+**Action:** If business requirements permit, changing the search strategy to a prefix match (e.g., `LIKE 'query%'`) and ensuring proper indexes exist on the queried columns (e.g., `city` and `country`) allows the database to use index seeks. This reduces algorithmic complexity from O(N) to O(log N) and dramatically speeds up query performance on large tables.
