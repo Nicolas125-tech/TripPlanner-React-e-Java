@@ -50,9 +50,9 @@ const App = () => {
   const [loading, setLoading] = useState(true);
 
   // Persistence
-  const [user, setUser] = useState(() => JSON.parse(localStorage.getItem('trip_user')) || null);
-  const [myTrips, setMyTrips] = useState(() => JSON.parse(localStorage.getItem('trip_bookings')) || []);
-  const [favorites, setFavorites] = useState(() => new Set(JSON.parse(localStorage.getItem('trip_favorites')) || []));
+  const [user, setUser] = useState(() => JSON.parse(sessionStorage.getItem('trip_user')) || null);
+  const [myTrips, setMyTrips] = useState(() => JSON.parse(sessionStorage.getItem('trip_bookings')) || []);
+  const [favorites, setFavorites] = useState(() => new Set(JSON.parse(sessionStorage.getItem('trip_favorites')) || []));
   
   // Modals state
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -121,9 +121,9 @@ const App = () => {
     performSearch("");
   }, [performSearch]);
 
-  useEffect(() => localStorage.setItem('trip_user', JSON.stringify(user)), [user]);
-  useEffect(() => localStorage.setItem('trip_bookings', JSON.stringify(myTrips)), [myTrips]);
-  useEffect(() => localStorage.setItem('trip_favorites', JSON.stringify([...favorites])), [favorites]);
+  useEffect(() => sessionStorage.setItem('trip_user', JSON.stringify(user)), [user]);
+  useEffect(() => sessionStorage.setItem('trip_bookings', JSON.stringify(myTrips)), [myTrips]);
+  useEffect(() => sessionStorage.setItem('trip_favorites', JSON.stringify([...favorites])), [favorites]);
 
   const showNotification = React.useCallback((msg) => {
     setNotification(msg);

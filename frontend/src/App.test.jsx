@@ -15,7 +15,7 @@ const mockDestinations = [
 describe('App', () => {
   beforeEach(() => {
     vi.resetAllMocks();
-    localStorage.clear();
+    sessionStorage.clear();
     // Default fetch success response
     global.fetch.mockResolvedValue({
       json: () => Promise.resolve(mockDestinations),
