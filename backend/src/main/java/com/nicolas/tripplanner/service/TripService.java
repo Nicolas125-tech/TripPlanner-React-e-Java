@@ -12,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Service
 public class TripService {
@@ -38,13 +40,10 @@ public class TripService {
     // ⚡ Bolt Performance Optimization:
     // Added Spring Cache (@Cacheable) for frequent database reads and @CacheEvict for writes.
     // This reduces the number of queries reaching the database and provides O(1) in-memory lookup times for repeated queries.
-    @Cacheable("allTrips")
+    @Cacheable(value = "allTrips", key = "#pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort.toString()")
     @Transactional(readOnly = true)
-    public List<TripResponse> getAllTrips() {
-        return tripRepository.findAll()
-                .stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
+    public Page<TripResponse> getAllTrips(Pageable pageable) {
+        return tripRepository.findAll(pageable).map(this::mapToResponse);
     }
     
     @Cacheable(value = "trip", key = "#id")
@@ -59,16 +58,13 @@ public class TripService {
     // Normalized the cache key for searchTrips using SpEL: `#query != null ? #query.trim().toLowerCase() : ''`
     // Previously, the key was just `#query`, meaning "Paris", "paris", and " Paris " generated different cache entries,
     // leading to redundant database queries. This normalization significantly improves cache hit rates and memory efficiency.
-    @Cacheable(value = "searchTrips", key = "#query != null ? #query.trim().toLowerCase() : ''")
+    @Cacheable(value = "searchTrips", key = "(#query != null ? #query.trim().toLowerCase() : '') + '-' + #pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort.toString()")
     @Transactional(readOnly = true)
-    public List<TripResponse> searchTrips(String query) {
+    public Page<TripResponse> searchTrips(String query, Pageable pageable) {
         if (query == null || query.isBlank()) {
-            return getAllTrips();
+            return getAllTrips(pageable);
         }
-        return tripRepository.searchTrips(query)
-                .stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
+        return tripRepository.searchTrips(query, pageable).map(this::mapToResponse);
     }
     
     @Cacheable(value = "tripsByCategory", key = "#category")

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.util.List;
+import org.springframework.data.domain.PageRequest;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -62,12 +63,12 @@ class TripRepositoryTest {
 
     @Test
     void searchTrips_shouldReturnTrips_matchingCityOrCountry() {
-        List<Trip> result = tripRepository.searchTrips("rio");
+        List<Trip> result = tripRepository.searchTrips("rio", PageRequest.of(0, 10)).getContent();
 
         assertEquals(1, result.size());
         assertEquals("Rio de Janeiro", result.get(0).getCity());
 
-        List<Trip> result2 = tripRepository.searchTrips("fran");
+        List<Trip> result2 = tripRepository.searchTrips("fran", PageRequest.of(0, 10)).getContent();
 
         assertEquals(1, result2.size());
         assertEquals("Paris", result2.get(0).getCity());

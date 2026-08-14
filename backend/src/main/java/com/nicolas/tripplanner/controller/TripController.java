@@ -9,6 +9,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 
 @RestController
 @RequestMapping("/api/trips")
@@ -22,8 +25,8 @@ public class TripController {
     }
     
     @GetMapping
-    public ResponseEntity<List<TripResponse>> getAllTrips() {
-        List<TripResponse> trips = tripService.getAllTrips();
+    public ResponseEntity<Page<TripResponse>> getAllTrips(@PageableDefault(size = 100) Pageable pageable) {
+        Page<TripResponse> trips = tripService.getAllTrips(pageable);
         return ResponseEntity.ok(trips);
     }
     
@@ -34,9 +37,10 @@ public class TripController {
     }
     
     @GetMapping("/search")
-    public ResponseEntity<List<TripResponse>> searchTrips(
-            @RequestParam(value = "query", required = false) String query) {
-        List<TripResponse> trips = tripService.searchTrips(query);
+    public ResponseEntity<Page<TripResponse>> searchTrips(
+            @RequestParam(value = "query", required = false) String query,
+            @PageableDefault(size = 100) Pageable pageable) {
+        Page<TripResponse> trips = tripService.searchTrips(query, pageable);
         return ResponseEntity.ok(trips);
     }
     

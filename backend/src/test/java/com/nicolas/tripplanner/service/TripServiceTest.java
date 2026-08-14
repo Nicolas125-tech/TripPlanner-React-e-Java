@@ -16,6 +16,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -46,14 +50,14 @@ class TripServiceTest {
 
     @Test
     void getAllTrips_shouldReturnAllTrips() {
-        when(tripRepository.findAll()).thenReturn(Arrays.asList(trip1, trip2));
+        when(tripRepository.findAll(any(Pageable.class))).thenReturn(new PageImpl<>(Arrays.asList(trip1, trip2)));
 
-        List<TripResponse> trips = tripService.getAllTrips();
+        Page<TripResponse> trips = tripService.getAllTrips(PageRequest.of(0, 10));
 
-        assertEquals(2, trips.size());
-        assertEquals("Paris", trips.get(0).getCity());
-        assertEquals("Tokyo", trips.get(1).getCity());
-        verify(tripRepository, times(1)).findAll();
+        assertEquals(2, trips.getContent().size());
+        assertEquals("Paris", trips.getContent().get(0).getCity());
+        assertEquals("Tokyo", trips.getContent().get(1).getCity());
+        verify(tripRepository, times(1)).findAll(any(Pageable.class));
     }
 
     @Test
@@ -78,24 +82,24 @@ class TripServiceTest {
 
     @Test
     void searchTrips_shouldReturnAll_whenQueryIsBlank() {
-        when(tripRepository.findAll()).thenReturn(Arrays.asList(trip1, trip2));
+        when(tripRepository.findAll(any(Pageable.class))).thenReturn(new PageImpl<>(Arrays.asList(trip1, trip2)));
 
-        List<TripResponse> trips = tripService.searchTrips("  ");
+        Page<TripResponse> trips = tripService.searchTrips("  ", PageRequest.of(0, 10));
 
-        assertEquals(2, trips.size());
-        verify(tripRepository, times(1)).findAll();
-        verify(tripRepository, never()).searchTrips(anyString());
+        assertEquals(2, trips.getContent().size());
+        verify(tripRepository, times(1)).findAll(any(Pageable.class));
+        verify(tripRepository, never()).searchTrips(anyString(), any(Pageable.class));
     }
 
     @Test
     void searchTrips_shouldReturnMatchingTrips_whenQueryIsNotBlank() {
-        when(tripRepository.searchTrips("Paris")).thenReturn(Collections.singletonList(trip1));
+        when(tripRepository.searchTrips(eq("Paris"), any(Pageable.class))).thenReturn(new PageImpl<>(Collections.singletonList(trip1)));
 
-        List<TripResponse> trips = tripService.searchTrips("Paris");
+        Page<TripResponse> trips = tripService.searchTrips("Paris", PageRequest.of(0, 10));
 
-        assertEquals(1, trips.size());
-        assertEquals("Paris", trips.get(0).getCity());
-        verify(tripRepository, times(1)).searchTrips("Paris");
+        assertEquals(1, trips.getContent().size());
+        assertEquals("Paris", trips.getContent().get(0).getCity());
+        verify(tripRepository, times(1)).searchTrips(eq("Paris"), any(Pageable.class));
     }
 
     @Test
