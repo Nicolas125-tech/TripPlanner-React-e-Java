@@ -10,7 +10,8 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "trips", indexes = {
     @Index(name = "idx_trip_category", columnList = "category"),
-    @Index(name = "idx_trip_city", columnList = "city")
+    @Index(name = "idx_trip_city", columnList = "city"),
+    @Index(name = "idx_trip_country", columnList = "country")
 })
 public class Trip {
     
