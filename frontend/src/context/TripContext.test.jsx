@@ -39,10 +39,10 @@ const TestComponent = () => {
 };
 
 describe('TripContext', () => {
-  let localStorageMock;
+  let sessionStorageMock;
 
   beforeEach(() => {
-    localStorageMock = (() => {
+    sessionStorageMock = (() => {
       let store = {};
       return {
         getItem: vi.fn(key => store[key] || null),
@@ -55,12 +55,12 @@ describe('TripContext', () => {
       };
     })();
 
-    Object.defineProperty(window, 'localStorage', {
-      value: localStorageMock,
+    Object.defineProperty(window, 'sessionStorage', {
+      value: sessionStorageMock,
       writable: true
     });
 
-    window.localStorage.clear();
+    window.sessionStorage.clear();
     vi.clearAllMocks();
   });
 
@@ -81,7 +81,7 @@ describe('TripContext', () => {
     consoleSpy.mockRestore();
   });
 
-  it('initializes with default empty values when localStorage is empty', () => {
+  it('initializes with default empty values when sessionStorage is empty', () => {
     render(
       <TripProvider>
         <TestComponent />
@@ -93,10 +93,10 @@ describe('TripContext', () => {
     expect(screen.getByTestId('trips-count').textContent).toBe('0');
   });
 
-  it('initializes with values from localStorage', () => {
-    window.localStorage.setItem('trip_user', JSON.stringify({ name: 'Alice', email: 'alice@test.com' }));
-    window.localStorage.setItem('trip_favorites', JSON.stringify([1, 2]));
-    window.localStorage.setItem('trip_bookings', JSON.stringify([{ id: 1 }]));
+  it('initializes with values from sessionStorage', () => {
+    window.sessionStorage.setItem('trip_user', JSON.stringify({ name: 'Alice', email: 'alice@test.com' }));
+    window.sessionStorage.setItem('trip_favorites', JSON.stringify([1, 2]));
+    window.sessionStorage.setItem('trip_bookings', JSON.stringify([{ id: 1 }]));
 
     render(
       <TripProvider>
@@ -109,7 +109,7 @@ describe('TripContext', () => {
     expect(screen.getByTestId('trips-count').textContent).toBe('1');
   });
 
-  it('login updates user state and localStorage', () => {
+  it('login updates user state and sessionStorage', () => {
     render(
       <TripProvider>
         <TestComponent />
@@ -119,11 +119,11 @@ describe('TripContext', () => {
     fireEvent.click(screen.getByText('Login'));
 
     expect(screen.getByTestId('user').textContent).toBe('John');
-    expect(window.localStorage.setItem).toHaveBeenCalledWith('trip_user', expect.stringContaining('John'));
+    expect(window.sessionStorage.setItem).toHaveBeenCalledWith('trip_user', expect.stringContaining('John'));
   });
 
-  it('logout clears user state and updates localStorage', () => {
-    window.localStorage.setItem('trip_user', JSON.stringify({ name: 'Alice' }));
+  it('logout clears user state and updates sessionStorage', () => {
+    window.sessionStorage.setItem('trip_user', JSON.stringify({ name: 'Alice' }));
 
     render(
       <TripProvider>
@@ -136,10 +136,10 @@ describe('TripContext', () => {
     fireEvent.click(screen.getByText('Logout'));
 
     expect(screen.getByTestId('user').textContent).toBe('no-user');
-    expect(window.localStorage.setItem).toHaveBeenCalledWith('trip_user', 'null');
+    expect(window.sessionStorage.setItem).toHaveBeenCalledWith('trip_user', 'null');
   });
 
-  it('toggleFavorite adds and removes favorite ID and updates localStorage', () => {
+  it('toggleFavorite adds and removes favorite ID and updates sessionStorage', () => {
     render(
       <TripProvider>
         <TestComponent />
@@ -149,15 +149,15 @@ describe('TripContext', () => {
     // Add favorite
     fireEvent.click(screen.getByText('Toggle Fav 1'));
     expect(screen.getByTestId('favorites').textContent).toBe('1');
-    expect(window.localStorage.setItem).toHaveBeenCalledWith('trip_favorites', JSON.stringify([1]));
+    expect(window.sessionStorage.setItem).toHaveBeenCalledWith('trip_favorites', JSON.stringify([1]));
 
     // Remove favorite
     fireEvent.click(screen.getByText('Toggle Fav 1'));
     expect(screen.getByTestId('favorites').textContent).toBe('');
-    expect(window.localStorage.setItem).toHaveBeenCalledWith('trip_favorites', JSON.stringify([]));
+    expect(window.sessionStorage.setItem).toHaveBeenCalledWith('trip_favorites', JSON.stringify([]));
   });
 
-  it('bookTrip adds a booking with total price and status and updates localStorage', () => {
+  it('bookTrip adds a booking with total price and status and updates sessionStorage', () => {
     render(
       <TripProvider>
         <TestComponent />
@@ -168,7 +168,7 @@ describe('TripContext', () => {
 
     expect(screen.getByTestId('trips-count').textContent).toBe('1');
 
-    const calls = window.localStorage.setItem.mock.calls;
+    const calls = window.sessionStorage.setItem.mock.calls;
     const bookingCall = calls.find(call => call[0] === 'trip_bookings');
     expect(bookingCall).toBeDefined();
 

@@ -8,24 +8,24 @@ export const TripProvider = ({ children }) => {
   const [destinations, setDestinations] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [user, setUser] = useState(() => JSON.parse(localStorage.getItem('trip_user')) || null);
-  const [myTrips, setMyTrips] = useState(() => JSON.parse(localStorage.getItem('trip_bookings')) || []);
-  const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('trip_favorites')) || []);
+  const [user, setUser] = useState(() => JSON.parse(sessionStorage.getItem('trip_user')) || null);
+  const [myTrips, setMyTrips] = useState(() => JSON.parse(sessionStorage.getItem('trip_bookings')) || []);
+  const [favorites, setFavorites] = useState(() => JSON.parse(sessionStorage.getItem('trip_favorites')) || []);
 
-  // Persistência localStorage
+  // Persistência sessionStorage
   const updateUser = useCallback((newUser) => {
     setUser(newUser);
-    localStorage.setItem('trip_user', JSON.stringify(newUser));
+    sessionStorage.setItem('trip_user', JSON.stringify(newUser));
   }, []);
 
   const updateMyTrips = useCallback((trips) => {
     setMyTrips(trips);
-    localStorage.setItem('trip_bookings', JSON.stringify(trips));
+    sessionStorage.setItem('trip_bookings', JSON.stringify(trips));
   }, []);
 
   const updateFavorites = useCallback((favs) => {
     setFavorites(favs);
-    localStorage.setItem('trip_favorites', JSON.stringify(favs));
+    sessionStorage.setItem('trip_favorites', JSON.stringify(favs));
   }, []);
 
   // Busca de destinos
