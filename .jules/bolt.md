@@ -57,3 +57,10 @@ cat .jules/bolt.md
 ## 2026-08-14 - [Performance Optimization] Prevent Full Table Scan in Search
 **Learning:** In standard JPA with relational databases like H2, using a leading wildcard in a `LIKE` query (e.g., `LIKE '%query%'`) prevents the database from using B-Tree indexes, forcing a full table scan.
 **Action:** If business requirements permit, changing the search strategy to a prefix match (e.g., `LIKE 'query%'`) and ensuring proper indexes exist on the queried columns (e.g., `city` and `country`) allows the database to use index seeks. This reduces algorithmic complexity from O(N) to O(log N) and dramatically speeds up query performance on large tables.
+## 2024-08-15 - [Performance Optimization] React.memo missing display name
+**Learning:** When optimizing components with `React.memo`, passing an anonymous arrow function (e.g., `React.memo(({ props }) => { ... })`) triggers the ESLint `react/display-name` rule because the component loses its explicit name for debugging tools.
+**Action:** Always use a named function expression (e.g., `React.memo(function ComponentName({ props }) { ... })`) when applying `React.memo` to ensure the component maintains a display name and satisfies standard linting configurations.
+
+## 2024-08-15 - [Performance Optimization] Stable props for React.memo
+**Learning:** In `App.jsx`, `CategoryPill` was previously receiving an inline arrow function as its `onClick` prop (`onClick={() => setCategoryFilter(cat.label)}`). This caused the reference to change on every parent render, forcing all instances of `CategoryPill` to re-render.
+**Action:** When a child component requires a parameter for its callback (like `cat.label`), pass the parameter directly as a prop (`label={cat.label}`) alongside the stable callback reference (`onClick={setCategoryFilter}`). Then, within the child component, wrap the event handler in `React.useCallback` or execute it directly (`onClick(label)`) to ensure `React.memo` effectively prevents O(N) list re-renders.
