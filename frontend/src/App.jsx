@@ -179,7 +179,9 @@ const App = () => {
   }, []);
 
   // ⚡ Bolt Performance Optimization:
-  // Wrapped confirmBooking in React.useCallback to prevent unnecessary re-renders of BookingModal
+  // Wrapped confirmBooking in React.useCallback to prevent unnecessary re-renders of BookingModal.
+  // Updated to use functional state updates (prev => [...prev, newTrip]) to remove `myTrips` from the
+  // dependency array, ensuring the callback reference remains perfectly stable even as new trips are booked.
   const confirmBooking = React.useCallback((bookingFormData) => {
     const newTrip = {
       ...selectedDestination,
@@ -188,11 +190,11 @@ const App = () => {
       totalPrice: selectedDestination.price * bookingFormData.guests,
       status: 'Confirmado'
     };
-    setMyTrips([...myTrips, newTrip]);
+    setMyTrips(prev => [...prev, newTrip]);
     setShowBookingModal(false);
     setActiveTab('my-trips');
     showNotification("Viagem reservada com sucesso! ✈️");
-  }, [selectedDestination, myTrips, showNotification]);
+  }, [selectedDestination, showNotification]);
 
   // ⚡ Bolt Performance Optimization:
   // Wrapped the destinations filter in `React.useMemo` to cache the filtered array
