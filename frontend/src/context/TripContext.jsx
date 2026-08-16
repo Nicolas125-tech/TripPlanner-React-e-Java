@@ -41,7 +41,7 @@ export const TripProvider = ({ children }) => {
       if (!res.ok) throw new Error('Erro ao buscar destinos');
       
       const data = await res.json();
-      setDestinations(data);
+      setDestinations(data.content || data);
     } catch (err) {
       setError(err.message);
       console.error('Erro:', err);

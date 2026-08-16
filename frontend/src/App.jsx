@@ -113,9 +113,10 @@ const App = () => {
       
       const res = await fetch(url);
       const data = await res.json();
+      const finalData = data.content || data;
 
-      searchCache.current.set(cacheKey, data);
-      setDestinations(data);
+      searchCache.current.set(cacheKey, finalData);
+      setDestinations(finalData);
     } catch (err) {
       console.error("Erro ao buscar:", err);
       setDestinations(mockDestinations);

@@ -10,12 +10,17 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.context.annotation.Import;
+
+
+import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.security.test.context.support.WithMockUser;
 import com.nicolas.tripplanner.config.SecurityConfig;
 
+import org.springframework.data.domain.PageImpl;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -27,8 +32,69 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(value = TripController.class, properties = {"ADMIN_USERNAME=admin", "ADMIN_PASSWORD=admin"})
-@Import(SecurityConfig.class)
+@Import({SecurityConfig.class, org.springframework.data.web.config.SpringDataJacksonConfiguration.class})
 class TripControllerTest {
+    public static class CustomPageImpl<T> implements org.springframework.data.domain.Page<T> {
+        private java.util.List<T> content;
+        public CustomPageImpl(java.util.List<T> content) { this.content = content; }
+
+        @com.fasterxml.jackson.annotation.JsonProperty("content")
+        public java.util.List<T> getContent() { return content; }
+
+        @com.fasterxml.jackson.annotation.JsonProperty("totalElements")
+        public long getTotalElements() { return content.size(); }
+
+        @com.fasterxml.jackson.annotation.JsonProperty("totalPages")
+        public int getTotalPages() { return 1; }
+
+        @com.fasterxml.jackson.annotation.JsonProperty("size")
+        public int getSize() { return content.size(); }
+
+        @com.fasterxml.jackson.annotation.JsonProperty("number")
+        public int getNumber() { return 0; }
+
+        @com.fasterxml.jackson.annotation.JsonProperty("numberOfElements")
+        public int getNumberOfElements() { return content.size(); }
+
+        @com.fasterxml.jackson.annotation.JsonIgnore
+        public org.springframework.data.domain.Sort getSort() { return org.springframework.data.domain.Sort.unsorted(); }
+
+        @com.fasterxml.jackson.annotation.JsonIgnore
+        public boolean isFirst() { return true; }
+
+        @com.fasterxml.jackson.annotation.JsonIgnore
+        public boolean isLast() { return true; }
+
+        @com.fasterxml.jackson.annotation.JsonIgnore
+        public boolean hasNext() { return false; }
+
+        @com.fasterxml.jackson.annotation.JsonIgnore
+        public boolean hasPrevious() { return false; }
+
+        @com.fasterxml.jackson.annotation.JsonIgnore
+        public org.springframework.data.domain.Pageable nextPageable() { return org.springframework.data.domain.Pageable.unpaged(); }
+
+        @com.fasterxml.jackson.annotation.JsonIgnore
+        public org.springframework.data.domain.Pageable previousPageable() { return org.springframework.data.domain.Pageable.unpaged(); }
+
+        @com.fasterxml.jackson.annotation.JsonIgnore
+        public java.util.Iterator<T> iterator() { return content.iterator(); }
+
+        @com.fasterxml.jackson.annotation.JsonIgnore
+        public <U> org.springframework.data.domain.Page<U> map(java.util.function.Function<? super T, ? extends U> converter) { return null; }
+
+        @com.fasterxml.jackson.annotation.JsonIgnore
+        public boolean isEmpty() { return content.isEmpty(); }
+
+        @com.fasterxml.jackson.annotation.JsonIgnore
+        public boolean hasContent() { return !content.isEmpty(); }
+
+        @com.fasterxml.jackson.annotation.JsonIgnore
+        public org.springframework.data.domain.Pageable getPageable() { return org.springframework.data.domain.Pageable.unpaged(); }
+    }
+
+
+
 
     @Autowired
     private MockMvc mockMvc;
@@ -50,16 +116,16 @@ class TripControllerTest {
 
     @Test
     void getAllTrips_shouldReturnListOfTrips() throws Exception {
-        when(tripService.getAllTrips()).thenReturn(Arrays.asList(tripResponse1, tripResponse2));
+        when(tripService.getAllTrips(anyInt(), anyInt())).thenReturn(new CustomPageImpl<>(Arrays.asList(tripResponse1, tripResponse2)));
 
         mockMvc.perform(get("/api/trips"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$[0].city").value("Paris"))
-                .andExpect(jsonPath("$[1].city").value("Tokyo"))
-                .andExpect(jsonPath("$.length()").value(2));
+                .andExpect(jsonPath("$.content[0].city").value("Paris"))
+                .andExpect(jsonPath("$.content[1].city").value("Tokyo"))
+                .andExpect(jsonPath("$.content.length()").value(2));
 
-        verify(tripService, times(1)).getAllTrips();
+        verify(tripService, times(1)).getAllTrips(0, 10);
     }
 
     @Test

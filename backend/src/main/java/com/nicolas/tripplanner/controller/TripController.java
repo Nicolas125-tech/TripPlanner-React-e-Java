@@ -5,6 +5,7 @@ import com.nicolas.tripplanner.dto.TripResponse;
 import com.nicolas.tripplanner.service.TripService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,8 +23,10 @@ public class TripController {
     }
     
     @GetMapping
-    public ResponseEntity<List<TripResponse>> getAllTrips() {
-        List<TripResponse> trips = tripService.getAllTrips();
+    public ResponseEntity<Page<TripResponse>> getAllTrips(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Page<TripResponse> trips = tripService.getAllTrips(page, size);
         return ResponseEntity.ok(trips);
     }
     

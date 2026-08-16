@@ -12,6 +12,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -46,14 +49,14 @@ class TripServiceTest {
 
     @Test
     void getAllTrips_shouldReturnAllTrips() {
-        when(tripRepository.findAll()).thenReturn(Arrays.asList(trip1, trip2));
+        when(tripRepository.findAll(any(Pageable.class))).thenReturn(new PageImpl<>(Arrays.asList(trip1, trip2)));
 
-        List<TripResponse> trips = tripService.getAllTrips();
+        Page<TripResponse> trips = tripService.getAllTrips(0, 10);
 
-        assertEquals(2, trips.size());
-        assertEquals("Paris", trips.get(0).getCity());
-        assertEquals("Tokyo", trips.get(1).getCity());
-        verify(tripRepository, times(1)).findAll();
+        assertEquals(2, trips.getContent().size());
+        assertEquals("Paris", trips.getContent().get(0).getCity());
+        assertEquals("Tokyo", trips.getContent().get(1).getCity());
+        verify(tripRepository, times(1)).findAll(any(Pageable.class));
     }
 
     @Test
@@ -78,12 +81,12 @@ class TripServiceTest {
 
     @Test
     void searchTrips_shouldReturnAll_whenQueryIsBlank() {
-        when(tripRepository.findAll()).thenReturn(Arrays.asList(trip1, trip2));
+        when(tripRepository.findAll(any(Pageable.class))).thenReturn(new PageImpl<>(Arrays.asList(trip1, trip2)));
 
         List<TripResponse> trips = tripService.searchTrips("  ");
 
         assertEquals(2, trips.size());
-        verify(tripRepository, times(1)).findAll();
+        verify(tripRepository, times(1)).findAll(any(Pageable.class));
         verify(tripRepository, never()).searchTrips(anyString());
     }
 

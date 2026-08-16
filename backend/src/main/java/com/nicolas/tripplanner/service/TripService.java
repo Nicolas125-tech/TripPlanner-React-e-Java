@@ -7,6 +7,8 @@ import com.nicolas.tripplanner.model.Trip;
 import com.nicolas.tripplanner.repository.TripRepository;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,13 +40,11 @@ public class TripService {
     // ⚡ Bolt Performance Optimization:
     // Added Spring Cache (@Cacheable) for frequent database reads and @CacheEvict for writes.
     // This reduces the number of queries reaching the database and provides O(1) in-memory lookup times for repeated queries.
-    @Cacheable("allTrips")
+    @Cacheable(value = "allTrips", key = "{#page, #size}")
     @Transactional(readOnly = true)
-    public List<TripResponse> getAllTrips() {
-        return tripRepository.findAll()
-                .stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
+    public Page<TripResponse> getAllTrips(int page, int size) {
+        return tripRepository.findAll(PageRequest.of(page, size))
+                .map(this::mapToResponse);
     }
     
     @Cacheable(value = "trip", key = "#id")
@@ -63,7 +63,7 @@ public class TripService {
     @Transactional(readOnly = true)
     public List<TripResponse> searchTrips(String query) {
         if (query == null || query.isBlank()) {
-            return getAllTrips();
+            return getAllTrips(0, 100).getContent();
         }
         return tripRepository.searchTrips(query)
                 .stream()
