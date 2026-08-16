@@ -64,3 +64,7 @@ cat .jules/bolt.md
 ## 2024-08-15 - [Performance Optimization] Stable props for React.memo
 **Learning:** In `App.jsx`, `CategoryPill` was previously receiving an inline arrow function as its `onClick` prop (`onClick={() => setCategoryFilter(cat.label)}`). This caused the reference to change on every parent render, forcing all instances of `CategoryPill` to re-render.
 **Action:** When a child component requires a parameter for its callback (like `cat.label`), pass the parameter directly as a prop (`label={cat.label}`) alongside the stable callback reference (`onClick={setCategoryFilter}`). Then, within the child component, wrap the event handler in `React.useCallback` or execute it directly (`onClick(label)`) to ensure `React.memo` effectively prevents O(N) list re-renders.
+
+## 2024-08-16 - [Performance Optimization] O(1) Operations with Sets
+**Learning:** Using array filtering (`Array.prototype.filter`) to remove an item or array spreading (`[...arr, item]`) to add an item requires iterating over the entire array or allocating new memory for the entire array, resulting in O(N) operations. When performed frequently on large collections, this causes noticeable performance degradation.
+**Action:** When updating a collection where uniqueness is guaranteed (like a list of IDs), use a `Set`. Native Set operations (`Set.prototype.delete` and `Set.prototype.add`) operate in O(1) time complexity. Convert back to an array (`Array.from(set)`) only when necessary to conform to React state requirements.
