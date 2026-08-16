@@ -12,7 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/trips")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "${app.cors.allowed-origins}")
 public class TripController {
     
     private final TripService tripService;
