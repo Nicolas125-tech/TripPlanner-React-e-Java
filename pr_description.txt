@@ -1,0 +1,3 @@
+🎯 **What:** The `ResourceNotFoundException` class was completely lacking tests. Although a simple class, it's essential to verify its core logic to ensure future safety.
+📊 **Coverage:** Added tests to cover all available constructors: with just a message, and with a message plus a root cause.
+✨ **Result:** Test coverage for `ResourceNotFoundException` is now 100%, catching any potential regressions related to this commonly used exception.
