@@ -107,9 +107,10 @@ const App = () => {
     setLoading(true);
     try {
       // Se tiver termo, busca específico. Se não, busca tudo.
+      const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
       const url = normalizedTerm
-        ? `http://localhost:8080/api/trips/search?query=${encodeURIComponent(normalizedTerm)}`
-        : 'http://localhost:8080/api/trips';
+        ? `${baseUrl}/api/trips/search?query=${encodeURIComponent(normalizedTerm)}`
+        : `${baseUrl}/api/trips`;
       
       const res = await fetch(url);
       const data = await res.json();
