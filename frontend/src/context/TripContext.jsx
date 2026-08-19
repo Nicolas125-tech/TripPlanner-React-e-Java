@@ -33,9 +33,10 @@ export const TripProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
+      const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
       const url = query 
-        ? `http://localhost:8080/api/trips/search?query=${encodeURIComponent(query)}` 
-        : 'http://localhost:8080/api/trips';
+        ? `${baseUrl}/api/trips/search?query=${encodeURIComponent(query)}`
+        : `${baseUrl}/api/trips`;
       
       const res = await fetch(url);
       if (!res.ok) throw new Error('Erro ao buscar destinos');
