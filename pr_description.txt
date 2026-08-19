@@ -1,0 +1,4 @@
+🎯 What: Removed the unused `import React from 'react';` statement from `frontend/src/context/TripContext.test.jsx`.
+💡 Why: In modern React (17+), the JSX transform automatically handles React imports for JSX files. The explicit import was unused, causing linter warnings and adding unnecessary clutter. Removing it improves code health and maintainability.
+✅ Verification: Ran `npm run lint` and the Vitest test suite (`npm run test`) to ensure no functionality or tests were broken by the removal.
+✨ Result: Cleaner code, no unused imports, and fully passing tests and linting.
