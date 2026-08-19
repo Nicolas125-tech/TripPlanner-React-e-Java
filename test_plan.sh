@@ -1,2 +1,2 @@
 #!/bin/bash
-echo "Plan looks good"
+echo "Testing..."
