@@ -266,8 +266,13 @@ const App = () => {
                 ))}
               </div>
 
-              {loading ? <div className="text-center py-10">Carregando destinos...</div> : (
-                <div className="grid md:grid-cols-3 gap-8">
+              <div className="relative min-h-[200px]">
+                {loading && (
+                  <div className="absolute inset-0 bg-white/70 backdrop-blur-sm z-10 flex items-center justify-center rounded-xl">
+                    <span className="font-bold text-gray-600">Carregando destinos...</span>
+                  </div>
+                )}
+                <div className={`grid md:grid-cols-3 gap-8 ${loading ? 'opacity-50 pointer-events-none' : ''}`}>
                   {filteredDestinations.map((dest, index) => (
                     <TripCard
                       key={dest.id}
@@ -279,7 +284,7 @@ const App = () => {
                     />
                   ))}
                 </div>
-              )}
+              </div>
             </main>
           </>
         )}
