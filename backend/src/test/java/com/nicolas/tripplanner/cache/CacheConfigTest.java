@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
+@SpringBootTest(properties = {"ADMIN_USERNAME=test_user", "ADMIN_PASSWORD=test_secure_pass_123"})
 class CacheConfigTest {
     @Autowired
     private CacheManager cacheManager;

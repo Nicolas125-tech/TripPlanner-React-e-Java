@@ -68,3 +68,7 @@ cat .jules/bolt.md
 ## 2024-08-16 - [Performance Optimization] O(1) Operations with Sets
 **Learning:** Using array filtering (`Array.prototype.filter`) to remove an item or array spreading (`[...arr, item]`) to add an item requires iterating over the entire array or allocating new memory for the entire array, resulting in O(N) operations. When performed frequently on large collections, this causes noticeable performance degradation.
 **Action:** When updating a collection where uniqueness is guaranteed (like a list of IDs), use a `Set`. Native Set operations (`Set.prototype.delete` and `Set.prototype.add`) operate in O(1) time complexity. Convert back to an array (`Array.from(set)`) only when necessary to conform to React state requirements.
+
+## 2024-08-18 - [Performance Optimization] Prevent DOM Destruction on Loading
+**Learning:** Using a ternary operator to conditionally render a loading state in place of a large list (e.g., `loading ? <Loading /> : <List />`) forces React to unmount and destroy all DOM nodes in the list. When loading finishes, it has to recreate them all from scratch, defeating React's reconciliation engine and causing layout thrashing.
+**Action:** Instead of conditional unmounting, use CSS to overlay the loading state (e.g., a semi-transparent absolute div) while keeping the list rendered underneath. This allows React to retain the existing DOM nodes and only apply necessary diffs, significantly reducing layout calculations and DOM manipulation overhead during data fetches.
