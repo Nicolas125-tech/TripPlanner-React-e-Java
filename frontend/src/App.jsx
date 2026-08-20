@@ -266,7 +266,12 @@ const App = () => {
                 ))}
               </div>
 
-              {loading ? <div className="text-center py-10">Carregando destinos...</div> : (
+              <div className="relative min-h-[300px]">
+                {loading && (
+                  <div className="absolute inset-0 bg-white/50 z-10 flex items-center justify-center">
+                    <div className="text-xl font-semibold text-gray-700">Carregando destinos...</div>
+                  </div>
+                )}
                 <div className="grid md:grid-cols-3 gap-8">
                   {filteredDestinations.map((dest, index) => (
                     <TripCard
@@ -279,7 +284,7 @@ const App = () => {
                     />
                   ))}
                 </div>
-              )}
+              </div>
             </main>
           </>
         )}
