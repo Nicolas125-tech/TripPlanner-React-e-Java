@@ -1,2 +1,2 @@
 #!/bin/bash
-echo "Testing..."
+# test plan for pre_commit
