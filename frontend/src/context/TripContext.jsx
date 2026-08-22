@@ -15,17 +15,23 @@ export const TripProvider = ({ children }) => {
   // Persistência sessionStorage
   const updateUser = useCallback((newUser) => {
     setUser(newUser);
-    sessionStorage.setItem('trip_user', JSON.stringify(newUser));
+    setTimeout(() => {
+      sessionStorage.setItem('trip_user', JSON.stringify(newUser));
+    }, 0);
   }, []);
 
   const updateMyTrips = useCallback((trips) => {
     setMyTrips(trips);
-    sessionStorage.setItem('trip_bookings', JSON.stringify(trips));
+    setTimeout(() => {
+      sessionStorage.setItem('trip_bookings', JSON.stringify(trips));
+    }, 0);
   }, []);
 
   const updateFavorites = useCallback((favs) => {
     setFavorites(favs);
-    sessionStorage.setItem('trip_favorites', JSON.stringify(favs));
+    setTimeout(() => {
+      sessionStorage.setItem('trip_favorites', JSON.stringify(favs));
+    }, 0);
   }, []);
 
   // Busca de destinos

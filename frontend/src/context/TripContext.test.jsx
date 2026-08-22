@@ -1,5 +1,5 @@
 /* global global */
-import { render, screen, act, fireEvent } from '@testing-library/react';
+import { render, screen, act, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { TripProvider, useTrips } from './TripContext';
 
@@ -108,7 +108,7 @@ describe('TripContext', () => {
     expect(screen.getByTestId('trips-count').textContent).toBe('1');
   });
 
-  it('login updates user state and sessionStorage', () => {
+  it('login updates user state and sessionStorage', async () => {
     render(
       <TripProvider>
         <TestComponent />
@@ -118,10 +118,12 @@ describe('TripContext', () => {
     fireEvent.click(screen.getByText('Login'));
 
     expect(screen.getByTestId('user').textContent).toBe('John');
-    expect(window.sessionStorage.setItem).toHaveBeenCalledWith('trip_user', expect.stringContaining('John'));
+    await waitFor(() => {
+      expect(window.sessionStorage.setItem).toHaveBeenCalledWith('trip_user', expect.stringContaining('John'));
+    });
   });
 
-  it('logout clears user state and updates sessionStorage', () => {
+  it('logout clears user state and updates sessionStorage', async () => {
     window.sessionStorage.setItem('trip_user', JSON.stringify({ name: 'Alice' }));
 
     render(
@@ -135,10 +137,12 @@ describe('TripContext', () => {
     fireEvent.click(screen.getByText('Logout'));
 
     expect(screen.getByTestId('user').textContent).toBe('no-user');
-    expect(window.sessionStorage.setItem).toHaveBeenCalledWith('trip_user', 'null');
+    await waitFor(() => {
+      expect(window.sessionStorage.setItem).toHaveBeenCalledWith('trip_user', 'null');
+    });
   });
 
-  it('toggleFavorite adds and removes favorite ID and updates sessionStorage', () => {
+  it('toggleFavorite adds and removes favorite ID and updates sessionStorage', async () => {
     render(
       <TripProvider>
         <TestComponent />
@@ -148,15 +152,19 @@ describe('TripContext', () => {
     // Add favorite
     fireEvent.click(screen.getByText('Toggle Fav 1'));
     expect(screen.getByTestId('favorites').textContent).toBe('1');
-    expect(window.sessionStorage.setItem).toHaveBeenCalledWith('trip_favorites', JSON.stringify([1]));
+    await waitFor(() => {
+      expect(window.sessionStorage.setItem).toHaveBeenCalledWith('trip_favorites', JSON.stringify([1]));
+    });
 
     // Remove favorite
     fireEvent.click(screen.getByText('Toggle Fav 1'));
     expect(screen.getByTestId('favorites').textContent).toBe('');
-    expect(window.sessionStorage.setItem).toHaveBeenCalledWith('trip_favorites', JSON.stringify([]));
+    await waitFor(() => {
+      expect(window.sessionStorage.setItem).toHaveBeenCalledWith('trip_favorites', JSON.stringify([]));
+    });
   });
 
-  it('bookTrip adds a booking with total price and status and updates sessionStorage', () => {
+  it('bookTrip adds a booking with total price and status and updates sessionStorage', async () => {
     render(
       <TripProvider>
         <TestComponent />
@@ -166,6 +174,12 @@ describe('TripContext', () => {
     fireEvent.click(screen.getByText('Book Trip'));
 
     expect(screen.getByTestId('trips-count').textContent).toBe('1');
+
+    await waitFor(() => {
+      const calls = window.sessionStorage.setItem.mock.calls;
+      const bookingCall = calls.find(call => call[0] === 'trip_bookings');
+      expect(bookingCall).toBeDefined();
+    });
 
     const calls = window.sessionStorage.setItem.mock.calls;
     const bookingCall = calls.find(call => call[0] === 'trip_bookings');
