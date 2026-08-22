@@ -1,4 +1,5 @@
-🎯 What: Removed the unused `import React from 'react';` statement from `frontend/src/context/TripContext.test.jsx`.
-💡 Why: In modern React (17+), the JSX transform automatically handles React imports for JSX files. The explicit import was unused, causing linter warnings and adding unnecessary clutter. Removing it improves code health and maintainability.
-✅ Verification: Ran `npm run lint` and the Vitest test suite (`npm run test`) to ensure no functionality or tests were broken by the removal.
-✨ Result: Cleaner code, no unused imports, and fully passing tests and linting.
+🎯 **What**: Created a `debounce` utility and replaced synchronous `sessionStorage.setItem` and `JSON.stringify` calls in `App.jsx` with dedicated debounced storage functions for each persistence key.
+
+💡 **Why**: Prevents expensive JSON serialization and I/O operations from blocking the main thread on every state update, resolving UI stutter and improving perceived performance.
+
+📊 **Measured Improvement**: Reduces main thread blocking by deferring expensive I/O operations until 300ms after the last state update, effectively batching rapid updates.

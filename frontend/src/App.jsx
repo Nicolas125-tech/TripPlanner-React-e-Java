@@ -6,6 +6,7 @@ import AuthModal from './components/AuthModal';
 import BookingModal from './components/BookingModal';
 import DetailsModal from './components/DetailsModal';
 import { mockDestinations } from './utils/fallbackData';
+import { debounce } from './utils/debounce';
 
 // --- COMPONENTES AUXILIARES ---
 
@@ -131,9 +132,29 @@ const App = () => {
     performSearch("");
   }, [performSearch]);
 
-  useEffect(() => sessionStorage.setItem('trip_user', JSON.stringify(user)), [user]);
-  useEffect(() => sessionStorage.setItem('trip_bookings', JSON.stringify(myTrips)), [myTrips]);
-  useEffect(() => sessionStorage.setItem('trip_favorites', JSON.stringify([...favorites])), [favorites]);
+  // ⚡ Bolt Performance Optimization:
+  // Wrapped sessionStorage I/O and JSON.stringify in debounced callbacks.
+  // This prevents expensive serialization and main thread blocking during rapid state updates.
+  // Each key gets its own debounced instance to prevent them from cancelling each other out.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const debouncedUserStorage = React.useCallback(
+    debounce((value) => sessionStorage.setItem('trip_user', JSON.stringify(value)), 300),
+    []
+  );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const debouncedBookingsStorage = React.useCallback(
+    debounce((value) => sessionStorage.setItem('trip_bookings', JSON.stringify(value)), 300),
+    []
+  );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const debouncedFavoritesStorage = React.useCallback(
+    debounce((value) => sessionStorage.setItem('trip_favorites', JSON.stringify(value)), 300),
+    []
+  );
+
+  useEffect(() => debouncedUserStorage(user), [user, debouncedUserStorage]);
+  useEffect(() => debouncedBookingsStorage(myTrips), [myTrips, debouncedBookingsStorage]);
+  useEffect(() => debouncedFavoritesStorage([...favorites]), [favorites, debouncedFavoritesStorage]);
 
   const showNotification = React.useCallback((msg) => {
     setNotification(msg);
