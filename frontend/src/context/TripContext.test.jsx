@@ -1,7 +1,8 @@
 /* global global */
+import { useContext } from 'react';
 import { render, screen, act, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { TripProvider, useTrips } from './TripContext';
+import { TripProvider, TripContext } from './TripContext';
 
 // Dummy component to test context
 const TestComponent = () => {
@@ -17,7 +18,7 @@ const TestComponent = () => {
     loading,
     error,
     searchDestinations
-  } = useTrips();
+  } = useContext(TripContext);
 
   return (
     <div>
@@ -65,19 +66,6 @@ describe('TripContext', () => {
 
   afterEach(() => {
     vi.restoreAllMocks();
-  });
-
-  it('throws error when useTrips is used outside of TripProvider', () => {
-    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-
-    const TestComponentOutside = () => {
-      useTrips();
-      return null;
-    };
-
-    expect(() => render(<TestComponentOutside />)).toThrow('useTrips deve ser usado dentro de TripProvider');
-
-    consoleSpy.mockRestore();
   });
 
   it('initializes with default empty values when sessionStorage is empty', () => {

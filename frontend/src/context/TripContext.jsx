@@ -1,7 +1,7 @@
-import { createContext, useContext, useState, useCallback, useMemo } from 'react';
+import { createContext, useState, useCallback, useMemo } from 'react';
 
 // Criar contexto
-const TripContext = createContext();
+export const TripContext = createContext();
 
 // Provider
 export const TripProvider = ({ children }) => {
@@ -136,11 +136,3 @@ export const TripProvider = ({ children }) => {
   return <TripContext.Provider value={value}>{children}</TripContext.Provider>;
 };
 
-// Hook customizado
-export const useTrips = () => {
-  const context = useContext(TripContext);
-  if (!context) {
-    throw new Error('useTrips deve ser usado dentro de TripProvider');
-  }
-  return context;
-};
