@@ -1,11 +1,11 @@
-💡 What
-Implemented proper debouncing for `sessionStorage` writes in `TripContext.jsx` using the `debounce` utility, replacing naive `setTimeout(..., 0)` calls. Also fixed broken tests in `App.test.jsx` by wrapping the component in `TripProvider`.
+🚀 [deploy] Deploy to Render using Docker and PostgreSQL
 
-🎯 Why
-Previously, rapid state updates (like toggling favorites quickly) queued multiple `setTimeout` macro-tasks, causing redundant JSON serialization and blocking the main thread. This optimization prevents that by coalescing rapid updates.
+🎯 What
+This PR sets up the full-stack application for automated deployment to Render. It configures the Java backend to run via Docker, connects it to a production-ready PostgreSQL database, and configures the React frontend to run as a static site and connect to the new backend.
 
-📊 Impact
-Reduces unnecessary I/O and JSON serialization operations, preventing main thread freezing during rapid interactions.
-
-🔬 Measurement
-Verify that rapidly clicking the favorite button multiple times only triggers a single write to `sessionStorage` after the user stops clicking, rather than writing on every single click.
+🛡️ Solution
+- Created a multi-stage `Dockerfile` to build and serve the Spring Boot application using Maven and Temurin JRE.
+- Added `org.postgresql:postgresql` dependency to the `backend/pom.xml`.
+- Externalized database connection (URL, user, password), DDL settings, and CORS via environment variables in `application.properties`, falling back to the local H2 and localhost settings to keep local dev environments working.
+- Created a `render.yaml` Blueprint file to declare the PostgreSQL database, the Backend Web Service, and the Frontend Static Site as Infrastructure as Code.
+- Resolved circular dependencies between frontend (VITE_API_URL) and backend (APP_CORS_ALLOWED_ORIGINS) in the Blueprint configuration.
