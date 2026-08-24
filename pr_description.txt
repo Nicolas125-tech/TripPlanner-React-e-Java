@@ -1,5 +1,11 @@
-🎯 **What**: Created a `debounce` utility and replaced synchronous `sessionStorage.setItem` and `JSON.stringify` calls in `App.jsx` with dedicated debounced storage functions for each persistence key.
+💡 What
+Implemented proper debouncing for `sessionStorage` writes in `TripContext.jsx` using the `debounce` utility, replacing naive `setTimeout(..., 0)` calls. Also fixed broken tests in `App.test.jsx` by wrapping the component in `TripProvider`.
 
-💡 **Why**: Prevents expensive JSON serialization and I/O operations from blocking the main thread on every state update, resolving UI stutter and improving perceived performance.
+🎯 Why
+Previously, rapid state updates (like toggling favorites quickly) queued multiple `setTimeout` macro-tasks, causing redundant JSON serialization and blocking the main thread. This optimization prevents that by coalescing rapid updates.
 
-📊 **Measured Improvement**: Reduces main thread blocking by deferring expensive I/O operations until 300ms after the last state update, effectively batching rapid updates.
+📊 Impact
+Reduces unnecessary I/O and JSON serialization operations, preventing main thread freezing during rapid interactions.
+
+🔬 Measurement
+Verify that rapidly clicking the favorite button multiple times only triggers a single write to `sessionStorage` after the user stops clicking, rather than writing on every single click.

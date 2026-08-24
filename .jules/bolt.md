@@ -72,3 +72,11 @@ cat .jules/bolt.md
 ## 2024-08-18 - [Performance Optimization] Prevent DOM Destruction on Loading
 **Learning:** Using a ternary operator to conditionally render a loading state in place of a large list (e.g., `loading ? <Loading /> : <List />`) forces React to unmount and destroy all DOM nodes in the list. When loading finishes, it has to recreate them all from scratch, defeating React's reconciliation engine and causing layout thrashing.
 **Action:** Instead of conditional unmounting, use CSS to overlay the loading state (e.g., a semi-transparent absolute div) while keeping the list rendered underneath. This allows React to retain the existing DOM nodes and only apply necessary diffs, significantly reducing layout calculations and DOM manipulation overhead during data fetches.
+
+## 2026-08-24 - [Performance Optimization] Case-insensitive Index Optimization (ILIKE)
+**Learning:** Using a leading wildcard in a standard `LIKE` query (e.g., `LIKE '%query%'`) with `LOWER()` prevents database index usage and forces a full table scan, degrading performance.
+**Action:** Replace `LOWER(col) LIKE LOWER(pattern)` with `ILIKE` and prefix matching (e.g., `ILIKE 'query%'`) to utilize indexes effectively.
+
+## 2026-08-24 - [Performance Optimization] Debounce Storage Ops
+**Learning:** Using `setTimeout` to defer `sessionStorage.setItem` calls inside React contexts can still cause performance issues if updates are rapid, as multiple timers will fire and execute synchronous I/O and JSON serialization repeatedly.
+**Action:** Always use a proper `debounce` function, passing the specific key as the debounced function, to coalesce rapid writes into a single execution, preventing main thread blocking.

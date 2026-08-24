@@ -1,4 +1,6 @@
 import { createContext, useContext, useState, useCallback, useMemo } from 'react';
+import { debounce } from '../utils/debounce';
+
 
 // Criar contexto
 const TripContext = createContext();
@@ -13,26 +15,42 @@ export const TripProvider = ({ children }) => {
   const [favorites, setFavorites] = useState(() => JSON.parse(sessionStorage.getItem('trip_favorites')) || []);
 
   // Persistência sessionStorage
+  // ⚡ Bolt Performance Optimization:
+  // Wrapped sessionStorage writes in individual debounced functions.
+  // Using setTimeout directly inside context update functions still queues multiple
+  // macro-tasks on rapid state updates, causing redundant JSON serialization and I/O.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const debouncedUserStorage = useCallback(
+    debounce((value) => sessionStorage.setItem('trip_user', JSON.stringify(value)), 300),
+    []
+  );
+
   const updateUser = useCallback((newUser) => {
     setUser(newUser);
-    setTimeout(() => {
-      sessionStorage.setItem('trip_user', JSON.stringify(newUser));
-    }, 0);
-  }, []);
+    debouncedUserStorage(newUser);
+  }, [debouncedUserStorage]);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const debouncedBookingsStorage = useCallback(
+    debounce((value) => sessionStorage.setItem('trip_bookings', JSON.stringify(value)), 300),
+    []
+  );
 
   const updateMyTrips = useCallback((trips) => {
     setMyTrips(trips);
-    setTimeout(() => {
-      sessionStorage.setItem('trip_bookings', JSON.stringify(trips));
-    }, 0);
-  }, []);
+    debouncedBookingsStorage(trips);
+  }, [debouncedBookingsStorage]);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const debouncedFavoritesStorage = useCallback(
+    debounce((value) => sessionStorage.setItem('trip_favorites', JSON.stringify(value)), 300),
+    []
+  );
 
   const updateFavorites = useCallback((favs) => {
     setFavorites(favs);
-    setTimeout(() => {
-      sessionStorage.setItem('trip_favorites', JSON.stringify(favs));
-    }, 0);
-  }, []);
+    debouncedFavoritesStorage(favs);
+  }, [debouncedFavoritesStorage]);
 
   // Busca de destinos
   const searchDestinations = useCallback(async (query) => {
