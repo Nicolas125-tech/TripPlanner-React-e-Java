@@ -1,3 +1,4 @@
+import { TripProvider } from './context/TripContext';
 /* global global */
 import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
@@ -26,7 +27,12 @@ describe('App', () => {
   });
 
   it('renders the initial layout with loading state and then destinations', async () => {
-    render(<App />);
+
+    render(
+      <TripProvider>
+        <App />
+      </TripProvider>
+    );
 
     // Check Navbar
     expect(screen.getByText('Trip')).toBeInTheDocument();
@@ -40,7 +46,12 @@ describe('App', () => {
   });
 
   it('handles tab switching correctly', async () => {
-    render(<App />);
+
+    render(
+      <TripProvider>
+        <App />
+      </TripProvider>
+    );
 
     await waitFor(() => {
       expect(screen.getByText('Paris')).toBeInTheDocument();
@@ -60,7 +71,12 @@ describe('App', () => {
   });
 
   it('handles search correctly', async () => {
-    render(<App />);
+
+    render(
+      <TripProvider>
+        <App />
+      </TripProvider>
+    );
 
     await waitFor(() => {
       expect(screen.getByText('Paris')).toBeInTheDocument();
@@ -85,7 +101,12 @@ describe('App', () => {
   });
 
   it('handles category filtering', async () => {
-    render(<App />);
+
+    render(
+      <TripProvider>
+        <App />
+      </TripProvider>
+    );
 
     await waitFor(() => {
       expect(screen.getByText('Paris')).toBeInTheDocument(); // Cidade
@@ -101,7 +122,12 @@ describe('App', () => {
   });
 
   it('can open login modal', async () => {
-    render(<App />);
+
+    render(
+      <TripProvider>
+        <App />
+      </TripProvider>
+    );
 
     fireEvent.click(screen.getByText('Entrar'));
 
@@ -112,7 +138,12 @@ describe('App', () => {
   it('handles API failure gracefully using mock fallback', async () => {
     global.fetch.mockRejectedValueOnce(new Error('API failed'));
 
-    render(<App />);
+
+    render(
+      <TripProvider>
+        <App />
+      </TripProvider>
+    );
 
     // It should load the fallback mockDestinations which includes Paris
     await waitFor(() => {
