@@ -28,8 +28,9 @@ services:
     name: tripplanner-frontend
     env: static
     region: oregon
-    buildCommand: cd frontend && npm install && npm run build
-    staticPublishPath: frontend/dist
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    rootDir: frontend
     envVars:
       - key: VITE_API_URL
         value: "https://tripplanner-backend-653v.onrender.com"
