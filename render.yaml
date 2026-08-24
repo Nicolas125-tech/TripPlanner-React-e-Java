@@ -1,0 +1,42 @@
+services:
+  - type: web
+    name: tripplanner-backend
+    env: docker
+    region: oregon
+    plan: free
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        fromDatabase:
+          name: tripplanner-db
+          property: connectionString
+      - key: SPRING_DATASOURCE_USERNAME
+        fromDatabase:
+          name: tripplanner-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: tripplanner-db
+          property: password
+      - key: SPRING_JPA_DATABASE_PLATFORM
+        value: org.hibernate.dialect.PostgreSQLDialect
+      - key: SPRING_JPA_HIBERNATE_DDL_AUTO
+        value: update
+      - key: APP_CORS_ALLOWED_ORIGINS
+        value: "https://tripplanner-frontend-mmo8.onrender.com"
+
+  - type: web
+    name: tripplanner-frontend
+    env: static
+    region: oregon
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: frontend/dist
+    envVars:
+      - key: VITE_API_URL
+        value: "https://tripplanner-backend-653v.onrender.com"
+
+databases:
+  - name: tripplanner-db
+    databaseName: tripplanner_db_l61b
+    user: tripplanner_db_l61b_user
+    plan: free
+    region: oregon
