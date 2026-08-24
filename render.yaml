@@ -5,11 +5,21 @@ services:
     region: oregon
     plan: free
     envVars:
-      - key: SPRING_DATASOURCE_URL
+      - key: SPRING_PROFILES_ACTIVE
+        value: render
+      - key: DB_HOST
         fromDatabase:
           name: tripplanner-db
-          property: connectionString
-      - key: SPRING_DATASOURCE_USERNAME
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: tripplanner-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: tripplanner-db
+          property: database
+      - key: DB_USER
         fromDatabase:
           name: tripplanner-db
           property: user
@@ -17,10 +27,6 @@ services:
         fromDatabase:
           name: tripplanner-db
           property: password
-      - key: SPRING_JPA_DATABASE_PLATFORM
-        value: org.hibernate.dialect.PostgreSQLDialect
-      - key: SPRING_JPA_HIBERNATE_DDL_AUTO
-        value: update
       - key: APP_CORS_ALLOWED_ORIGINS
         value: "https://tripplanner-frontend-mmo8.onrender.com"
 
