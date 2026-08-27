@@ -2,6 +2,8 @@ import SearchBar from "./components/SearchBar";
 import React, { useState, useEffect } from 'react';
 import { Plane, Map as MapIcon, Sun, Mountain, Building } from 'lucide-react';
 import TripCard from './components/TripCard';
+import MyTripCard from './components/MyTripCard';
+
 import AuthModal from './components/AuthModal';
 import BookingModal from './components/BookingModal';
 import DetailsModal from './components/DetailsModal';
@@ -316,16 +318,8 @@ const App = () => {
             <h2 className="text-2xl font-bold mb-6">Minhas Viagens</h2>
             {myTrips.length === 0 ? <p className="text-gray-500">Nenhuma viagem agendada.</p> : (
               <div className="space-y-4">
-                {myTrips.map((trip, i) => (
-                  <div key={trip.bookingId} className="bg-white p-4 rounded-xl border flex gap-4">
-                    <img src={trip.imageUrl || trip.image} className="w-24 h-24 object-cover rounded-lg" alt="" />
-                    <div>
-                      <h3 className="font-bold">{trip.city}</h3>
-                      <p className="text-sm text-gray-500">Status: {trip.status}</p>
-                      <p className="text-sm text-gray-500">Ida: {trip.dateStart} | Volta: {trip.dateEnd}</p>
-                      <p className="font-bold text-blue-600 mt-2">Total: R$ {trip.totalPrice}</p>
-                    </div>
-                  </div>
+                {myTrips.map((trip) => (
+                  <MyTripCard key={trip.bookingId} trip={trip} />
                 ))}
               </div>
             )}
