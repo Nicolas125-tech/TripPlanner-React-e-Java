@@ -78,16 +78,14 @@ export const TripProvider = ({ children }) => {
   // Toggle favorito
   const toggleFavorite = useCallback((id) => {
     // ⚡ Bolt Performance Optimization:
-    // Converted membership check to use a Set, reducing time complexity from O(N) to O(1).
-    // Furthermore, we use Set's native operations (delete/add) to avoid inefficient array traversals
-    // via filter/spread, reducing toggle time by ~20% in large array benchmarks.
-    const favoriteSet = new Set(favorites);
-    if (favoriteSet.has(id)) {
-      favoriteSet.delete(id);
-      updateFavorites(Array.from(favoriteSet));
+    // Replaced Array.from(favoriteSet) inside the state update with Array filter/spread.
+    // Since we're dealing with React state that must remain an Array to avoid breaking consumers,
+    // we can skip the Set conversion overhead entirely and perform native Array operations.
+    // A single O(N) pass is faster than O(N) array-to-set and another O(N) set-to-array conversion.
+    if (favorites.includes(id)) {
+      updateFavorites(favorites.filter(favId => favId !== id));
     } else {
-      favoriteSet.add(id);
-      updateFavorites(Array.from(favoriteSet));
+      updateFavorites([...favorites, id]);
     }
   }, [favorites, updateFavorites]);
 

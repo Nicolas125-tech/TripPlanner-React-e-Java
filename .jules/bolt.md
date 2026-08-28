@@ -80,3 +80,7 @@ cat .jules/bolt.md
 ## 2026-08-24 - [Performance Optimization] Debounce Storage Ops
 **Learning:** Using `setTimeout` to defer `sessionStorage.setItem` calls inside React contexts can still cause performance issues if updates are rapid, as multiple timers will fire and execute synchronous I/O and JSON serialization repeatedly.
 **Action:** Always use a proper `debounce` function, passing the specific key as the debounced function, to coalesce rapid writes into a single execution, preventing main thread blocking.
+
+## 2024-08-28 - [Performance Optimization] Avoid Set conversion for Array state
+**Learning:** For single-item insertions or deletions in React state arrays (like toggling a favorite), converting the array to a `Set` and back to leverage O(1) Set operations introduces more overhead than using native O(N) array operations (`includes()`, `filter()`, spread syntax), making it slower overall. Furthermore, exposing a `Set` in context values when consumers expect an `Array` causes crashes.
+**Action:** When working with React state that must remain an Array to avoid breaking consumers, skip `Set` conversion overhead and perform native Array operations for simple manipulations.
