@@ -1,12 +1,16 @@
 package com.nicolas.tripplanner.exception;
 
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class GlobalExceptionHandlerBenchmarkTest {
+
+    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandlerBenchmarkTest.class);
 
     @Test
     public void benchmarkReduceVsJoining() {
@@ -40,10 +44,10 @@ public class GlobalExceptionHandlerBenchmarkTest {
         }
         long endJoining = System.nanoTime();
 
-        System.out.println("========== BENCHMARK RESULTS ==========");
-        System.out.println("Reduce approach took (50 iters): " + (endReduce - startReduce) / 1_000_000.0 + " ms");
-        System.out.println("Joining approach took (50 iters): " + (endJoining - startJoining) / 1_000_000.0 + " ms");
-        System.out.println("=======================================");
+        logger.info("========== BENCHMARK RESULTS ==========");
+        logger.info("Reduce approach took (50 iters): " + (endReduce - startReduce) / 1_000_000.0 + " ms");
+        logger.info("Joining approach took (50 iters): " + (endJoining - startJoining) / 1_000_000.0 + " ms");
+        logger.info("=======================================");
     }
 
     private String runReduce(List<String> errors) {
