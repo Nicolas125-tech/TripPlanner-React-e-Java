@@ -12,6 +12,6 @@ class CacheConfigTest {
 
     @Test
     void testCacheManagerType() {
-        System.out.println("Cache Manager: " + cacheManager.getClass().getName());
+        assertEquals(org.springframework.cache.concurrent.ConcurrentMapCacheManager.class, cacheManager.getClass());
     }
 }
