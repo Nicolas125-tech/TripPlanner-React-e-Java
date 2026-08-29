@@ -64,7 +64,7 @@ const App = () => {
   // Persistence
   const [user, setUser] = useState(() => JSON.parse(sessionStorage.getItem('trip_user')) || null);
   const [myTrips, setMyTrips] = useState(() => JSON.parse(sessionStorage.getItem('trip_bookings')) || []);
-  const [favorites, setFavorites] = useState(() => new Set(JSON.parse(sessionStorage.getItem('trip_favorites')) || []));
+  const [favorites, setFavorites] = useState(() => JSON.parse(sessionStorage.getItem('trip_favorites')) || []);
   
   // Modals state
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -156,7 +156,7 @@ const App = () => {
 
   useEffect(() => debouncedUserStorage(user), [user, debouncedUserStorage]);
   useEffect(() => debouncedBookingsStorage(myTrips), [myTrips, debouncedBookingsStorage]);
-  useEffect(() => debouncedFavoritesStorage([...favorites]), [favorites, debouncedFavoritesStorage]);
+  useEffect(() => debouncedFavoritesStorage(favorites), [favorites, debouncedFavoritesStorage]);
 
   const showNotification = React.useCallback((msg) => {
     setNotification(msg);
@@ -181,13 +181,11 @@ const App = () => {
 
   const toggleFavorite = React.useCallback((id, isCurrentlyFavorite) => {
     setFavorites(prevFavorites => {
-      const newFavorites = new Set(prevFavorites);
-      if (newFavorites.has(id)) {
-        newFavorites.delete(id);
+      if (prevFavorites.includes(id)) {
+        return prevFavorites.filter(favId => favId !== id);
       } else {
-        newFavorites.add(id);
+        return [...prevFavorites, id];
       }
-      return newFavorites;
     });
 
     if (isCurrentlyFavorite) {
@@ -234,8 +232,8 @@ const App = () => {
   // Wrapped favoritesList in useMemo to prevent O(N) recalculations on every render.
   // Added an early return for the default empty state, making it O(1) instead of O(N).
   const favoritesList = React.useMemo(() => {
-    if (favorites.size === 0) return [];
-    return destinations.filter(d => favorites.has(d.id));
+    if (favorites.length === 0) return [];
+    return destinations.filter(d => favorites.includes(d.id));
   }, [destinations, favorites]);
 
   return (
@@ -300,7 +298,7 @@ const App = () => {
                     <TripCard
                       key={dest.id}
                       trip={dest}
-                      isFavorite={favorites.has(dest.id)}
+                      isFavorite={favorites.includes(dest.id)}
                       onFavoriteClick={toggleFavorite}
                       onDetailsClick={handleDetailsClick}
                       priority={index < 3}
