@@ -132,7 +132,7 @@ describe('App', () => {
     fireEvent.click(screen.getByText('Entrar'));
 
     // AuthForm should be visible (Acesse sua conta is modal title)
-    expect(screen.getByText('Acesse sua conta')).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByText('Acesse sua conta')).toBeInTheDocument());
   });
 
   it('handles API failure gracefully using mock fallback', async () => {

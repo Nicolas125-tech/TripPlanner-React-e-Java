@@ -87,3 +87,6 @@ cat .jules/bolt.md
 ## 2025-01-20 - Web Crypto API instead of deprecated crypto-js
 **Learning:** When implementing client-side encryption in JavaScript/TypeScript projects, avoid introducing the `crypto-js` library as it is officially deprecated and no longer maintained. Use the native Web Crypto API (`window.crypto.subtle`) or modern, actively maintained libraries. If synchronous API is required, simple obfuscation like base64 + XOR might be considered if the goal is only casual tampering prevention and strict encryption is not possible, although it's not a strong security measure.
 **Action:** Avoid using `crypto-js` and use native APIs or actively maintained packages instead.
+## 2024-08-30 - [Performance Optimization] Code Splitting with React.lazy for Modals
+**Learning:** When using React.lazy() to code-split components (like modals), ensure the component is rendered conditionally (e.g., `{isOpen && <Modal />}`) rather than unconditionally with an internal visibility prop. Unconditional rendering causes React to immediately fetch the lazy-loaded chunk on mount, nullifying the code-splitting benefit.
+**Action:** Always wrap lazily loaded components in conditional rendering logic based on their active state and use a `<React.Suspense>` boundary to manage the loading state.
