@@ -1,7 +1,6 @@
 package com.nicolas.tripplanner.controller;
 
 import com.nicolas.tripplanner.config.SecurityConfig;
-import com.nicolas.tripplanner.dto.TripRequest;
 import com.nicolas.tripplanner.service.TripService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
