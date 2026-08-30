@@ -1,5 +1,6 @@
 import SearchBar from "./components/SearchBar";
 import React, { useState, useEffect } from 'react';
+import { secureStorage } from './utils/secureStorage';
 import { Plane, Map as MapIcon, Sun, Mountain, Building } from 'lucide-react';
 import TripCard from './components/TripCard';
 import MyTripCard from './components/MyTripCard';
@@ -62,9 +63,9 @@ const App = () => {
   const [loading, setLoading] = useState(true);
 
   // Persistence
-  const [user, setUser] = useState(() => JSON.parse(sessionStorage.getItem('trip_user')) || null);
-  const [myTrips, setMyTrips] = useState(() => JSON.parse(sessionStorage.getItem('trip_bookings')) || []);
-  const [favorites, setFavorites] = useState(() => JSON.parse(sessionStorage.getItem('trip_favorites')) || []);
+  const [user, setUser] = useState(() => secureStorage.getItem('trip_user') || null);
+  const [myTrips, setMyTrips] = useState(() => secureStorage.getItem('trip_bookings') || []);
+  const [favorites, setFavorites] = useState(() => secureStorage.getItem('trip_favorites') || []);
   
   // Modals state
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -140,17 +141,17 @@ const App = () => {
   // Each key gets its own debounced instance to prevent them from cancelling each other out.
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedUserStorage = React.useCallback(
-    debounce((value) => sessionStorage.setItem('trip_user', JSON.stringify(value)), 300),
+    debounce((value) => secureStorage.setItem('trip_user', value), 300),
     []
   );
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedBookingsStorage = React.useCallback(
-    debounce((value) => sessionStorage.setItem('trip_bookings', JSON.stringify(value)), 300),
+    debounce((value) => secureStorage.setItem('trip_bookings', value), 300),
     []
   );
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedFavoritesStorage = React.useCallback(
-    debounce((value) => sessionStorage.setItem('trip_favorites', JSON.stringify(value)), 300),
+    debounce((value) => secureStorage.setItem('trip_favorites', value), 300),
     []
   );
 

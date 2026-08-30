@@ -84,3 +84,6 @@ cat .jules/bolt.md
 ## 2024-08-28 - [Performance Optimization] Avoid Set conversion for Array state
 **Learning:** For single-item insertions or deletions in React state arrays (like toggling a favorite), converting the array to a `Set` and back to leverage O(1) Set operations introduces more overhead than using native O(N) array operations (`includes()`, `filter()`, spread syntax), making it slower overall. Furthermore, exposing a `Set` in context values when consumers expect an `Array` causes crashes.
 **Action:** When working with React state that must remain an Array to avoid breaking consumers, skip `Set` conversion overhead and perform native Array operations for simple manipulations.
+## 2025-01-20 - Web Crypto API instead of deprecated crypto-js
+**Learning:** When implementing client-side encryption in JavaScript/TypeScript projects, avoid introducing the `crypto-js` library as it is officially deprecated and no longer maintained. Use the native Web Crypto API (`window.crypto.subtle`) or modern, actively maintained libraries. If synchronous API is required, simple obfuscation like base64 + XOR might be considered if the goal is only casual tampering prevention and strict encryption is not possible, although it's not a strong security measure.
+**Action:** Avoid using `crypto-js` and use native APIs or actively maintained packages instead.
