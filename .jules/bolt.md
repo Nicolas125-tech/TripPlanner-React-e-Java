@@ -87,3 +87,7 @@ cat .jules/bolt.md
 ## 2025-01-20 - Web Crypto API instead of deprecated crypto-js
 **Learning:** When implementing client-side encryption in JavaScript/TypeScript projects, avoid introducing the `crypto-js` library as it is officially deprecated and no longer maintained. Use the native Web Crypto API (`window.crypto.subtle`) or modern, actively maintained libraries. If synchronous API is required, simple obfuscation like base64 + XOR might be considered if the goal is only casual tampering prevention and strict encryption is not possible, although it's not a strong security measure.
 **Action:** Avoid using `crypto-js` and use native APIs or actively maintained packages instead.
+
+## 2026-08-30 - [Performance Optimization] Code Splitting Modals
+**Learning:** Modals that are hidden on initial load unnecessarily bloat the main JavaScript bundle if imported synchronously, delaying the application's Time to Interactive (TTI).
+**Action:** Use React.lazy() and <Suspense> to dynamically import these non-critical components, ensuring they are only fetched over the network when the user actually triggers them.
