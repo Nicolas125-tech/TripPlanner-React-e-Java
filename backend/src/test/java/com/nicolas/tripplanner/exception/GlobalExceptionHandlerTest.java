@@ -10,7 +10,6 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
-import java.util.List;
 import java.util.Arrays;
 
 
