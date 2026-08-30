@@ -6,6 +6,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +17,8 @@ import java.util.List;
     "spring.jpa.properties.hibernate.format_sql=false"
 })
 class TripRepositoryBenchmarkTest {
+
+    private static final Logger logger = LoggerFactory.getLogger(TripRepositoryBenchmarkTest.class);
 
     @Autowired
     private TripRepository tripRepository;
@@ -46,6 +50,6 @@ class TripRepositoryBenchmarkTest {
             tripRepository.searchTrips("City" + i);
         }
         long end = System.nanoTime();
-        System.out.println("Execution time for 100 searches: " + (end - start) / 1000000.0 + " ms");
+        logger.info("Execution time for 100 searches: {} ms", (end - start) / 1000000.0);
     }
 }
