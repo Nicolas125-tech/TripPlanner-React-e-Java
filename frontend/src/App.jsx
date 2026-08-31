@@ -235,20 +235,20 @@ const App = () => {
   // favoriteSet has been removed as favorites is now already a Set.
 
   // ⚡ Bolt Performance Optimization:
+  // Lifted the `favorites` Set conversion to a component-level `useMemo` (`favoritesSet`).
+  // This allows O(1) lookups in multiple places (like `favoritesList` and `filteredDestinations.map`),
+  // rather than re-creating the Set or falling back to O(N) `Array.includes` inside render loops.
+  // This reduces render complexities from O(N*M) to O(N+M).
+  const favoritesSet = React.useMemo(() => new Set(favorites), [favorites]);
+
+  // ⚡ Bolt Performance Optimization:
   // Wrapped favoritesList in useMemo to prevent O(N) recalculations on every render.
   // Added an early return for the default empty state, making it O(1) instead of O(N).
-  //
-  // ⚡ Bolt Performance Optimization:
-  // Converted `favorites` to a Set inside the useMemo callback for O(1) lookups during filtering.
-  // The previous implementation used `favorites.includes(d.id)` inside a `filter` loop,
-  // which is an O(N*M) operation where N is the number of destinations and M is the number of favorites.
-  // Converting the array to a Set first takes O(M) and reduces the filter lookups to O(1),
-  // improving the overall complexity to O(N+M) and significantly speeding up the render for large lists.
+  // Uses the component-level `favoritesSet` for O(1) lookups during filtering.
   const favoritesList = React.useMemo(() => {
     if (favorites.length === 0) return [];
-    const favoritesSet = new Set(favorites);
     return destinations.filter(d => favoritesSet.has(d.id));
-  }, [destinations, favorites]);
+  }, [destinations, favoritesSet, favorites.length]);
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans text-gray-900 pb-20">
@@ -312,7 +312,7 @@ const App = () => {
                     <TripCard
                       key={dest.id}
                       trip={dest}
-                      isFavorite={favorites.includes(dest.id)}
+                      isFavorite={favoritesSet.has(dest.id)}
                       onFavoriteClick={toggleFavorite}
                       onDetailsClick={handleDetailsClick}
                       priority={index < 3}
