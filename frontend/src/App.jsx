@@ -232,23 +232,17 @@ const App = () => {
     return destinations.filter(d => d.category === categoryFilter);
   }, [destinations, categoryFilter]);
 
-  // favoriteSet has been removed as favorites is now already a Set.
+  // ⚡ Bolt Performance Optimization:
+  // Converted `favorites` array to a Set outside the render loop for O(1) lookups.
+  const favoritesSet = React.useMemo(() => new Set(favorites), [favorites]);
 
   // ⚡ Bolt Performance Optimization:
   // Wrapped favoritesList in useMemo to prevent O(N) recalculations on every render.
   // Added an early return for the default empty state, making it O(1) instead of O(N).
-  //
-  // ⚡ Bolt Performance Optimization:
-  // Converted `favorites` to a Set inside the useMemo callback for O(1) lookups during filtering.
-  // The previous implementation used `favorites.includes(d.id)` inside a `filter` loop,
-  // which is an O(N*M) operation where N is the number of destinations and M is the number of favorites.
-  // Converting the array to a Set first takes O(M) and reduces the filter lookups to O(1),
-  // improving the overall complexity to O(N+M) and significantly speeding up the render for large lists.
   const favoritesList = React.useMemo(() => {
-    if (favorites.length === 0) return [];
-    const favoritesSet = new Set(favorites);
+    if (favoritesSet.size === 0) return [];
     return destinations.filter(d => favoritesSet.has(d.id));
-  }, [destinations, favorites]);
+  }, [destinations, favoritesSet]);
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans text-gray-900 pb-20">
@@ -312,7 +306,7 @@ const App = () => {
                     <TripCard
                       key={dest.id}
                       trip={dest}
-                      isFavorite={favorites.includes(dest.id)}
+                      isFavorite={favoritesSet.has(dest.id)}
                       onFavoriteClick={toggleFavorite}
                       onDetailsClick={handleDetailsClick}
                       priority={index < 3}
