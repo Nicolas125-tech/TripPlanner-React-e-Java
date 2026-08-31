@@ -1,11 +1,15 @@
 // In a real app, this secret should come from an environment variable (e.g. import.meta.env.VITE_STORAGE_SECRET).
 // For the scope of this fix, we're using a simple string manipulation based encryption as a fallback for the deprecated crypto-js
 // since Web Crypto API is asynchronous and would require significant refactoring of synchronous React state initializers.
-const SECRET_KEY = "TRIPPLANNER_SECURE_STORAGE_KEY_!@#";
+const SECRET_KEY = import.meta.env.VITE_STORAGE_SECRET;
 
 // A simple XOR cipher and Base64 encoding for synchronous client-side obfuscation.
 // Note: This is obfuscation, not strong encryption, but fulfills the synchronous requirement without deprecated dependencies.
 const xorCipher = (text) => {
+  if (!SECRET_KEY) {
+    console.warn("VITE_STORAGE_SECRET is not set. Storage obfuscation is missing a secret key.");
+    return text;
+  }
   let result = "";
   for (let i = 0; i < text.length; i++) {
     result += String.fromCharCode(text.charCodeAt(i) ^ SECRET_KEY.charCodeAt(i % SECRET_KEY.length));
@@ -17,7 +21,7 @@ export const secureStorage = {
   setItem: (key, value) => {
     try {
       const stringValue = JSON.stringify(value);
-      const obfuscatedValue = btoa(xorCipher(stringValue));
+      const obfuscatedValue = SECRET_KEY ? btoa(xorCipher(stringValue)) : btoa(stringValue);
       sessionStorage.setItem(key, obfuscatedValue);
     } catch (error) {
       console.error('Error encrypting and saving data:', error);
@@ -29,7 +33,7 @@ export const secureStorage = {
       const obfuscatedValue = sessionStorage.getItem(key);
       if (!obfuscatedValue) return null;
 
-      const deobfuscatedString = xorCipher(atob(obfuscatedValue));
+      const deobfuscatedString = SECRET_KEY ? xorCipher(atob(obfuscatedValue)) : atob(obfuscatedValue);
 
       if (!deobfuscatedString) {
         throw new Error('Decryption resulted in empty string. Possibly malformed data.');
