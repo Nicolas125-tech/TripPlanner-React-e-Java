@@ -70,7 +70,7 @@ const App = () => {
   // Persistence
   const [user, setUser] = useState(() => secureStorage.getItem('trip_user') || null);
   const [myTrips, setMyTrips] = useState(() => secureStorage.getItem('trip_bookings') || []);
-  const [favorites, setFavorites] = useState(() => secureStorage.getItem('trip_favorites') || []);
+  const [favorites, setFavorites] = useState(() => new Set(secureStorage.getItem('trip_favorites') || []));
   
   // Modals state
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -156,7 +156,7 @@ const App = () => {
   );
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedFavoritesStorage = React.useCallback(
-    debounce((value) => secureStorage.setItem('trip_favorites', value), 300),
+    debounce((value) => secureStorage.setItem('trip_favorites', Array.from(value)), 300),
     []
   );
 
@@ -187,11 +187,13 @@ const App = () => {
 
   const toggleFavorite = React.useCallback((id, isCurrentlyFavorite) => {
     setFavorites(prevFavorites => {
-      if (prevFavorites.includes(id)) {
-        return prevFavorites.filter(favId => favId !== id);
+      const newFavorites = new Set(prevFavorites);
+      if (newFavorites.has(id)) {
+        newFavorites.delete(id);
       } else {
-        return [...prevFavorites, id];
+        newFavorites.add(id);
       }
+      return newFavorites;
     });
 
     if (isCurrentlyFavorite) {
@@ -232,23 +234,13 @@ const App = () => {
     return destinations.filter(d => d.category === categoryFilter);
   }, [destinations, categoryFilter]);
 
-  // favoriteSet has been removed as favorites is now already a Set.
-
-  // ⚡ Bolt Performance Optimization:
-  // Lifted the `favorites` Set conversion to a component-level `useMemo` (`favoritesSet`).
-  // This allows O(1) lookups in multiple places (like `favoritesList` and `filteredDestinations.map`),
-  // rather than re-creating the Set or falling back to O(N) `Array.includes` inside render loops.
-  // This reduces render complexities from O(N*M) to O(N+M).
-  const favoritesSet = React.useMemo(() => new Set(favorites), [favorites]);
-
   // ⚡ Bolt Performance Optimization:
   // Wrapped favoritesList in useMemo to prevent O(N) recalculations on every render.
   // Added an early return for the default empty state, making it O(1) instead of O(N).
-  // Uses the component-level `favoritesSet` for O(1) lookups during filtering.
   const favoritesList = React.useMemo(() => {
-    if (favorites.length === 0) return [];
-    return destinations.filter(d => favoritesSet.has(d.id));
-  }, [destinations, favoritesSet, favorites.length]);
+    if (favorites.size === 0) return [];
+    return destinations.filter(d => favorites.has(d.id));
+  }, [destinations, favorites]);
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans text-gray-900 pb-20">
@@ -312,7 +304,7 @@ const App = () => {
                     <TripCard
                       key={dest.id}
                       trip={dest}
-                      isFavorite={favoritesSet.has(dest.id)}
+                      isFavorite={favorites.has(dest.id)}
                       onFavoriteClick={toggleFavorite}
                       onDetailsClick={handleDetailsClick}
                       priority={index < 3}

@@ -22,7 +22,7 @@ const TestComponent = () => {
   return (
     <div>
       <div data-testid="user">{user ? user.name : 'no-user'}</div>
-      <div data-testid="favorites">{favorites.join(',')}</div>
+      <div data-testid="favorites">{Array.from(favorites).join(',')}</div>
       <div data-testid="trips-count">{myTrips.length}</div>
       <div data-testid="loading">{loading.toString()}</div>
       <div data-testid="error">{error || 'no-error'}</div>
