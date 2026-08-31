@@ -12,7 +12,7 @@ export const TripProvider = ({ children }) => {
   const [error, setError] = useState(null);
   const [user, setUser] = useState(() => JSON.parse(sessionStorage.getItem('trip_user')) || null);
   const [myTrips, setMyTrips] = useState(() => JSON.parse(sessionStorage.getItem('trip_bookings')) || []);
-  const [favorites, setFavorites] = useState(() => JSON.parse(sessionStorage.getItem('trip_favorites')) || []);
+  const [favorites, setFavorites] = useState(() => new Set(JSON.parse(sessionStorage.getItem('trip_favorites')) || []));
 
   // Persistência sessionStorage
   // ⚡ Bolt Performance Optimization:
@@ -43,7 +43,7 @@ export const TripProvider = ({ children }) => {
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedFavoritesStorage = useCallback(
-    debounce((value) => sessionStorage.setItem('trip_favorites', JSON.stringify(value)), 300),
+    debounce((value) => sessionStorage.setItem('trip_favorites', JSON.stringify(Array.from(value))), 300),
     []
   );
 
@@ -78,15 +78,14 @@ export const TripProvider = ({ children }) => {
   // Toggle favorito
   const toggleFavorite = useCallback((id) => {
     // ⚡ Bolt Performance Optimization:
-    // Replaced Array.from(favoriteSet) inside the state update with Array filter/spread.
-    // Since we're dealing with React state that must remain an Array to avoid breaking consumers,
-    // we can skip the Set conversion overhead entirely and perform native Array operations.
-    // A single O(N) pass is faster than O(N) array-to-set and another O(N) set-to-array conversion.
-    if (favorites.includes(id)) {
-      updateFavorites(favorites.filter(favId => favId !== id));
+    // Using Set for favorites to enable O(1) lookups and modifications
+    const newFavorites = new Set(favorites);
+    if (newFavorites.has(id)) {
+      newFavorites.delete(id);
     } else {
-      updateFavorites([...favorites, id]);
+      newFavorites.add(id);
     }
+    updateFavorites(newFavorites);
   }, [favorites, updateFavorites]);
 
   // Login
