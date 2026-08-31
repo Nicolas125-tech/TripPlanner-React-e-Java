@@ -237,9 +237,17 @@ const App = () => {
   // ⚡ Bolt Performance Optimization:
   // Wrapped favoritesList in useMemo to prevent O(N) recalculations on every render.
   // Added an early return for the default empty state, making it O(1) instead of O(N).
+  //
+  // ⚡ Bolt Performance Optimization:
+  // Converted `favorites` to a Set inside the useMemo callback for O(1) lookups during filtering.
+  // The previous implementation used `favorites.includes(d.id)` inside a `filter` loop,
+  // which is an O(N*M) operation where N is the number of destinations and M is the number of favorites.
+  // Converting the array to a Set first takes O(M) and reduces the filter lookups to O(1),
+  // improving the overall complexity to O(N+M) and significantly speeding up the render for large lists.
   const favoritesList = React.useMemo(() => {
     if (favorites.length === 0) return [];
-    return destinations.filter(d => favorites.includes(d.id));
+    const favoritesSet = new Set(favorites);
+    return destinations.filter(d => favoritesSet.has(d.id));
   }, [destinations, favorites]);
 
   return (

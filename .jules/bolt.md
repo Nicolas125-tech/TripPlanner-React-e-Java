@@ -91,3 +91,6 @@ cat .jules/bolt.md
 ## 2026-08-30 - [Performance Optimization] Code Splitting Modals
 **Learning:** Modals that are hidden on initial load unnecessarily bloat the main JavaScript bundle if imported synchronously, delaying the application's Time to Interactive (TTI).
 **Action:** Use React.lazy() and <Suspense> to dynamically import these non-critical components, ensuring they are only fetched over the network when the user actually triggers them.
+## 2024-08-30 - [Performance Optimization] O(1) Lookups in useMemo Filter
+**Learning:** Using \`Array.includes\` inside an \`Array.filter\` loop creates an O(N*M) time complexity. While converting an Array to a Set is inefficient for single-item state manipulations, doing it once inside a \`useMemo\` block prior to filtering reduces the inner loop lookup to O(1).
+**Action:** Always convert the lookup array to a Set before entering a loop or filter operation to improve complexity from O(N*M) to O(N+M) for derived state collections.
