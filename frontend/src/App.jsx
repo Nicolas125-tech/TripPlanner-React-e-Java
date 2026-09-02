@@ -95,6 +95,10 @@ const App = () => {
   // It provides instant (0ms) results for cached queries, reducing server load and drastically improving perceived frontend responsiveness.
   const searchCache = React.useRef(new Map());
 
+  // ⚡ Bolt Performance Optimization:
+  // Added an AbortController ref to track and cancel in-flight API requests.
+  const abortControllerRef = React.useRef(null);
+
   // Buscar dados da API JAVA
   // ⚡ Bolt Performance Optimization:
   // Wrapped performSearch in useCallback to prevent it from being recreated on every render.
@@ -113,6 +117,14 @@ const App = () => {
       return;
     }
 
+    // ⚡ Bolt Performance Optimization:
+    // Cancel previous pending network requests to prevent race conditions and save bandwidth.
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    const abortController = new AbortController();
+    abortControllerRef.current = abortController;
+
     setLoading(true);
     try {
       // Se tiver termo, busca específico. Se não, busca tudo.
@@ -121,17 +133,22 @@ const App = () => {
         ? `${baseUrl}/api/trips/search?query=${encodeURIComponent(normalizedTerm)}`
         : `${baseUrl}/api/trips`;
       
-      const res = await fetch(url);
+      const res = await fetch(url, { signal: abortController.signal });
       const data = await res.json();
 
       searchCache.current.set(cacheKey, data);
       setDestinations(data);
     } catch (err) {
+      if (err.name === 'AbortError') {
+        return; // Silently exit if request was intentionally aborted
+      }
       console.error("Erro ao buscar:", err);
       setDestinations(mockDestinations);
       // Fallback mantém os dados atuais
     } finally {
-      setLoading(false);
+      if (abortControllerRef.current === abortController) {
+        setLoading(false);
+      }
     }
   }, []);
 

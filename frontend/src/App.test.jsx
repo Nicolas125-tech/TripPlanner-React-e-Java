@@ -96,7 +96,10 @@ describe('App', () => {
     fireEvent.click(searchButton);
 
     await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledWith('http://localhost:8080/api/trips/search?query=Paris');
+      expect(global.fetch).toHaveBeenCalledWith(
+        'http://localhost:8080/api/trips/search?query=Paris',
+        expect.any(Object)
+      );
     });
   });
 
