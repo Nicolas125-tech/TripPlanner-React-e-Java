@@ -263,7 +263,7 @@ const App = () => {
             {user ? (
               <div className="flex items-center gap-3">
                 <span className="text-sm font-bold hidden sm:block">{user.name}</span>
-                <img src={user.avatar} className="w-8 h-8 rounded-full cursor-pointer" alt="" onClick={handleLogout} />
+                <img src={user.avatar} className="w-8 h-8 rounded-full cursor-pointer" alt={`${user.name}'s avatar`} onClick={handleLogout} />
               </div>
             ) : (
               <button onClick={openAuthModal} className="bg-gray-900 text-white px-5 py-2 rounded-full text-sm font-bold">Entrar</button>
