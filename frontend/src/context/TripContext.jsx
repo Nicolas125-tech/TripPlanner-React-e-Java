@@ -1,6 +1,6 @@
+import { secureStorage } from '../utils/secureStorage';
 import { createContext, useContext, useState, useCallback, useMemo, useRef } from 'react';
-import { debounce } from '../utils/debounce';
-
+import { useDebouncedStorage } from '../hooks/useDebouncedStorage';
 
 // Criar contexto
 const TripContext = createContext();
@@ -10,42 +10,30 @@ export const TripProvider = ({ children }) => {
   const [destinations, setDestinations] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [user, setUser] = useState(() => JSON.parse(sessionStorage.getItem('trip_user')) || null);
-  const [myTrips, setMyTrips] = useState(() => JSON.parse(sessionStorage.getItem('trip_bookings')) || []);
-  const [favorites, setFavorites] = useState(() => new Set(JSON.parse(sessionStorage.getItem('trip_favorites')) || []));
+  const [user, setUser] = useState(() => secureStorage.getItem('trip_user') || null);
+  const [myTrips, setMyTrips] = useState(() => secureStorage.getItem('trip_bookings') || []);
+  const [favorites, setFavorites] = useState(() => new Set(secureStorage.getItem('trip_favorites') || []));
 
   // Persistência sessionStorage
   // ⚡ Bolt Performance Optimization:
   // Wrapped sessionStorage writes in individual debounced functions.
   // Using setTimeout directly inside context update functions still queues multiple
   // macro-tasks on rapid state updates, causing redundant JSON serialization and I/O.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const debouncedUserStorage = useCallback(
-    debounce((value) => sessionStorage.setItem('trip_user', JSON.stringify(value)), 300),
-    []
-  );
+  const debouncedUserStorage = useDebouncedStorage('trip_user');
 
   const updateUser = useCallback((newUser) => {
     setUser(newUser);
     debouncedUserStorage(newUser);
   }, [debouncedUserStorage]);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const debouncedBookingsStorage = useCallback(
-    debounce((value) => sessionStorage.setItem('trip_bookings', JSON.stringify(value)), 300),
-    []
-  );
+  const debouncedBookingsStorage = useDebouncedStorage('trip_bookings');
 
   const updateMyTrips = useCallback((trips) => {
     setMyTrips(trips);
     debouncedBookingsStorage(trips);
   }, [debouncedBookingsStorage]);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const debouncedFavoritesStorage = useCallback(
-    debounce((value) => sessionStorage.setItem('trip_favorites', JSON.stringify(Array.from(value))), 300),
-    []
-  );
+  const debouncedFavoritesStorage = useDebouncedStorage('trip_favorites', 300, true);
 
   const updateFavorites = useCallback((favs) => {
     setFavorites(favs);

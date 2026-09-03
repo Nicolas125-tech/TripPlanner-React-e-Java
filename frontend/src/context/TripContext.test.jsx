@@ -1,5 +1,22 @@
+import { secureStorage } from '../utils/secureStorage';
+vi.mock('../utils/secureStorage', () => ({
+  secureStorage: {
+    setItem: vi.fn((key, value) => {
+      if (key === 'trip_user') global.mockUser = value;
+      if (key === 'trip_favorites') global.mockFavorites = value;
+      if (key === 'trip_bookings') global.mockBookings = value;
+    }),
+    getItem: vi.fn((key) => {
+      if (key === 'trip_user') return global.mockUser || null;
+      if (key === 'trip_favorites') return global.mockFavorites || null;
+      if (key === 'trip_bookings') return global.mockBookings || null;
+      return null;
+    })
+  }
+}));
 /* global global */
 import { render, screen, act, fireEvent, waitFor } from '@testing-library/react';
+
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { TripProvider, useTrips } from './TripContext';
 
@@ -41,12 +58,15 @@ describe('TripContext', () => {
   let sessionStorageMock;
 
   beforeEach(() => {
+    global.mockUser = null;
+    global.mockFavorites = null;
+    global.mockBookings = null;
     sessionStorageMock = (() => {
       let store = {};
       return {
         getItem: vi.fn(key => store[key] || null),
         setItem: vi.fn((key, value) => {
-          store[key] = value ? value.toString() : 'null';
+          store[key] = value ? value.toString() : null;
         }),
         clear: vi.fn(() => {
           store = {};
@@ -93,9 +113,9 @@ describe('TripContext', () => {
   });
 
   it('initializes with values from sessionStorage', () => {
-    window.sessionStorage.setItem('trip_user', JSON.stringify({ name: 'Alice', email: 'alice@test.com' }));
-    window.sessionStorage.setItem('trip_favorites', JSON.stringify([1, 2]));
-    window.sessionStorage.setItem('trip_bookings', JSON.stringify([{ id: 1 }]));
+    secureStorage.setItem('trip_user', { name: 'Alice', email: 'alice@test.com' });
+    secureStorage.setItem('trip_favorites', [1, 2]);
+    secureStorage.setItem('trip_bookings', [{ id: 1 }]);
 
     render(
       <TripProvider>
@@ -119,12 +139,12 @@ describe('TripContext', () => {
 
     expect(screen.getByTestId('user').textContent).toBe('John');
     await waitFor(() => {
-      expect(window.sessionStorage.setItem).toHaveBeenCalledWith('trip_user', expect.stringContaining('John'));
+      expect(secureStorage.setItem).toHaveBeenCalledWith('trip_user', expect.objectContaining({ name: 'John' }));
     });
   });
 
   it('logout clears user state and updates sessionStorage', async () => {
-    window.sessionStorage.setItem('trip_user', JSON.stringify({ name: 'Alice' }));
+    secureStorage.setItem('trip_user', { name: 'Alice' });
 
     render(
       <TripProvider>
@@ -138,7 +158,7 @@ describe('TripContext', () => {
 
     expect(screen.getByTestId('user').textContent).toBe('no-user');
     await waitFor(() => {
-      expect(window.sessionStorage.setItem).toHaveBeenCalledWith('trip_user', 'null');
+      expect(secureStorage.setItem).toHaveBeenCalledWith('trip_user', null);
     });
   });
 
@@ -153,14 +173,14 @@ describe('TripContext', () => {
     fireEvent.click(screen.getByText('Toggle Fav 1'));
     expect(screen.getByTestId('favorites').textContent).toBe('1');
     await waitFor(() => {
-      expect(window.sessionStorage.setItem).toHaveBeenCalledWith('trip_favorites', JSON.stringify([1]));
+      expect(secureStorage.setItem).toHaveBeenCalledWith('trip_favorites', [1]);
     });
 
     // Remove favorite
     fireEvent.click(screen.getByText('Toggle Fav 1'));
     expect(screen.getByTestId('favorites').textContent).toBe('');
     await waitFor(() => {
-      expect(window.sessionStorage.setItem).toHaveBeenCalledWith('trip_favorites', JSON.stringify([]));
+      expect(secureStorage.setItem).toHaveBeenCalledWith('trip_favorites', []);
     });
   });
 
@@ -176,16 +196,16 @@ describe('TripContext', () => {
     expect(screen.getByTestId('trips-count').textContent).toBe('1');
 
     await waitFor(() => {
-      const calls = window.sessionStorage.setItem.mock.calls;
+      const calls = secureStorage.setItem.mock.calls;
       const bookingCall = calls.find(call => call[0] === 'trip_bookings');
       expect(bookingCall).toBeDefined();
     });
 
-    const calls = window.sessionStorage.setItem.mock.calls;
+    const calls = secureStorage.setItem.mock.calls;
     const bookingCall = calls.find(call => call[0] === 'trip_bookings');
     expect(bookingCall).toBeDefined();
 
-    const savedTrips = JSON.parse(bookingCall[1]);
+    const savedTrips = bookingCall[1];
     expect(savedTrips).toHaveLength(1);
     expect(savedTrips[0].id).toBe(10);
     expect(savedTrips[0].guests).toBe(2);
