@@ -43,7 +43,7 @@ describe('DetailsModal', () => {
     expect(screen.getByText('Pool')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /reservar agora/i })).toBeInTheDocument();
 
-    const img = screen.getByRole('presentation');
+    const img = screen.getByAltText('Test City');
     expect(img).toHaveAttribute('src', 'http://example.com/image.jpg');
   });
 
