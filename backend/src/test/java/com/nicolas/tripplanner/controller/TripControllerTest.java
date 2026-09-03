@@ -114,6 +114,46 @@ class TripControllerTest {
     }
 
     @Test
+    void searchTrips_shouldReturnTrips_whenQueryIsEmptyString() throws Exception {
+        when(tripService.searchTrips("")).thenReturn(Arrays.asList(tripResponse1, tripResponse2));
+
+        mockMvc.perform(get("/api/trips/search").param("query", ""))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$[0].city").value("Paris"))
+                .andExpect(jsonPath("$[1].city").value("Tokyo"))
+                .andExpect(jsonPath("$.length()").value(2));
+
+        verify(tripService, times(1)).searchTrips("");
+    }
+
+    @Test
+    void searchTrips_shouldReturnTrips_whenQueryIsWhitespace() throws Exception {
+        when(tripService.searchTrips("   ")).thenReturn(Arrays.asList(tripResponse1, tripResponse2));
+
+        mockMvc.perform(get("/api/trips/search").param("query", "   "))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$[0].city").value("Paris"))
+                .andExpect(jsonPath("$[1].city").value("Tokyo"))
+                .andExpect(jsonPath("$.length()").value(2));
+
+        verify(tripService, times(1)).searchTrips("   ");
+    }
+
+    @Test
+    void searchTrips_shouldReturnEmptyList_whenNoMatchesFound() throws Exception {
+        when(tripService.searchTrips("UnknownPlace")).thenReturn(Collections.emptyList());
+
+        mockMvc.perform(get("/api/trips/search").param("query", "UnknownPlace"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.length()").value(0));
+
+        verify(tripService, times(1)).searchTrips("UnknownPlace");
+    }
+
+    @Test
     void getTripsByCategory_shouldReturnMatchingTrips() throws Exception {
         when(tripService.getTripsByCategory("City")).thenReturn(Arrays.asList(tripResponse1, tripResponse2));
 
