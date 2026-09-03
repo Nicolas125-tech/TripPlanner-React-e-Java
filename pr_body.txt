@@ -1,3 +1,0 @@
-🎯 What: Added unit tests for the `ResourceNotFoundException` class to address a testing gap where basic exception constructors were untested.
-📊 Coverage: Added tests to cover the two constructors: the one taking a `message` and the one taking a `message` and a `cause`.
-✨ Result: Improved test coverage and codebase reliability by ensuring exceptions properly store their messages and underlying causes.
