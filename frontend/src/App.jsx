@@ -14,7 +14,7 @@ const AuthModal = React.lazy(() => import('./components/AuthModal'));
 const BookingModal = React.lazy(() => import('./components/BookingModal'));
 const DetailsModal = React.lazy(() => import('./components/DetailsModal'));
 import { mockDestinations } from './utils/fallbackData';
-import { debounce } from './utils/debounce';
+import { useDebouncedStorage } from './hooks/useDebouncedStorage';
 import CategoryPill from './components/CategoryPill';
 
 // --- COMPONENTES AUXILIARES ---
@@ -137,21 +137,9 @@ const App = () => {
   // Wrapped sessionStorage I/O and JSON.stringify in debounced callbacks.
   // This prevents expensive serialization and main thread blocking during rapid state updates.
   // Each key gets its own debounced instance to prevent them from cancelling each other out.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const debouncedUserStorage = React.useCallback(
-    debounce((value) => secureStorage.setItem('trip_user', value), 300),
-    []
-  );
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const debouncedBookingsStorage = React.useCallback(
-    debounce((value) => secureStorage.setItem('trip_bookings', value), 300),
-    []
-  );
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const debouncedFavoritesStorage = React.useCallback(
-    debounce((value) => secureStorage.setItem('trip_favorites', Array.from(value)), 300),
-    []
-  );
+  const debouncedUserStorage = useDebouncedStorage('trip_user');
+  const debouncedBookingsStorage = useDebouncedStorage('trip_bookings');
+  const debouncedFavoritesStorage = useDebouncedStorage('trip_favorites', 300, true);
 
   useEffect(() => debouncedUserStorage(user), [user, debouncedUserStorage]);
   useEffect(() => debouncedBookingsStorage(myTrips), [myTrips, debouncedBookingsStorage]);
