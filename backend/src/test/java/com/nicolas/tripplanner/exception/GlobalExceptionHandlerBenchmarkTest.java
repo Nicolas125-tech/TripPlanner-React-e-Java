@@ -27,7 +27,12 @@ public class GlobalExceptionHandlerBenchmarkTest {
         }
 
         System.gc();
-        try { Thread.sleep(500); } catch (InterruptedException e) {}
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Thread interrupted during sleep", e);
+        }
 
         long startReduce = System.nanoTime();
         for (int i = 0; i < 50; i++) {
@@ -36,7 +41,12 @@ public class GlobalExceptionHandlerBenchmarkTest {
         long endReduce = System.nanoTime();
 
         System.gc();
-        try { Thread.sleep(500); } catch (InterruptedException e) {}
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Thread interrupted during sleep", e);
+        }
 
         long startJoining = System.nanoTime();
         for (int i = 0; i < 50; i++) {
