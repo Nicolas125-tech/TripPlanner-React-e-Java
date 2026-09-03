@@ -28,16 +28,16 @@ public class TripService {
     }
 
     private TripResponse mapToResponse(Trip trip) {
-        return new TripResponse(
-            trip.getId(),
-            trip.getCity(),
-            trip.getCountry(),
-            trip.getPrice(),
-            trip.getRating(),
-            trip.getCategory(),
-            trip.getDescription(),
-            trip.getImageUrl()
-        );
+        return TripResponse.builder()
+            .id(trip.getId())
+            .city(trip.getCity())
+            .country(trip.getCountry())
+            .price(trip.getPrice())
+            .rating(trip.getRating())
+            .category(trip.getCategory())
+            .description(trip.getDescription())
+            .imageUrl(trip.getImageUrl())
+            .build();
     }
     
     // ⚡ Bolt Performance Optimization:
