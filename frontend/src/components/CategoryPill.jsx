@@ -10,7 +10,9 @@ const CategoryPill = React.memo(function CategoryPill({ icon, label, active, onC
 
   return (
     <button
+      type="button"
       onClick={handleClick}
+      aria-pressed={active}
       className={`flex items-center gap-2 px-4 py-2 rounded-full border transition-all ${
         active
         ? 'bg-blue-600 text-white border-blue-600 shadow-md transform scale-105'

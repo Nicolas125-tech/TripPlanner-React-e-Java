@@ -38,4 +38,28 @@ describe('CategoryPill Component', () => {
     expect(mockOnClick).toHaveBeenCalledTimes(1);
     expect(mockOnClick).toHaveBeenCalledWith('Nature');
   });
+
+  it('has type="button" attribute', () => {
+    const mockOnClick = vi.fn();
+    render(<CategoryPill icon={<span>Icon</span>} label="Nature" active={false} onClick={mockOnClick} />);
+
+    const button = screen.getByRole('button', { name: 'IconNature' });
+    expect(button).toHaveAttribute('type', 'button');
+  });
+
+  it('has aria-pressed="true" when active', () => {
+    const mockOnClick = vi.fn();
+    render(<CategoryPill icon={<span>Icon</span>} label="Nature" active={true} onClick={mockOnClick} />);
+
+    const button = screen.getByRole('button', { name: 'IconNature' });
+    expect(button).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  it('has aria-pressed="false" when not active', () => {
+    const mockOnClick = vi.fn();
+    render(<CategoryPill icon={<span>Icon</span>} label="Nature" active={false} onClick={mockOnClick} />);
+
+    const button = screen.getByRole('button', { name: 'IconNature' });
+    expect(button).toHaveAttribute('aria-pressed', 'false');
+  });
 });
