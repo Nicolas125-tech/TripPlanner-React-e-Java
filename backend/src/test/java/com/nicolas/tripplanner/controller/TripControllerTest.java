@@ -44,8 +44,26 @@ class TripControllerTest {
 
     @BeforeEach
     void setUp() {
-        tripResponse1 = new TripResponse(1L, "Paris", "France", 1200.0, 4.8, "City", "Beautiful city", "paris.jpg");
-        tripResponse2 = new TripResponse(2L, "Tokyo", "Japan", 1500.0, 4.9, "City", "Bustling city", "tokyo.jpg");
+        tripResponse1 = TripResponse.builder()
+            .id(1L)
+            .city("Paris")
+            .country("France")
+            .price(1200.0)
+            .rating(4.8)
+            .category("City")
+            .description("Beautiful city")
+            .imageUrl("paris.jpg")
+            .build();
+        tripResponse2 = TripResponse.builder()
+            .id(2L)
+            .city("Tokyo")
+            .country("Japan")
+            .price(1500.0)
+            .rating(4.9)
+            .category("City")
+            .description("Bustling city")
+            .imageUrl("tokyo.jpg")
+            .build();
     }
 
     @Test
@@ -183,7 +201,16 @@ class TripControllerTest {
     @WithMockUser(roles = "ADMIN")
     void createTrip_shouldReturnCreatedTrip() throws Exception {
         TripRequest request = new TripRequest("Rome", "Italy", 1000.0, 4.7, "City");
-        TripResponse response = new TripResponse(3L, "Rome", "Italy", 1000.0, 4.7, "City", null, null);
+        TripResponse response = TripResponse.builder()
+            .id(3L)
+            .city("Rome")
+            .country("Italy")
+            .price(1000.0)
+            .rating(4.7)
+            .category("City")
+            .description(null)
+            .imageUrl(null)
+            .build();
 
         when(tripService.createTrip(any(TripRequest.class))).thenReturn(response);
 
@@ -200,7 +227,16 @@ class TripControllerTest {
     @WithMockUser(roles = "ADMIN")
     void updateTrip_shouldReturnUpdatedTrip() throws Exception {
         TripRequest request = new TripRequest("Paris Updated", "France Updated", 1300.0, 4.9, "City Plus");
-        TripResponse response = new TripResponse(1L, "Paris Updated", "France Updated", 1300.0, 4.9, "City Plus", null, null);
+        TripResponse response = TripResponse.builder()
+            .id(1L)
+            .city("Paris Updated")
+            .country("France Updated")
+            .price(1300.0)
+            .rating(4.9)
+            .category("City Plus")
+            .description(null)
+            .imageUrl(null)
+            .build();
 
         when(tripService.updateTrip(eq(1L), any(TripRequest.class))).thenReturn(response);
 

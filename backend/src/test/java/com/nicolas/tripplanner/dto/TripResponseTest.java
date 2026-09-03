@@ -16,7 +16,16 @@ class TripResponseTest {
         String description = "A beautiful trip to Paris.";
         String imageUrl = "http://example.com/paris.jpg";
 
-        TripResponse tripResponse = new TripResponse(id, city, country, price, rating, category, description, imageUrl);
+        TripResponse tripResponse = TripResponse.builder()
+            .id(id)
+            .city(city)
+            .country(country)
+            .price(price)
+            .rating(rating)
+            .category(category)
+            .description(description)
+            .imageUrl(imageUrl)
+            .build();
 
         assertEquals(id, tripResponse.getId());
         assertEquals(city, tripResponse.getCity());
