@@ -131,6 +131,18 @@ class TripServiceTest {
     }
 
     @Test
+    void createTrip_shouldThrowException_whenRepositorySaveFails() {
+        TripRequest request = new TripRequest("Rome", "Italy", 1000.0, 4.7, "City");
+        request.setDescription("Historic city");
+        request.setImageUrl("rome.jpg");
+
+        when(tripRepository.save(any(Trip.class))).thenThrow(new RuntimeException("Database error"));
+
+        assertThrows(RuntimeException.class, () -> tripService.createTrip(request));
+        verify(tripRepository, times(1)).save(any(Trip.class));
+    }
+
+    @Test
     void updateTrip_shouldUpdateAndReturnTrip_whenTripExists() {
         TripRequest request = new TripRequest("Paris Updated", "France Updated", 1300.0, 4.9, "City Plus");
 
