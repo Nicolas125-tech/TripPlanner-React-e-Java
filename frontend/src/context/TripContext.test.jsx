@@ -216,7 +216,7 @@ describe('TripContext', () => {
       fireEvent.click(screen.getByText('Search'));
     });
 
-    expect(global.fetch).toHaveBeenCalledWith('http://localhost:8080/api/trips/search?query=Paris');
+    expect(global.fetch).toHaveBeenCalledWith('http://localhost:8080/api/trips/search?query=Paris', expect.any(Object));
     expect(screen.getByTestId('destinations-count').textContent).toBe('2');
     expect(screen.getByTestId('loading').textContent).toBe('false');
     expect(screen.getByTestId('error').textContent).toBe('no-error');
