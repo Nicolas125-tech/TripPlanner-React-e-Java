@@ -7,7 +7,7 @@ const DetailsModal = ({ isOpen, onClose, destination, user, onBookingClick, onAu
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={destination.city}>
       <div>
-        <img src={destination.imageUrl || destination.image} className="w-full h-56 object-cover rounded-lg mb-4" alt="" />
+        <img src={destination.imageUrl || destination.image} className="w-full h-56 object-cover rounded-lg mb-4" alt={destination.city} />
         <p className="text-gray-600 mb-4">{destination.description}</p>
         <div className="flex gap-2 mb-6">
           {destination.amenities?.map((am, i) => (
