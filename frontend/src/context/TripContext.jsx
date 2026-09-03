@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, useMemo } from 'react';
+import { createContext, useContext, useState, useCallback, useMemo, useRef } from 'react';
 import { debounce } from '../utils/debounce';
 
 
@@ -52,8 +52,19 @@ export const TripProvider = ({ children }) => {
     debouncedFavoritesStorage(favs);
   }, [debouncedFavoritesStorage]);
 
+  const abortControllerRef = useRef(null);
+
   // Busca de destinos
   const searchDestinations = useCallback(async (query) => {
+    // ⚡ Bolt Performance Optimization:
+    // Abort previous pending requests to prevent race conditions and free up client bandwidth.
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
+    const abortController = new AbortController();
+    abortControllerRef.current = abortController;
+
     setLoading(true);
     setError(null);
     try {
@@ -62,16 +73,21 @@ export const TripProvider = ({ children }) => {
         ? `${baseUrl}/api/trips/search?query=${encodeURIComponent(query)}`
         : `${baseUrl}/api/trips`;
       
-      const res = await fetch(url);
+      const res = await fetch(url, { signal: abortController.signal });
       if (!res.ok) throw new Error('Erro ao buscar destinos');
       
       const data = await res.json();
       setDestinations(data);
     } catch (err) {
+      if (err.name === 'AbortError') {
+        return; // Silently exit if request was intentionally aborted
+      }
       setError(err.message);
       console.error('Erro:', err);
     } finally {
-      setLoading(false);
+      if (abortControllerRef.current === abortController) {
+        setLoading(false);
+      }
     }
   }, []);
 
