@@ -7,6 +7,7 @@ import com.nicolas.tripplanner.model.Trip;
 import com.nicolas.tripplanner.repository.TripRepository;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -102,7 +103,10 @@ public class TripService {
         return mapToResponse(savedTrip);
     }
     
-    @CacheEvict(value = {CACHE_ALL_TRIPS, CACHE_SEARCH_TRIPS, CACHE_TRIPS_BY_CATEGORY, CACHE_TRIP}, allEntries = true)
+    @Caching(evict = {
+        @CacheEvict(value = {CACHE_ALL_TRIPS, CACHE_SEARCH_TRIPS, CACHE_TRIPS_BY_CATEGORY}, allEntries = true),
+        @CacheEvict(value = CACHE_TRIP, key = "#id")
+    })
     @Transactional
     public TripResponse updateTrip(Long id, TripRequest request) {
         Trip trip = tripRepository.findById(id)
@@ -120,7 +124,10 @@ public class TripService {
         return mapToResponse(updatedTrip);
     }
     
-    @CacheEvict(value = {CACHE_ALL_TRIPS, CACHE_SEARCH_TRIPS, CACHE_TRIPS_BY_CATEGORY, CACHE_TRIP}, allEntries = true)
+    @Caching(evict = {
+        @CacheEvict(value = {CACHE_ALL_TRIPS, CACHE_SEARCH_TRIPS, CACHE_TRIPS_BY_CATEGORY}, allEntries = true),
+        @CacheEvict(value = CACHE_TRIP, key = "#id")
+    })
     @Transactional
     public void deleteTrip(Long id) {
         Trip trip = tripRepository.findById(id)
