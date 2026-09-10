@@ -22,6 +22,18 @@ class TripRequestTest {
     }
 
     @Test
+    void testEmptyConstructor() {
+        TripRequest request = new TripRequest();
+        assertNull(request.getCity());
+        assertNull(request.getCountry());
+        assertNull(request.getPrice());
+        assertNull(request.getRating());
+        assertNull(request.getCategory());
+        assertNull(request.getDescription());
+        assertNull(request.getImageUrl());
+    }
+
+    @Test
     void testConstructorAndGettersAndSetters() {
         String city = "Rio de Janeiro";
         String country = "Brazil";
