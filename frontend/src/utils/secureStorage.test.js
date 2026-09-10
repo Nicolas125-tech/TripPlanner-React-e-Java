@@ -11,16 +11,16 @@ describe('secureStorage', () => {
     vi.restoreAllMocks();
   });
 
-  it('obfuscates and stores data correctly', () => {
+  it('stores data correctly in plain text', () => {
     const testData = { id: 1, name: 'Test User' };
     secureStorage.setItem('test_key', testData);
 
     const rawStorage = sessionStorage.getItem('test_key');
     expect(rawStorage).toBeDefined();
-    expect(rawStorage).not.toContain('Test User'); // Should be obfuscated
+    expect(JSON.parse(rawStorage)).toEqual(testData);
   });
 
-  it('retrieves and deobfuscates data correctly', () => {
+  it('retrieves data correctly', () => {
     const testData = { id: 1, name: 'Test User' };
     secureStorage.setItem('test_key', testData);
 
@@ -33,21 +33,11 @@ describe('secureStorage', () => {
     expect(retrievedData).toBeNull();
   });
 
-  it('handles corrupted encrypted data gracefully', () => {
-    sessionStorage.setItem('test_key', 'definitely_not_valid_encrypted_string');
+  it('handles corrupted data gracefully', () => {
+    sessionStorage.setItem('test_key', 'definitely_not_valid_json_string');
 
     const retrievedData = secureStorage.getItem('test_key');
     expect(retrievedData).toBeNull();
     expect(console.error).toHaveBeenCalled();
-  });
-
-  it('falls back to raw JSON parsing if decryption fails but data is valid JSON', () => {
-     // Simulate pre-existing unencrypted data
-     const rawData = { legacy: 'data' };
-     sessionStorage.setItem('legacy_key', JSON.stringify(rawData));
-
-     const retrievedData = secureStorage.getItem('legacy_key');
-     expect(retrievedData).toEqual(rawData);
-     expect(console.error).toHaveBeenCalled();
   });
 });
