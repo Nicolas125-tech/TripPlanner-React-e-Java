@@ -1,6 +1,6 @@
 import { TripProvider } from './context/TripContext';
 /* global global */
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import App from './App';
 
@@ -154,5 +154,30 @@ describe('App', () => {
     await waitFor(() => {
       expect(screen.getByText('Paris')).toBeInTheDocument();
     });
+  });
+
+  it('silently ignores AbortError without updating state or logging', async () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    const abortError = new Error('Request aborted');
+    abortError.name = 'AbortError';
+    global.fetch.mockRejectedValueOnce(abortError);
+
+    await act(async () => {
+      render(
+        <TripProvider>
+          <App />
+        </TripProvider>
+      );
+    });
+
+    // Should not render the fallback data
+    expect(screen.queryByText('Paris')).not.toBeInTheDocument();
+    expect(screen.queryByText('Rio')).not.toBeInTheDocument();
+
+    // Should not log the error
+    expect(consoleSpy).not.toHaveBeenCalled();
+
+    consoleSpy.mockRestore();
   });
 });
