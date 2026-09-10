@@ -41,7 +41,6 @@ describe('AuthModal', () => {
     expect(onLogin).toHaveBeenCalledWith({
       name: 'Test User',
       email: 'test@example.com',
-      password: '' // Note: password input is not present in the current AuthModal.jsx implementation.
     });
   });
 });

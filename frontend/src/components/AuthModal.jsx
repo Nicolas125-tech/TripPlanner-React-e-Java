@@ -2,7 +2,7 @@ import React from 'react';
 import Modal from './Modal';
 
 const AuthForm = ({ onLogin }) => {
-  const [authForm, setAuthForm] = React.useState({ name: '', email: '', password: '' });
+  const [authForm, setAuthForm] = React.useState({ name: '', email: '' });
 
   const handleSubmit = (e) => {
     e.preventDefault();
