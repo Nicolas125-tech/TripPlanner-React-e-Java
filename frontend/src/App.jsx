@@ -46,7 +46,7 @@ const App = () => {
   // Persistence
   const [user, setUser] = useState(() => secureStorage.getItem('trip_user') || null);
   const [myTrips, setMyTrips] = useState(() => secureStorage.getItem('trip_bookings') || []);
-  const [favorites, setFavorites] = useState(() => new Set(secureStorage.getItem('trip_favorites') || []));
+  const [favorites, setFavorites] = useState(() => secureStorage.getItem('trip_favorites') || []);
   
   // Modals state
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -168,11 +168,12 @@ const App = () => {
 
   const toggleFavorite = React.useCallback((id, isCurrentlyFavorite) => {
     setFavorites(prevFavorites => {
-      const newFavorites = new Set(prevFavorites);
-      if (newFavorites.has(id)) {
-        newFavorites.delete(id);
+      const newFavorites = [...prevFavorites];
+      const index = newFavorites.indexOf(id);
+      if (index > -1) {
+        newFavorites.splice(index, 1);
       } else {
-        newFavorites.add(id);
+        newFavorites.push(id);
       }
       return newFavorites;
     });
@@ -216,12 +217,16 @@ const App = () => {
   }, [destinations, categoryFilter]);
 
   // ⚡ Bolt Performance Optimization:
+  // Added favoritesSet to avoid O(N*M) lookups inside the map/filter loops.
+  const favoritesSet = React.useMemo(() => new Set(favorites), [favorites]);
+
+  // ⚡ Bolt Performance Optimization:
   // Wrapped favoritesList in useMemo to prevent O(N) recalculations on every render.
   // Added an early return for the default empty state, making it O(1) instead of O(N).
   const favoritesList = React.useMemo(() => {
-    if (favorites.size === 0) return [];
-    return destinations.filter(d => favorites.has(d.id));
-  }, [destinations, favorites]);
+    if (favoritesSet.size === 0) return [];
+    return destinations.filter(d => favoritesSet.has(d.id));
+  }, [destinations, favoritesSet]);
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans text-gray-900 pb-20">
@@ -285,7 +290,7 @@ const App = () => {
                     <TripCard
                       key={dest.id}
                       trip={dest}
-                      isFavorite={favorites.has(dest.id)}
+                      isFavorite={favoritesSet.has(dest.id)}
                       onFavoriteClick={toggleFavorite}
                       onDetailsClick={handleDetailsClick}
                       priority={index < 3}

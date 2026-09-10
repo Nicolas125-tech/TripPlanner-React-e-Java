@@ -12,7 +12,7 @@ export const TripProvider = ({ children }) => {
   const [error, setError] = useState(null);
   const [user, setUser] = useState(() => secureStorage.getItem('trip_user') || null);
   const [myTrips, setMyTrips] = useState(() => secureStorage.getItem('trip_bookings') || []);
-  const [favorites, setFavorites] = useState(() => new Set(secureStorage.getItem('trip_favorites') || []));
+  const [favorites, setFavorites] = useState(() => secureStorage.getItem('trip_favorites') || []);
 
   // Persistência sessionStorage
   // ⚡ Bolt Performance Optimization:
@@ -33,7 +33,7 @@ export const TripProvider = ({ children }) => {
     debouncedBookingsStorage(trips);
   }, [debouncedBookingsStorage]);
 
-  const debouncedFavoritesStorage = useDebouncedStorage('trip_favorites', 300, true);
+  const debouncedFavoritesStorage = useDebouncedStorage('trip_favorites');
 
   const updateFavorites = useCallback((favs) => {
     setFavorites(favs);
@@ -81,13 +81,12 @@ export const TripProvider = ({ children }) => {
 
   // Toggle favorito
   const toggleFavorite = useCallback((id) => {
-    // ⚡ Bolt Performance Optimization:
-    // Using Set for favorites to enable O(1) lookups and modifications
-    const newFavorites = new Set(favorites);
-    if (newFavorites.has(id)) {
-      newFavorites.delete(id);
+    const newFavorites = [...favorites];
+    const index = newFavorites.indexOf(id);
+    if (index > -1) {
+      newFavorites.splice(index, 1);
     } else {
-      newFavorites.add(id);
+      newFavorites.push(id);
     }
     updateFavorites(newFavorites);
   }, [favorites, updateFavorites]);
