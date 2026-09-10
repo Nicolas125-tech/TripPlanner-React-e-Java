@@ -266,4 +266,29 @@ describe('TripContext', () => {
 
     consoleSpy.mockRestore();
   });
+
+  it('searchDestinations silently handles AbortError', async () => {
+    const abortError = new Error('The user aborted a request.');
+    abortError.name = 'AbortError';
+
+    global.fetch = vi.fn(() => Promise.reject(abortError));
+
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    render(
+      <TripProvider>
+        <TestComponent />
+      </TripProvider>
+    );
+
+    await act(async () => {
+      fireEvent.click(screen.getByText('Search'));
+    });
+
+    // The error should not be updated and console.error should not be called
+    expect(screen.getByTestId('error').textContent).toBe('no-error');
+    expect(consoleSpy).not.toHaveBeenCalled();
+
+    consoleSpy.mockRestore();
+  });
 });
