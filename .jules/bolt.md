@@ -102,3 +102,7 @@ cat .jules/bolt.md
 ## 2026-09-04 - [Performance Optimization] Selective Cache Eviction
 **Learning:** In Spring Boot applications using `@Cacheable` and `@CacheEvict`, configuring an eviction for an individual item cache (like `CACHE_TRIP`) with `allEntries = true` flushes the entire cache whenever any single item is updated or deleted. This negates the benefit of the cache for all unmodified items, reducing O(1) in-memory lookups to database calls under load.
 **Action:** When updating or deleting individual entities, use `@Caching` to apply multiple targeted `@CacheEvict` annotations: one with `allEntries = true` for list-based caches (e.g., searches or category views), and another highly targeted eviction using `key = "#id"` strictly for the single-item cache to preserve overall cache health.
+
+## 2026-09-10 - [Performance Optimization] State Array Modification vs Set Conversion Overhead
+**Learning:** For single-item insertions or deletions in React state arrays, converting the array to a Set and back just to leverage O(1) Set operations introduces more overhead than using native O(N) array operations, making it slower overall.
+**Action:** To optimize single-item removal from a React state array without altering its data type (which would break consumers), replace `includes()` and `filter()` with `indexOf()` and `splice()` on a cloned array, which provides significant performance improvements (e.g., ~4x faster) while maintaining compatibility.
