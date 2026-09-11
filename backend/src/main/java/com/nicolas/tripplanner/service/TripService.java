@@ -7,6 +7,7 @@ import com.nicolas.tripplanner.model.Trip;
 import com.nicolas.tripplanner.repository.TripRepository;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -86,7 +87,10 @@ public class TripService {
                 .collect(Collectors.toList());
     }
     
-    @CacheEvict(value = {CACHE_ALL_TRIPS, CACHE_SEARCH_TRIPS, CACHE_TRIPS_BY_CATEGORY}, allEntries = true)
+    @Caching(
+        evict = { @CacheEvict(value = {CACHE_ALL_TRIPS, CACHE_SEARCH_TRIPS, CACHE_TRIPS_BY_CATEGORY}, allEntries = true) },
+        put = { @CachePut(value = CACHE_TRIP, key = "#result.id") }
+    )
     @Transactional
     public TripResponse createTrip(TripRequest request) {
         Trip trip = new Trip(
@@ -108,10 +112,10 @@ public class TripService {
     // Previously, updating or deleting a trip flushed the ENTIRE CACHE_TRIP (allEntries = true),
     // destroying the O(1) in-memory lookups for all other unmodified trips.
     // Now, it selectively evicts only the modified trip by its specific #id.
-    @Caching(evict = {
-        @CacheEvict(value = {CACHE_ALL_TRIPS, CACHE_SEARCH_TRIPS, CACHE_TRIPS_BY_CATEGORY}, allEntries = true),
-        @CacheEvict(value = CACHE_TRIP, key = "#id")
-    })
+    @Caching(
+        evict = { @CacheEvict(value = {CACHE_ALL_TRIPS, CACHE_SEARCH_TRIPS, CACHE_TRIPS_BY_CATEGORY}, allEntries = true) },
+        put = { @CachePut(value = CACHE_TRIP, key = "#id") }
+    )
     @Transactional
     public TripResponse updateTrip(Long id, TripRequest request) {
         Trip trip = tripRepository.findById(id)
