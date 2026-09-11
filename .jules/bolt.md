@@ -108,3 +108,7 @@ cat .jules/bolt.md
 ## 2026-09-12 - [Performance Optimization] @CachePut for Immediate Cache Warming
 **Learning:** Using `@CacheEvict` for an individual item cache (like `CACHE_TRIP`) after a create or update operation successfully invalidates stale data, but forces the very next read of that item to query the database.
 **Action:** Replace `@CacheEvict` with `@CachePut` (e.g., `key = "#result.id"` or `key = "#id"`) for single-item creates and updates. This immediately updates the cache with the newly saved data, preventing the database call on the subsequent read and providing a seamless O(1) in-memory lookup.
+
+## 2026-09-11 - Fixed CSRF Misconfiguration
+**Learning:** Spring Security's default CSRF protection, which assumes a synchronizer token pattern, is often inappropriate for SPA frontends (like React) interacting with a stateless API.
+**Action:** When configuring CSRF for SPAs, use a `CookieCsrfTokenRepository` with `httpOnly` set to false, enabling client-side frameworks to read the `XSRF-TOKEN` cookie and return it in headers.

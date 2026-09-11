@@ -32,7 +32,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(org.springframework.security.config.Customizer.withDefaults())
+            .csrf(csrf -> csrf.csrfTokenRepository(org.springframework.security.web.csrf.CookieCsrfTokenRepository.withHttpOnlyFalse()))
             .authorizeHttpRequests(authz -> authz
                 .requestMatchers(HttpMethod.GET, "/api/trips/**").permitAll() // Allow read operations
                 .requestMatchers(HttpMethod.POST, "/api/trips/**").hasRole("ADMIN")
