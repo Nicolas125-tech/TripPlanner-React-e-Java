@@ -15,6 +15,7 @@ const BookingModal = React.lazy(() => import('./components/BookingModal'));
 const DetailsModal = React.lazy(() => import('./components/DetailsModal'));
 import { mockDestinations } from './utils/fallbackData';
 import { useDebouncedStorage } from './hooks/useDebouncedStorage';
+import { useAbortController } from './hooks/useAbortController';
 import CategoryPill from './components/CategoryPill';
 
 // --- COMPONENTES AUXILIARES ---
@@ -72,8 +73,8 @@ const App = () => {
   const searchCache = React.useRef(new Map());
 
   // ⚡ Bolt Performance Optimization:
-  // Added an AbortController ref to track and cancel in-flight API requests.
-  const abortControllerRef = React.useRef(null);
+  // Use custom hook to track and cancel in-flight API requests.
+  const { getNewController, isCurrentController } = useAbortController();
 
   // Buscar dados da API JAVA
   // ⚡ Bolt Performance Optimization:
@@ -95,11 +96,7 @@ const App = () => {
 
     // ⚡ Bolt Performance Optimization:
     // Cancel previous pending network requests to prevent race conditions and save bandwidth.
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
-    const abortController = new AbortController();
-    abortControllerRef.current = abortController;
+    const abortController = getNewController();
 
     setLoading(true);
     try {
@@ -122,11 +119,11 @@ const App = () => {
       setDestinations(mockDestinations);
       // Fallback mantém os dados atuais
     } finally {
-      if (abortControllerRef.current === abortController) {
+      if (isCurrentController(abortController)) {
         setLoading(false);
       }
     }
-  }, []);
+  }, [getNewController, isCurrentController]);
 
   // Carregamento inicial
   useEffect(() => {

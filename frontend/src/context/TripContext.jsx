@@ -1,6 +1,7 @@
 import { secureStorage } from '../utils/secureStorage';
-import { createContext, useContext, useState, useCallback, useMemo, useRef } from 'react';
+import { createContext, useContext, useState, useCallback, useMemo } from 'react';
 import { useDebouncedStorage } from '../hooks/useDebouncedStorage';
+import { useAbortController } from '../hooks/useAbortController';
 
 // Criar contexto
 const TripContext = createContext();
@@ -40,18 +41,13 @@ export const TripProvider = ({ children }) => {
     debouncedFavoritesStorage(favs);
   }, [debouncedFavoritesStorage]);
 
-  const abortControllerRef = useRef(null);
+  const { getNewController, isCurrentController } = useAbortController();
 
   // Busca de destinos
   const searchDestinations = useCallback(async (query) => {
     // ⚡ Bolt Performance Optimization:
     // Abort previous pending requests to prevent race conditions and free up client bandwidth.
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
-
-    const abortController = new AbortController();
-    abortControllerRef.current = abortController;
+    const abortController = getNewController();
 
     setLoading(true);
     setError(null);
@@ -73,11 +69,11 @@ export const TripProvider = ({ children }) => {
       setError(err.message);
       console.error('Erro:', err);
     } finally {
-      if (abortControllerRef.current === abortController) {
+      if (isCurrentController(abortController)) {
         setLoading(false);
       }
     }
-  }, []);
+  }, [getNewController, isCurrentController]);
 
   // Toggle favorito
   const toggleFavorite = useCallback((id) => {
