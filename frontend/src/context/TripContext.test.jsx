@@ -291,4 +291,27 @@ describe('TripContext', () => {
 
     consoleSpy.mockRestore();
   });
+
+  it('searchDestinations handles generic fetch rejection correctly', async () => {
+    const genericError = new Error('Erro de conexão de rede');
+
+    global.fetch = vi.fn(() => Promise.reject(genericError));
+
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    render(
+      <TripProvider>
+        <TestComponent />
+      </TripProvider>
+    );
+
+    await act(async () => {
+      fireEvent.click(screen.getByText('Search'));
+    });
+
+    expect(screen.getByTestId('error').textContent).toBe('Erro de conexão de rede');
+    expect(screen.getByTestId('loading').textContent).toBe('false');
+
+    consoleSpy.mockRestore();
+  });
 });
