@@ -104,4 +104,15 @@ describe('secureStorage', () => {
     secureStorage.setItem('test_key', 'some data');
     expect(console.error).toHaveBeenCalledWith('Error saving data:', error);
   });
+
+  it('logs an error and returns null when getItem throws an exception', () => {
+    vi.stubEnv('VITE_STORAGE_SECRET', undefined);
+    // Returning invalid JSON to force JSON.parse to throw a SyntaxError
+    vi.spyOn(Storage.prototype, 'getItem').mockReturnValueOnce('{invalid json');
+
+    const retrievedData = secureStorage.getItem('test_key');
+
+    expect(retrievedData).toBeNull();
+    expect(console.error).toHaveBeenCalledWith('Error retrieving data:', expect.any(SyntaxError));
+  });
 });
