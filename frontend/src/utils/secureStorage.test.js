@@ -94,4 +94,14 @@ describe('secureStorage', () => {
     // Error could be thrown either by crypto-js decryption or JSON.parse
     expect(console.error).toHaveBeenCalled();
   });
+
+  it('logs an error when setItem fails', () => {
+    const error = new Error('Storage quota exceeded');
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementationOnce(() => {
+      throw error;
+    });
+
+    secureStorage.setItem('test_key', 'some data');
+    expect(console.error).toHaveBeenCalledWith('Error saving data:', error);
+  });
 });
