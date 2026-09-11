@@ -19,6 +19,7 @@ import { render, screen, act, fireEvent, waitFor } from '@testing-library/react'
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { TripProvider, useTrips } from './TripContext';
+import { logger } from '../utils/logger';
 
 // Dummy component to test context
 const TestComponent = () => {
@@ -88,7 +89,7 @@ describe('TripContext', () => {
   });
 
   it('throws error when useTrips is used outside of TripProvider', () => {
-    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const loggerSpy = vi.spyOn(logger, 'error').mockImplementation(() => {});
 
     const TestComponentOutside = () => {
       useTrips();
@@ -97,7 +98,7 @@ describe('TripContext', () => {
 
     expect(() => render(<TestComponentOutside />)).toThrow('useTrips deve ser usado dentro de TripProvider');
 
-    consoleSpy.mockRestore();
+    loggerSpy.mockRestore();
   });
 
   it('initializes with default empty values when sessionStorage is empty', () => {
@@ -249,7 +250,7 @@ describe('TripContext', () => {
       })
     );
 
-    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const loggerSpy = vi.spyOn(logger, 'error').mockImplementation(() => {});
 
     render(
       <TripProvider>
@@ -264,7 +265,7 @@ describe('TripContext', () => {
     expect(screen.getByTestId('error').textContent).toBe('Erro ao buscar destinos');
     expect(screen.getByTestId('loading').textContent).toBe('false');
 
-    consoleSpy.mockRestore();
+    loggerSpy.mockRestore();
   });
 
   it('searchDestinations silently handles AbortError', async () => {
@@ -273,7 +274,7 @@ describe('TripContext', () => {
 
     global.fetch = vi.fn(() => Promise.reject(abortError));
 
-    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const loggerSpy = vi.spyOn(logger, 'error').mockImplementation(() => {});
 
     render(
       <TripProvider>
@@ -285,10 +286,10 @@ describe('TripContext', () => {
       fireEvent.click(screen.getByText('Search'));
     });
 
-    // The error should not be updated and console.error should not be called
+    // The error should not be updated and logger.error should not be called
     expect(screen.getByTestId('error').textContent).toBe('no-error');
-    expect(consoleSpy).not.toHaveBeenCalled();
+    expect(loggerSpy).not.toHaveBeenCalled();
 
-    consoleSpy.mockRestore();
+    loggerSpy.mockRestore();
   });
 });

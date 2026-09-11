@@ -1,14 +1,15 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { secureStorage } from './secureStorage';
 import CryptoJS from 'crypto-js';
+import { logger } from './logger';
 
 const TEST_SECRET = 'test_secret_123';
 
 describe('secureStorage', () => {
   beforeEach(() => {
     sessionStorage.clear();
-    vi.spyOn(console, 'error').mockImplementation(() => {});
-    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    vi.spyOn(logger, 'error').mockImplementation(() => {});
+    vi.spyOn(logger, 'warn').mockImplementation(() => {});
   });
 
   afterEach(() => {
@@ -45,7 +46,7 @@ describe('secureStorage', () => {
 
     // Should be able to parse as plain JSON
     expect(JSON.parse(rawStorage)).toEqual(testData);
-    expect(console.warn).toHaveBeenCalledWith('VITE_STORAGE_SECRET is not defined. Storing data in plain text.');
+    expect(logger.warn).toHaveBeenCalledWith('VITE_STORAGE_SECRET is not defined. Storing data in plain text.');
   });
 
   it('retrieves and decrypts encrypted data correctly', () => {
@@ -92,7 +93,7 @@ describe('secureStorage', () => {
     const retrievedData = secureStorage.getItem('test_key');
     expect(retrievedData).toBeNull();
     // Error could be thrown either by crypto-js decryption or JSON.parse
-    expect(console.error).toHaveBeenCalled();
+    expect(logger.error).toHaveBeenCalled();
   });
 
   it('logs an error when setItem fails', () => {
@@ -102,6 +103,6 @@ describe('secureStorage', () => {
     });
 
     secureStorage.setItem('test_key', 'some data');
-    expect(console.error).toHaveBeenCalledWith('Error saving data:', error);
+    expect(logger.error).toHaveBeenCalledWith('Error saving data:', error);
   });
 });

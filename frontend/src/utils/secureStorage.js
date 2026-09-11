@@ -1,4 +1,5 @@
 import CryptoJS from 'crypto-js';
+import { logger } from './logger';
 
 const getSecretKey = () => {
   // Vite sets import.meta.env
@@ -12,7 +13,7 @@ export const secureStorage = {
       const secretKey = getSecretKey();
 
       if (!secretKey) {
-        console.warn('VITE_STORAGE_SECRET is not defined. Storing data in plain text.');
+        logger.warn('VITE_STORAGE_SECRET is not defined. Storing data in plain text.');
         sessionStorage.setItem(key, stringValue);
         return;
       }
@@ -20,7 +21,7 @@ export const secureStorage = {
       const encryptedValue = CryptoJS.AES.encrypt(stringValue, secretKey).toString();
       sessionStorage.setItem(key, encryptedValue);
     } catch (error) {
-      console.error('Error saving data:', error);
+      logger.error('Error saving data:', error);
     }
   },
 
@@ -47,7 +48,7 @@ export const secureStorage = {
       // Fallback: try parsing as plain text
       return JSON.parse(storedValue);
     } catch (error) {
-      console.error('Error retrieving data:', error);
+      logger.error('Error retrieving data:', error);
       return null;
     }
   }

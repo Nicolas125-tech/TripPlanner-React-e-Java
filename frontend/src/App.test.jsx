@@ -3,6 +3,7 @@ import { TripProvider } from './context/TripContext';
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import App from './App';
+import { logger } from './utils/logger';
 
 // Mock the fetch API
 global.fetch = vi.fn();
@@ -141,6 +142,7 @@ describe('App', () => {
   });
 
   it('handles API failure gracefully using mock fallback', async () => {
+    const loggerSpy = vi.spyOn(logger, 'error').mockImplementation(() => {});
     global.fetch.mockRejectedValueOnce(new Error('API failed'));
 
 
@@ -154,10 +156,12 @@ describe('App', () => {
     await waitFor(() => {
       expect(screen.getByText('Paris')).toBeInTheDocument();
     });
+
+    loggerSpy.mockRestore();
   });
 
   it('silently ignores AbortError without updating state or logging', async () => {
-    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const loggerSpy = vi.spyOn(logger, 'error').mockImplementation(() => {});
 
     const abortError = new Error('Request aborted');
     abortError.name = 'AbortError';
@@ -176,8 +180,8 @@ describe('App', () => {
     expect(screen.queryByText('Rio')).not.toBeInTheDocument();
 
     // Should not log the error
-    expect(consoleSpy).not.toHaveBeenCalled();
+    expect(loggerSpy).not.toHaveBeenCalled();
 
-    consoleSpy.mockRestore();
+    loggerSpy.mockRestore();
   });
 });

@@ -1,4 +1,5 @@
 import { secureStorage } from '../utils/secureStorage';
+import { logger } from '../utils/logger';
 import { createContext, useContext, useState, useCallback, useMemo, useRef } from 'react';
 import { useDebouncedStorage } from '../hooks/useDebouncedStorage';
 
@@ -71,7 +72,7 @@ export const TripProvider = ({ children }) => {
         return; // Silently exit if request was intentionally aborted
       }
       setError(err.message);
-      console.error('Erro:', err);
+      logger.error('Erro:', err);
     } finally {
       if (abortControllerRef.current === abortController) {
         setLoading(false);

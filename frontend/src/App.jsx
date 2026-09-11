@@ -1,6 +1,7 @@
 import SearchBar from "./components/SearchBar";
 import React, { useState, useEffect } from 'react';
 import { secureStorage } from './utils/secureStorage';
+import { logger } from './utils/logger';
 import { Plane, Map as MapIcon, Sun, Mountain, Building } from 'lucide-react';
 import TripCard from './components/TripCard';
 import MyTripCard from './components/MyTripCard';
@@ -118,7 +119,7 @@ const App = () => {
       if (err.name === 'AbortError') {
         return; // Silently exit if request was intentionally aborted
       }
-      console.error("Erro ao buscar:", err);
+      logger.error("Erro ao buscar:", err);
       setDestinations(mockDestinations);
       // Fallback mantém os dados atuais
     } finally {
