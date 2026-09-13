@@ -58,7 +58,7 @@ describe('App', () => {
     });
 
     // Switch to Minhas Viagens
-    fireEvent.click(screen.getByText('Minhas Viagens'));
+    fireEvent.click(screen.getByRole('button', { name: 'Minhas Viagens' }));
     expect(screen.getByText('Nenhuma viagem agendada.')).toBeInTheDocument();
 
     // Switch to Favoritos
