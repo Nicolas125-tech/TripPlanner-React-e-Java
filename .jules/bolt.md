@@ -108,3 +108,14 @@ cat .jules/bolt.md
 ## 2026-09-12 - [Performance Optimization] @CachePut for Immediate Cache Warming
 **Learning:** Using `@CacheEvict` for an individual item cache (like `CACHE_TRIP`) after a create or update operation successfully invalidates stale data, but forces the very next read of that item to query the database.
 **Action:** Replace `@CacheEvict` with `@CachePut` (e.g., `key = "#result.id"` or `key = "#id"`) for single-item creates and updates. This immediately updates the cache with the newly saved data, preventing the database call on the subsequent read and providing a seamless O(1) in-memory lookup.
+## 2026-09-20 - [Performance Optimization] CSS-based DOM preservation for heavy subtrees
+**Learning:** Using conditional rendering (e.g., `{activeTab === 'home' && <List />}`) for tabs containing heavy DOM subtrees forces React to destroy and recreate thousands of DOM nodes during navigation, causing severe layout thrashing and loss of scroll state.
+**Action:** Replace conditional rendering with CSS-based visibility toggling (e.g., `className={activeTab === 'home' ? 'block' : 'hidden'}`). This keeps the DOM nodes alive, making navigation instantaneous. Be sure to update related tests to use highly specific queries (like `getByRole`) to avoid matching hidden elements in the DOM.
+
+## 2026-09-20 - [Anti-Pattern] Side effects in state updater functions
+**Learning:** Placing side effects (such as saving to `localStorage` or triggering debounced functions) directly inside a React state updater callback (e.g., `setFavorites(prev => { ... sideEffect(); return next; })`) violates React's purity rules. React may invoke updater functions multiple times during concurrent rendering, causing the side effect to fire unpredictably.
+**Action:** Always place side effects outside the state updater function, either within the event handler closure that triggered the update, or in a carefully controlled `useEffect` hook.
+
+## 2026-09-20 - [Security Risk] Sacrificing encryption for performance
+**Learning:** Attempting to optimize performance by removing an industry-standard encryption library (like AES in `crypto-js`) and replacing it with a lightweight, custom XOR cipher and base64 encoding completely breaks the application's security model.
+**Action:** Never compromise data security for micro-optimizations. If a cryptographic operation is a bottleneck, consider asynchronous offloading (e.g., Web Workers or asynchronous Web Crypto API) rather than weakening the algorithm.
