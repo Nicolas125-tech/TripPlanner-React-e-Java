@@ -58,16 +58,16 @@ describe('App', () => {
     });
 
     // Switch to Minhas Viagens
-    fireEvent.click(screen.getByText('Minhas Viagens'));
-    expect(screen.getByText('Nenhuma viagem agendada.')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Minhas Viagens' }));
+    expect(screen.getByText('Nenhuma viagem agendada.')).toBeVisible();
 
     // Switch to Favoritos
-    fireEvent.click(screen.getByText('Favoritos'));
-    expect(screen.getByText('Nenhum favorito ainda.')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Favoritos' }));
+    expect(screen.getByText('Nenhum favorito ainda.')).toBeVisible();
 
     // Switch back to Explorar (home)
-    fireEvent.click(screen.getByText('Explorar'));
-    expect(screen.getByText('Para onde você quer ir?')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Explorar' }));
+    expect(screen.getByText('Para onde você quer ir?')).toBeVisible();
   });
 
   it('handles search correctly', async () => {

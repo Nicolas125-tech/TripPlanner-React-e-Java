@@ -257,9 +257,8 @@ const App = () => {
 
       {/* CONTENT */}
       <div className="pt-16">
-        {activeTab === 'home' && (
-          <>
-            <div className="bg-blue-900 py-20 px-4 text-center text-white mb-10">
+        <div className={activeTab === 'home' ? 'block' : 'hidden'}>
+          <div className="bg-blue-900 py-20 px-4 text-center text-white mb-10">
               <h1 className="text-4xl md:text-5xl font-bold mb-4">Para onde você quer ir?</h1>
               <SearchBar onSearch={performSearch} />
             </div>
@@ -296,12 +295,10 @@ const App = () => {
                 </div>
               </div>
             </main>
-          </>
-        )}
+        </div>
 
         {/* Minhas Viagens */}
-        {activeTab === 'my-trips' && (
-          <div className="max-w-4xl mx-auto px-4 py-12">
+        <div className={`max-w-4xl mx-auto px-4 py-12 ${activeTab === 'my-trips' ? 'block' : 'hidden'}`}>
             <h2 className="text-2xl font-bold mb-6">Minhas Viagens</h2>
             {myTrips.length === 0 ? <p className="text-gray-500">Nenhuma viagem agendada.</p> : (
               <div className="space-y-4">
@@ -310,12 +307,10 @@ const App = () => {
                 ))}
               </div>
             )}
-          </div>
-        )}
+        </div>
 
         {/* Favoritos */}
-        {activeTab === 'favorites' && (
-          <div className="max-w-7xl mx-auto px-4 py-12">
+        <div className={`max-w-7xl mx-auto px-4 py-12 ${activeTab === 'favorites' ? 'block' : 'hidden'}`}>
             <h2 className="text-2xl font-bold mb-6">Meus Favoritos</h2>
             {favoritesList.length === 0 ? <p className="text-gray-500">Nenhum favorito ainda.</p> : (
               <div className="grid md:grid-cols-3 gap-8">
@@ -331,8 +326,7 @@ const App = () => {
                 ))}
               </div>
             )}
-          </div>
-        )}
+        </div>
       </div>
 
       {/* MODALS (Login, Booking, Details) */}
