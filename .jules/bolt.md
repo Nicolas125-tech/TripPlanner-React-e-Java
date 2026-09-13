@@ -108,3 +108,6 @@ cat .jules/bolt.md
 ## 2026-09-12 - [Performance Optimization] @CachePut for Immediate Cache Warming
 **Learning:** Using `@CacheEvict` for an individual item cache (like `CACHE_TRIP`) after a create or update operation successfully invalidates stale data, but forces the very next read of that item to query the database.
 **Action:** Replace `@CacheEvict` with `@CachePut` (e.g., `key = "#result.id"` or `key = "#id"`) for single-item creates and updates. This immediately updates the cache with the newly saved data, preventing the database call on the subsequent read and providing a seamless O(1) in-memory lookup.
+## 2026-09-13 - [Performance Optimization] CSS Visibility for Tab Switching
+**Learning:** Using conditional rendering (e.g., `{activeTab === 'home' && <Home />}`) for heavy DOM subtrees like tabs forces React to destroy and recreate DOM nodes when switching between tabs, causing layout thrashing and poor performance.
+**Action:** Instead of conditionally mounting/unmounting tab contents, wrap each tab in a `div` and use CSS classes (e.g., `className={activeTab === 'home' ? 'block' : 'hidden'}`) to toggle visibility. This retains the DOM nodes and significantly reduces overhead when switching tabs.

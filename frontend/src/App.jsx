@@ -256,83 +256,81 @@ const App = () => {
       </nav>
 
       {/* CONTENT */}
+      {/* ⚡ Bolt Performance Optimization:
+          Replaced conditional mounting with CSS visibility toggling (`block`/`hidden`) for tabs.
+          This prevents expensive DOM destruction and recreation when switching tabs,
+          improving render performance especially for tabs with large lists or grids. */}
       <div className="pt-16">
-        {activeTab === 'home' && (
-          <>
-            <div className="bg-blue-900 py-20 px-4 text-center text-white mb-10">
-              <h1 className="text-4xl md:text-5xl font-bold mb-4">Para onde você quer ir?</h1>
-              <SearchBar onSearch={performSearch} />
+        <div className={activeTab === 'home' ? 'block' : 'hidden'}>
+          <div className="bg-blue-900 py-20 px-4 text-center text-white mb-10">
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">Para onde você quer ir?</h1>
+            <SearchBar onSearch={performSearch} />
+          </div>
+
+          <main className="max-w-7xl mx-auto px-4">
+            <div className="flex gap-4 overflow-x-auto pb-6 mb-4">
+              {TRIP_CATEGORIES.map(cat => (
+                <CategoryPill
+                  key={cat.label}
+                  {...cat}
+                  active={categoryFilter === cat.label}
+                  onClick={setCategoryFilter}
+                />
+              ))}
             </div>
 
-            <main className="max-w-7xl mx-auto px-4">
-              <div className="flex gap-4 overflow-x-auto pb-6 mb-4">
-                {TRIP_CATEGORIES.map(cat => (
-                  <CategoryPill
-                    key={cat.label}
-                    {...cat}
-                    active={categoryFilter === cat.label}
-                    onClick={setCategoryFilter}
-                  />
-                ))}
-              </div>
-
-              <div className="relative min-h-[200px]">
-                {loading && (
-                  <div className="absolute inset-0 bg-white/70 backdrop-blur-sm z-10 flex items-center justify-center rounded-xl">
-                    <span className="font-bold text-gray-600">Carregando destinos...</span>
-                  </div>
-                )}
-                <div className={`grid md:grid-cols-3 gap-8 ${loading ? 'opacity-50 pointer-events-none' : ''}`}>
-                  {filteredDestinations.map((dest, index) => (
-                    <TripCard
-                      key={dest.id}
-                      trip={dest}
-                      isFavorite={favoritesSet.has(dest.id)}
-                      onFavoriteClick={toggleFavorite}
-                      onDetailsClick={handleDetailsClick}
-                      priority={index < 3}
-                    />
-                  ))}
+            <div className="relative min-h-[200px]">
+              {loading && (
+                <div className="absolute inset-0 bg-white/70 backdrop-blur-sm z-10 flex items-center justify-center rounded-xl">
+                  <span className="font-bold text-gray-600">Carregando destinos...</span>
                 </div>
-              </div>
-            </main>
-          </>
-        )}
-
-        {/* Minhas Viagens */}
-        {activeTab === 'my-trips' && (
-          <div className="max-w-4xl mx-auto px-4 py-12">
-            <h2 className="text-2xl font-bold mb-6">Minhas Viagens</h2>
-            {myTrips.length === 0 ? <p className="text-gray-500">Nenhuma viagem agendada.</p> : (
-              <div className="space-y-4">
-                {myTrips.map((trip) => (
-                  <MyTripCard key={trip.bookingId} trip={trip} />
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Favoritos */}
-        {activeTab === 'favorites' && (
-          <div className="max-w-7xl mx-auto px-4 py-12">
-            <h2 className="text-2xl font-bold mb-6">Meus Favoritos</h2>
-            {favoritesList.length === 0 ? <p className="text-gray-500">Nenhum favorito ainda.</p> : (
-              <div className="grid md:grid-cols-3 gap-8">
-                {favoritesList.map((dest, index) => (
+              )}
+              <div className={`grid md:grid-cols-3 gap-8 ${loading ? 'opacity-50 pointer-events-none' : ''}`}>
+                {filteredDestinations.map((dest, index) => (
                   <TripCard
                     key={dest.id}
                     trip={dest}
-                    isFavorite={true}
+                    isFavorite={favoritesSet.has(dest.id)}
                     onFavoriteClick={toggleFavorite}
                     onDetailsClick={handleDetailsClick}
                     priority={index < 3}
                   />
                 ))}
               </div>
-            )}
-          </div>
-        )}
+            </div>
+          </main>
+        </div>
+
+        {/* Minhas Viagens */}
+        <div className={`max-w-4xl mx-auto px-4 py-12 ${activeTab === 'my-trips' ? 'block' : 'hidden'}`}>
+          <h2 className="text-2xl font-bold mb-6">Minhas Viagens</h2>
+          {myTrips.length === 0 ? <p className="text-gray-500">Nenhuma viagem agendada.</p> : (
+            <div className="space-y-4">
+              {myTrips.map((trip) => (
+                <MyTripCard key={trip.bookingId} trip={trip} />
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Favoritos */}
+        <div className={`max-w-7xl mx-auto px-4 py-12 ${activeTab === 'favorites' ? 'block' : 'hidden'}`}>
+          <h2 className="text-2xl font-bold mb-6">Meus Favoritos</h2>
+          {favoritesList.length === 0 ? <p className="text-gray-500">Nenhum favorito ainda.</p> : (
+            <div className="grid md:grid-cols-3 gap-8">
+              {favoritesList.map((dest, index) => (
+                <TripCard
+                  key={dest.id}
+                  trip={dest}
+                  isFavorite={true}
+                  onFavoriteClick={toggleFavorite}
+                  onDetailsClick={handleDetailsClick}
+                  priority={index < 3}
+                />
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* MODALS (Login, Booking, Details) */}

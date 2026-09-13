@@ -57,17 +57,32 @@ describe('App', () => {
       expect(screen.getByText('Paris')).toBeInTheDocument();
     });
 
+    // We can't rely solely on .toBeVisible() because JSDOM doesn't load external CSS (like Tailwind's .hidden).
+    // So we check the actual className for the tabs to ensure the correct visibility classes are applied.
+
     // Switch to Minhas Viagens
-    fireEvent.click(screen.getByText('Minhas Viagens'));
-    expect(screen.getByText('Nenhuma viagem agendada.')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Minhas Viagens' }));
+
+    // Check that 'Minhas Viagens' tab is visible and 'home' tab is hidden
+    const minhasViagensTab = screen.getByText('Nenhuma viagem agendada.').closest('div.max-w-4xl');
+    expect(minhasViagensTab).toHaveClass('block');
+
+    const homeTab = screen.getByText('Para onde você quer ir?').closest('div.pt-16 > div');
+    expect(homeTab).toHaveClass('hidden');
 
     // Switch to Favoritos
-    fireEvent.click(screen.getByText('Favoritos'));
-    expect(screen.getByText('Nenhum favorito ainda.')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Favoritos' }));
+
+    // Check that 'Favoritos' tab is visible and 'Minhas Viagens' is hidden
+    const favoritosTab = screen.getByText('Nenhum favorito ainda.').closest('div.max-w-7xl');
+    expect(favoritosTab).toHaveClass('block');
+    expect(minhasViagensTab).toHaveClass('hidden');
 
     // Switch back to Explorar (home)
-    fireEvent.click(screen.getByText('Explorar'));
-    expect(screen.getByText('Para onde você quer ir?')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Explorar' }));
+
+    expect(homeTab).toHaveClass('block');
+    expect(favoritosTab).toHaveClass('hidden');
   });
 
   it('handles search correctly', async () => {
