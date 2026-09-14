@@ -119,3 +119,6 @@ cat .jules/bolt.md
 ## 2026-09-20 - [Security Risk] Sacrificing encryption for performance
 **Learning:** Attempting to optimize performance by removing an industry-standard encryption library (like AES in `crypto-js`) and replacing it with a lightweight, custom XOR cipher and base64 encoding completely breaks the application's security model.
 **Action:** Never compromise data security for micro-optimizations. If a cryptographic operation is a bottleneck, consider asynchronous offloading (e.g., Web Workers or asynchronous Web Crypto API) rather than weakening the algorithm.
+## 2026-10-25 - [Performance Optimization] Prevent Cache Stampedes with sync = true
+**Learning:** In Spring Cache, if a cached value expires, multiple concurrent threads might miss the cache simultaneously and execute the expensive underlying method (like a database query) before the first thread can populate the cache. This is known as a Cache Stampede or Thundering Herd problem.
+**Action:** Add `sync = true` to `@Cacheable` annotations. This ensures that only a single thread executes the target method to compute and store the value, while other concurrent threads block and wait to read the resulting cached value, protecting the database under high concurrency.
