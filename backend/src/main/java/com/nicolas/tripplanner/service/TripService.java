@@ -44,8 +44,10 @@ public class TripService {
     
     // ⚡ Bolt Performance Optimization:
     // Added Spring Cache (@Cacheable) for frequent database reads and @CacheEvict for writes.
-    // This reduces the number of queries reaching the database and provides O(1) in-memory lookup times for repeated queries.
-    @Cacheable(CACHE_ALL_TRIPS)
+    // Added `sync = true` to prevent "Cache Stampede" (Thundering Herd) under high concurrency.
+    // If the cache is empty and multiple threads request the same key, `sync = true` ensures only
+    // ONE thread executes the DB query while others wait and use the cached result, saving DB resources.
+    @Cacheable(value = CACHE_ALL_TRIPS, sync = true)
     @Transactional(readOnly = true)
     public List<TripResponse> getAllTrips() {
         return tripRepository.findAll()
@@ -54,7 +56,7 @@ public class TripService {
                 .collect(Collectors.toList());
     }
     
-    @Cacheable(value = CACHE_TRIP, key = "#id")
+    @Cacheable(value = CACHE_TRIP, key = "#id", sync = true)
     @Transactional(readOnly = true)
     public TripResponse getTripById(Long id) {
         Trip trip = tripRepository.findById(id)
@@ -66,7 +68,7 @@ public class TripService {
     // Normalized the cache key for searchTrips using SpEL: `#query != null ? #query.trim().toLowerCase() : ''`
     // Previously, the key was just `#query`, meaning "Paris", "paris", and " Paris " generated different cache entries,
     // leading to redundant database queries. This normalization significantly improves cache hit rates and memory efficiency.
-    @Cacheable(value = CACHE_SEARCH_TRIPS, key = "#query != null ? #query.trim().toLowerCase() : ''")
+    @Cacheable(value = CACHE_SEARCH_TRIPS, key = "#query != null ? #query.trim().toLowerCase() : ''", sync = true)
     @Transactional(readOnly = true)
     public List<TripResponse> searchTrips(String query) {
         if (query == null || query.isBlank()) {
@@ -78,7 +80,7 @@ public class TripService {
                 .collect(Collectors.toList());
     }
     
-    @Cacheable(value = CACHE_TRIPS_BY_CATEGORY, key = "#category")
+    @Cacheable(value = CACHE_TRIPS_BY_CATEGORY, key = "#category", sync = true)
     @Transactional(readOnly = true)
     public List<TripResponse> getTripsByCategory(String category) {
         return tripRepository.findByCategory(category)
