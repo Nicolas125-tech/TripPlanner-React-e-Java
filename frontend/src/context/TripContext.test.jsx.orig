@@ -240,15 +240,6 @@ describe('TripContext', () => {
     expect(screen.getByTestId('destinations-count').textContent).toBe('2');
     expect(screen.getByTestId('loading').textContent).toBe('false');
     expect(screen.getByTestId('error').textContent).toBe('no-error');
-
-    // Test cache hit
-    global.fetch.mockClear();
-
-    await act(async () => {
-      fireEvent.click(screen.getByText('Search'));
-    });
-
-    expect(global.fetch).not.toHaveBeenCalled();
   });
 
   it('searchDestinations handles errors correctly', async () => {

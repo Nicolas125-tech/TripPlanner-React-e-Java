@@ -1,0 +1,48 @@
+--- frontend/src/context/TripContext.jsx
++++ frontend/src/context/TripContext.jsx
+@@ -1,5 +1,5 @@
+ import { secureStorage } from '../utils/secureStorage';
+-import { createContext, useContext, useState, useCallback, useMemo } from 'react';
++import { createContext, useContext, useState, useCallback, useMemo, useRef } from 'react';
+ import { useDebouncedStorage } from '../hooks/useDebouncedStorage';
+ import { useAbortController } from '../hooks/useAbortController';
+
+@@ -43,6 +43,12 @@
+
+   const { getNewController, isCurrentController } = useAbortController();
+
++  // ⚡ Bolt Performance Optimization:
++  // Added a local cache (searchCache) for API responses.
++  // This avoids redundant network requests for identical searches (e.g., clearing the search bar or typing a previously searched term).
++  // It provides instant (0ms) results for cached queries, reducing server load and drastically improving perceived frontend responsiveness.
++  const searchCache = useRef(new Map());
++
+   // Busca de destinos
+   const searchDestinations = useCallback(async (query) => {
+     // ⚡ Bolt Performance Optimization:
+@@ -51,6 +57,17 @@
+
+     setLoading(true);
+     setError(null);
++
++    // ⚡ Bolt Performance Optimization:
++    // Normalized the search term (trimmed whitespace and lowercased) before generating the cache key.
++    const normalizedTerm = query ? query.trim() : "";
++    const cacheKey = normalizedTerm.toLowerCase() || 'ALL';
++    if (searchCache.current.has(cacheKey)) {
++      setDestinations(searchCache.current.get(cacheKey));
++      setLoading(false);
++      return;
++    }
++
+     try {
+       const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+       const url = query
+@@ -62,6 +79,7 @@
+       if (!res.ok) throw new Error('Erro ao buscar destinos');
+
+       const data = await res.json();
++      searchCache.current.set(cacheKey, data);
+       setDestinations(data);
+     } catch (err) {
+       if (err.name === 'AbortError') {
