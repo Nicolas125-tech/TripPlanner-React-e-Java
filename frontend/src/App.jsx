@@ -83,6 +83,10 @@ const App = () => {
   // of children components (like SearchBar) that receive it as a prop.
   const performSearch = React.useCallback(async (searchTerm) => {
     // ⚡ Bolt Performance Optimization:
+    // Cancel previous pending network requests to prevent race conditions and save bandwidth.
+    const abortController = getNewController();
+
+    // ⚡ Bolt Performance Optimization:
     // Normalized the search term (trimmed whitespace and lowercased) before generating the cache key.
     // This dramatically increases cache hit rates by treating equivalent searches (like "Paris", "paris", and " Paris ")
     // as identical, avoiding unnecessary API requests and subsequent React re-renders.
@@ -93,10 +97,6 @@ const App = () => {
       setDestinations(searchCache.current.get(cacheKey));
       return;
     }
-
-    // ⚡ Bolt Performance Optimization:
-    // Cancel previous pending network requests to prevent race conditions and save bandwidth.
-    const abortController = getNewController();
 
     setLoading(true);
     try {
