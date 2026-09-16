@@ -1,5 +1,5 @@
 import { secureStorage } from '../utils/secureStorage';
-import { createContext, useContext, useState, useCallback, useMemo } from 'react';
+import { createContext, useContext, useState, useCallback, useMemo, useRef } from 'react';
 import { useDebouncedStorage } from '../hooks/useDebouncedStorage';
 import { useAbortController } from '../hooks/useAbortController';
 
@@ -43,24 +43,44 @@ export const TripProvider = ({ children }) => {
 
   const { getNewController, isCurrentController } = useAbortController();
 
+  // ⚡ Bolt Performance Optimization:
+  // Added a local cache (searchCache) for API responses.
+  const searchCache = useRef(new Map());
+
   // Busca de destinos
   const searchDestinations = useCallback(async (query) => {
     // ⚡ Bolt Performance Optimization:
+    // Normalized the search term (trimmed whitespace and lowercased) before generating the cache key.
+    // This dramatically increases cache hit rates by treating equivalent searches (like "Paris", "paris", and " Paris ")
+    // as identical, avoiding unnecessary API requests and subsequent React re-renders.
+    const normalizedTerm = query ? query.trim() : "";
+    const cacheKey = normalizedTerm.toLowerCase() || 'ALL';
+
+    // ⚡ Bolt Performance Optimization:
     // Abort previous pending requests to prevent race conditions and free up client bandwidth.
     const abortController = getNewController();
+
+    if (searchCache.current.has(cacheKey)) {
+      setDestinations(searchCache.current.get(cacheKey));
+      setLoading(false);
+      setError(null);
+      return;
+    }
 
     setLoading(true);
     setError(null);
     try {
       const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
-      const url = query 
-        ? `${baseUrl}/api/trips/search?query=${encodeURIComponent(query)}`
+      const url = normalizedTerm
+        ? `${baseUrl}/api/trips/search?query=${encodeURIComponent(normalizedTerm)}`
         : `${baseUrl}/api/trips`;
       
       const res = await fetch(url, { signal: abortController.signal });
       if (!res.ok) throw new Error('Erro ao buscar destinos');
       
       const data = await res.json();
+
+      searchCache.current.set(cacheKey, data);
       setDestinations(data);
     } catch (err) {
       if (err.name === 'AbortError') {

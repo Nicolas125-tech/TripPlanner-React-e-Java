@@ -119,3 +119,6 @@ cat .jules/bolt.md
 ## 2026-09-20 - [Security Risk] Sacrificing encryption for performance
 **Learning:** Attempting to optimize performance by removing an industry-standard encryption library (like AES in `crypto-js`) and replacing it with a lightweight, custom XOR cipher and base64 encoding completely breaks the application's security model.
 **Action:** Never compromise data security for micro-optimizations. If a cryptographic operation is a bottleneck, consider asynchronous offloading (e.g., Web Workers or asynchronous Web Crypto API) rather than weakening the algorithm.
+## 2026-09-15 - [Performance Optimization] AbortController Race Conditions with Caching
+**Learning:** When implementing local caching with early returns in functions that use an `AbortController` to cancel requests, ensure the cancellation logic (e.g., `getNewController()`) is invoked *before* the cache-hit early return. Otherwise, pending network requests from previous cache misses will not be aborted and may overwrite the UI with stale data when they eventually resolve.
+**Action:** Always call the `AbortController` cancellation logic before checking the cache for early returns.
