@@ -89,14 +89,15 @@ const App = () => {
     const normalizedTerm = searchTerm ? searchTerm.trim() : "";
     const cacheKey = normalizedTerm.toLowerCase() || 'ALL';
 
+    // ⚡ Bolt Performance Optimization:
+    // Cancel previous pending network requests to prevent race conditions and save bandwidth.
+    // Must be called BEFORE the cache check so that a new cached request still cancels pending older requests.
+    const abortController = getNewController();
+
     if (searchCache.current.has(cacheKey)) {
       setDestinations(searchCache.current.get(cacheKey));
       return;
     }
-
-    // ⚡ Bolt Performance Optimization:
-    // Cancel previous pending network requests to prevent race conditions and save bandwidth.
-    const abortController = getNewController();
 
     setLoading(true);
     try {
