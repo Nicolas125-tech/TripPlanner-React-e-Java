@@ -112,7 +112,7 @@ export const TripProvider = ({ children }) => {
     const userData = {
       name: name || "Visitante",
       email: email || "guest@tripplanner.com",
-      avatar: `https://ui-avatars.com/api/?name=${name}&background=2563eb&color=fff`
+      avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(name || "Visitante")}&background=2563eb&color=fff`
     };
     updateUser(userData);
     return userData;
