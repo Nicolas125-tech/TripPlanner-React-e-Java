@@ -34,32 +34,24 @@ describe('secureStorage', () => {
     expect(JSON.parse(decryptedString)).toEqual(testData);
   });
 
-  it('stores data in plain text when VITE_STORAGE_SECRET is missing', () => {
+  it('throws an error when VITE_STORAGE_SECRET is missing', () => {
     vi.stubEnv('VITE_STORAGE_SECRET', undefined);
 
     const testData = { id: 1, name: 'Test User' };
     secureStorage.setItem('test_key', testData);
 
-    const rawStorage = sessionStorage.getItem('test_key');
-    expect(rawStorage).toBeDefined();
+    // It catches the error internally and logs to console.error
+    expect(console.error).toHaveBeenCalledWith(
+      'Error saving data:',
+      expect.objectContaining({ message: 'VITE_STORAGE_SECRET is not defined. Cannot store data securely.' })
+    );
 
-    // Should be able to parse as plain JSON
-    expect(JSON.parse(rawStorage)).toEqual(testData);
-    expect(console.warn).toHaveBeenCalledWith('VITE_STORAGE_SECRET is not defined. Storing data in plain text.');
+    const rawStorage = sessionStorage.getItem('test_key');
+    expect(rawStorage).toBeNull();
   });
 
   it('retrieves and decrypts encrypted data correctly', () => {
     vi.stubEnv('VITE_STORAGE_SECRET', TEST_SECRET);
-
-    const testData = { id: 1, name: 'Test User' };
-    secureStorage.setItem('test_key', testData);
-
-    const retrievedData = secureStorage.getItem('test_key');
-    expect(retrievedData).toEqual(testData);
-  });
-
-  it('retrieves plain text data correctly when secret is missing', () => {
-    vi.stubEnv('VITE_STORAGE_SECRET', undefined);
 
     const testData = { id: 1, name: 'Test User' };
     secureStorage.setItem('test_key', testData);
@@ -96,6 +88,7 @@ describe('secureStorage', () => {
   });
 
   it('logs an error when setItem fails', () => {
+    vi.stubEnv('VITE_STORAGE_SECRET', TEST_SECRET);
     const error = new Error('Storage quota exceeded');
     vi.spyOn(Storage.prototype, 'setItem').mockImplementationOnce(() => {
       throw error;

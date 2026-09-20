@@ -12,9 +12,7 @@ export const secureStorage = {
       const secretKey = getSecretKey();
 
       if (!secretKey) {
-        console.warn('VITE_STORAGE_SECRET is not defined. Storing data in plain text.');
-        sessionStorage.setItem(key, stringValue);
-        return;
+        throw new Error('VITE_STORAGE_SECRET is not defined. Cannot store data securely.');
       }
 
       const encryptedValue = CryptoJS.AES.encrypt(stringValue, secretKey).toString();
