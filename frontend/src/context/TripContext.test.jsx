@@ -143,6 +143,32 @@ describe('TripContext', () => {
     });
   });
 
+  it('login sanitizes user input in avatar URL', async () => {
+    const MaliciousLoginComponent = () => {
+      const { login } = useTrips();
+      return (
+        <button onClick={() => login('Hacker&color=red', 'hacker@example.com')}>
+          Malicious Login
+        </button>
+      );
+    };
+
+    render(
+      <TripProvider>
+        <MaliciousLoginComponent />
+      </TripProvider>
+    );
+
+    fireEvent.click(screen.getByText('Malicious Login'));
+
+    await waitFor(() => {
+      expect(secureStorage.setItem).toHaveBeenCalledWith('trip_user', expect.objectContaining({
+        name: 'Hacker&color=red',
+        avatar: 'https://ui-avatars.com/api/?name=Hacker%26color%3Dred&background=2563eb&color=fff'
+      }));
+    });
+  });
+
   it('logout clears user state and updates sessionStorage', async () => {
     secureStorage.setItem('trip_user', { name: 'Alice' });
 
