@@ -36,6 +36,14 @@ public class TripController {
     @GetMapping("/search")
     public ResponseEntity<List<TripResponse>> searchTrips(
             @RequestParam(value = "query", required = false) String query) {
+        // ⚡ Bolt Performance Optimization:
+        // Moved the blank query fallback logic from TripService to TripController.
+        // This ensures the call to getAllTrips() passes through the Spring AOP proxy,
+        // correctly triggering the @Cacheable annotation. Previously, the internal service call
+        // bypassed the proxy and hit the database on every empty search request.
+        if (query == null || query.isBlank()) {
+            return ResponseEntity.ok(tripService.getAllTrips());
+        }
         List<TripResponse> trips = tripService.searchTrips(query);
         return ResponseEntity.ok(trips);
     }

@@ -77,14 +77,13 @@ class TripServiceTest {
     }
 
     @Test
-    void searchTrips_shouldReturnAll_whenQueryIsBlank() {
-        when(tripRepository.findAll()).thenReturn(Arrays.asList(trip1, trip2));
+    void searchTrips_shouldCallRepository_whenQueryIsBlank() {
+        when(tripRepository.searchTrips("  ")).thenReturn(Arrays.asList(trip1, trip2));
 
         List<TripResponse> trips = tripService.searchTrips("  ");
 
         assertEquals(2, trips.size());
-        verify(tripRepository, times(1)).findAll();
-        verify(tripRepository, never()).searchTrips(anyString());
+        verify(tripRepository, times(1)).searchTrips("  ");
     }
 
     @Test

@@ -122,3 +122,7 @@ cat .jules/bolt.md
 ## 2026-09-15 - [Performance Optimization] AbortController Race Conditions with Caching
 **Learning:** When implementing local caching with early returns in functions that use an `AbortController` to cancel requests, ensure the cancellation logic (e.g., `getNewController()`) is invoked *before* the cache-hit early return. Otherwise, pending network requests from previous cache misses will not be aborted and may overwrite the UI with stale data when they eventually resolve.
 **Action:** Always call the `AbortController` cancellation logic before checking the cache for early returns.
+
+## 2026-09-21 - Fix Spring AOP Cache Bypass in TripService
+**Learning:** Internal method calls within the same Spring Service class bypass the Spring AOP proxy. This meant that the `@Cacheable` annotation on `getAllTrips()` was completely ignored when it was called internally by `searchTrips(String query)` for empty searches, resulting in redundant, full database scans on initial page loads.
+**Action:** Always route fallback logic that relies on other cached service methods through the Controller layer, ensuring the calls pass through the proxy and successfully hit the cache.

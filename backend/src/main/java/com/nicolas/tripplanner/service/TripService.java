@@ -71,9 +71,9 @@ public class TripService {
     @Cacheable(value = CACHE_SEARCH_TRIPS, key = "#query != null ? #query.trim().toLowerCase() : ''", sync = true)
     @Transactional(readOnly = true)
     public List<TripResponse> searchTrips(String query) {
-        if (query == null || query.isBlank()) {
-            return getAllTrips();
-        }
+        // Fallback logic for blank queries was moved to TripController.
+        // This prevents AOP proxy bypass when internally calling getAllTrips(),
+        // ensuring cache hits on CACHE_ALL_TRIPS instead of a full DB scan.
         return tripRepository.searchTrips(query)
                 .stream()
                 .map(this::mapToResponse)
