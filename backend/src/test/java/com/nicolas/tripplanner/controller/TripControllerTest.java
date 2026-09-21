@@ -106,7 +106,7 @@ class TripControllerTest {
 
     @Test
     void searchTrips_shouldReturnTrips_whenQueryIsMissing() throws Exception {
-        when(tripService.searchTrips(null)).thenReturn(Arrays.asList(tripResponse1, tripResponse2));
+        when(tripService.getAllTrips()).thenReturn(Arrays.asList(tripResponse1, tripResponse2));
 
         mockMvc.perform(get("/api/trips/search"))
                 .andExpect(status().isOk())
@@ -115,7 +115,7 @@ class TripControllerTest {
                 .andExpect(jsonPath("$[1].city").value("Tokyo"))
                 .andExpect(jsonPath("$.length()").value(2));
 
-        verify(tripService, times(1)).searchTrips(null);
+        verify(tripService, times(1)).getAllTrips();
     }
 
     @Test
@@ -133,7 +133,7 @@ class TripControllerTest {
 
     @Test
     void searchTrips_shouldReturnTrips_whenQueryIsEmptyString() throws Exception {
-        when(tripService.searchTrips("")).thenReturn(Arrays.asList(tripResponse1, tripResponse2));
+        when(tripService.getAllTrips()).thenReturn(Arrays.asList(tripResponse1, tripResponse2));
 
         mockMvc.perform(get("/api/trips/search").param("query", ""))
                 .andExpect(status().isOk())
@@ -142,12 +142,12 @@ class TripControllerTest {
                 .andExpect(jsonPath("$[1].city").value("Tokyo"))
                 .andExpect(jsonPath("$.length()").value(2));
 
-        verify(tripService, times(1)).searchTrips("");
+        verify(tripService, times(1)).getAllTrips();
     }
 
     @Test
     void searchTrips_shouldReturnTrips_whenQueryIsWhitespace() throws Exception {
-        when(tripService.searchTrips("   ")).thenReturn(Arrays.asList(tripResponse1, tripResponse2));
+        when(tripService.getAllTrips()).thenReturn(Arrays.asList(tripResponse1, tripResponse2));
 
         mockMvc.perform(get("/api/trips/search").param("query", "   "))
                 .andExpect(status().isOk())
@@ -156,7 +156,7 @@ class TripControllerTest {
                 .andExpect(jsonPath("$[1].city").value("Tokyo"))
                 .andExpect(jsonPath("$.length()").value(2));
 
-        verify(tripService, times(1)).searchTrips("   ");
+        verify(tripService, times(1)).getAllTrips();
     }
 
     @Test
