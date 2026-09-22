@@ -126,3 +126,6 @@ cat .jules/bolt.md
 ## 2024-10-24 - [Performance Optimization] Spring AOP Cache Proxy Bypass
 **Learning:** When a cached method calls another cached method internally within the same Spring service class, the internal call bypasses the Spring AOP proxy. This ignores the `@Cacheable` annotation on the second method, resulting in redundant database queries and duplicate cached data.
 **Action:** Route requests that can be fulfilled by the second cached method directly from the Controller instead of falling back within the service, ensuring the call passes through the AOP proxy and hits the cache.
+## 2026-11-05 - [Performance Optimization] Lazy loading images in CSS-hidden components
+**Learning:** When using CSS `display: none` or visibility toggling to preserve DOM subtrees for tab navigation, any `<img>` tags within those hidden subtrees will still be fetched synchronously by the browser on initial page load, wasting bandwidth and delaying the LCP of the visible view.
+**Action:** Always add `loading="lazy"` to images inside conditionally hidden DOM subtrees to ensure they are only fetched when the user actually switches to that view.
