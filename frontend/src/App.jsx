@@ -306,14 +306,21 @@ const App = () => {
             {favoritesList.length === 0 ? <p className="text-gray-500">Nenhum favorito ainda.</p> : (
               <div className="grid md:grid-cols-3 gap-8">
                 {favoritesList.map((dest, index) => (
-                  <TripCard
-                    key={dest.id}
-                    trip={dest}
-                    isFavorite={true}
-                    onFavoriteClick={toggleFavorite}
-                    onDetailsClick={handleDetailsClick}
-                    priority={index < 3}
-                  />
+                  <React.Fragment key={dest.id}>
+                    {/*
+                      ⚡ Bolt Performance Optimization:
+                      Set priority to false for images in the favorites tab.
+                      Since this tab is hidden on initial load (CSS display: none),
+                      these images should always be lazily loaded to save bandwidth and improve LCP.
+                    */}
+                    <TripCard
+                      trip={dest}
+                      isFavorite={true}
+                      onFavoriteClick={toggleFavorite}
+                      onDetailsClick={handleDetailsClick}
+                      priority={false}
+                    />
+                  </React.Fragment>
                 ))}
               </div>
             )}

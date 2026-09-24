@@ -126,3 +126,6 @@ cat .jules/bolt.md
 ## 2024-10-24 - [Performance Optimization] Spring AOP Cache Proxy Bypass
 **Learning:** When a cached method calls another cached method internally within the same Spring service class, the internal call bypasses the Spring AOP proxy. This ignores the `@Cacheable` annotation on the second method, resulting in redundant database queries and duplicate cached data.
 **Action:** Route requests that can be fulfilled by the second cached method directly from the Controller instead of falling back within the service, ensuring the call passes through the AOP proxy and hits the cache.
+## 2026-09-24 - [Syntax Error] React JSX comments inside implicit returns
+**Learning:** In React/JSX, when adding an explanatory comment (`{/* ... */}`) inside an array `.map()` callback that uses an implicit return (e.g., `map(() => (...))`), the JavaScript parser reads the comment as an empty object literal. If this is followed immediately by a JSX element without a comma or wrapper, it causes a critical syntax error (`Unexpected token`).
+**Action:** When adding comments to mapped elements with implicit returns, always wrap both the comment and the returned element within a single parent node, such as a React Fragment (`<React.Fragment key={...}>`).
