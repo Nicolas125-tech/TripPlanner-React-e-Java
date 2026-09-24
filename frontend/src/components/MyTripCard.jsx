@@ -7,7 +7,12 @@ import React, { memo } from 'react';
 const MyTripCard = ({ trip }) => {
   return (
     <div className="bg-white p-4 rounded-xl border flex gap-4">
-      <img src={trip.imageUrl || trip.image} className="w-24 h-24 object-cover rounded-lg" alt={trip.city} />
+      {/*
+        ⚡ Bolt Performance Optimization:
+        Added loading="lazy" to images in MyTripCard since they are initially rendered inside a CSS-hidden tab.
+        This prevents the browser from synchronously downloading these unseen images during the initial page load.
+      */}
+      <img src={trip.imageUrl || trip.image} className="w-24 h-24 object-cover rounded-lg" alt={trip.city} loading="lazy" />
       <div>
         <h3 className="font-bold">{trip.city}</h3>
         <p className="text-sm text-gray-500">Status: {trip.status}</p>
