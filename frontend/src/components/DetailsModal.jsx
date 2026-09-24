@@ -7,7 +7,14 @@ const DetailsModal = ({ isOpen, onClose, destination, user, onBookingClick, onAu
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={destination.city}>
       <div>
-        <img src={destination.imageUrl || destination.image} className="w-full h-56 object-cover rounded-lg mb-4" alt={destination.city} />
+        {/*
+          ⚡ Bolt Performance Optimization:
+          Added loading="lazy" to the image.
+          Because this component is a modal whose content is loaded but might be hidden,
+          lazy loading prevents the browser from synchronously fetching the image on initial load
+          before the modal is actually displayed. This saves bandwidth and improves LCP.
+        */}
+        <img src={destination.imageUrl || destination.image} className="w-full h-56 object-cover rounded-lg mb-4" alt={destination.city} loading="lazy" />
         <p className="text-gray-600 mb-4">{destination.description}</p>
         <div className="flex gap-2 mb-6">
           {destination.amenities?.map((am, i) => (
