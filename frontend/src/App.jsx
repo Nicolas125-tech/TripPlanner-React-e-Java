@@ -305,6 +305,13 @@ const App = () => {
             <h2 className="text-2xl font-bold mb-6">Meus Favoritos</h2>
             {favoritesList.length === 0 ? <p className="text-gray-500">Nenhum favorito ainda.</p> : (
               <div className="grid md:grid-cols-3 gap-8">
+                {/*
+                  ⚡ Bolt Performance Optimization:
+                  Set priority={false} for TripCards rendered in the initially hidden 'Favorites' tab.
+                  This ensures their images are loaded lazily instead of eagerly.
+                  Impact: Prevents the browser from prioritizing bandwidth for images that aren't
+                  immediately visible, thereby improving Initial Page Load/LCP for the active 'Explorar' tab.
+                */}
                 {favoritesList.map((dest, index) => (
                   <TripCard
                     key={dest.id}
@@ -312,7 +319,7 @@ const App = () => {
                     isFavorite={true}
                     onFavoriteClick={toggleFavorite}
                     onDetailsClick={handleDetailsClick}
-                    priority={index < 3}
+                    priority={false}
                   />
                 ))}
               </div>
