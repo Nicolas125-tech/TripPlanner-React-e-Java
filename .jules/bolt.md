@@ -129,3 +129,6 @@ cat .jules/bolt.md
 ## 2026-09-24 - [Syntax Error] React JSX comments inside implicit returns
 **Learning:** In React/JSX, when adding an explanatory comment (`{/* ... */}`) inside an array `.map()` callback that uses an implicit return (e.g., `map(() => (...))`), the JavaScript parser reads the comment as an empty object literal. If this is followed immediately by a JSX element without a comma or wrapper, it causes a critical syntax error (`Unexpected token`).
 **Action:** When adding comments to mapped elements with implicit returns, always wrap both the comment and the returned element within a single parent node, such as a React Fragment (`<React.Fragment key={...}>`).
+## 2026-09-25 - [Performance Optimization] Enable ETag HTTP Caching
+**Learning:** Returning large, mostly static payloads (like lists of trips) over HTTP repeatedly consumes unnecessary bandwidth and slows down client rendering, even if the backend service itself is fast or cached in-memory.
+**Action:** Implement `ShallowEtagHeaderFilter` as a Spring `@Bean`. This automatically intercepts responses, computes an MD5 hash of the payload, and manages `ETag` and `If-None-Match` headers, allowing the server to return `304 Not Modified` with an empty body, saving significant network bandwidth.
