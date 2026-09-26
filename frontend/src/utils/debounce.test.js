@@ -63,4 +63,15 @@ describe('debounce', () => {
 
     expect(context.value).toBe(43);
   });
+
+  it('should execute on the next tick if wait is 0', () => {
+    const mockFunc = vi.fn();
+    const debouncedFunc = debounce(mockFunc, 0);
+
+    debouncedFunc();
+    expect(mockFunc).not.toHaveBeenCalled();
+
+    vi.advanceTimersByTime(0);
+    expect(mockFunc).toHaveBeenCalledTimes(1);
+  });
 });
