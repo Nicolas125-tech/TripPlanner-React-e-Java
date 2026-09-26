@@ -15,14 +15,10 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.config.Customizer;
-import jakarta.annotation.PostConstruct;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-
-    @Value("${app.cors.allowed-origins}")
-    private String allowedOrigins;
 
     @Value("${ADMIN_USERNAME}")
     private String adminUsername;
@@ -64,10 +60,4 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    @PostConstruct
-    public void validateCorsConfiguration() {
-        if ("*".equals(allowedOrigins)) {
-            throw new IllegalArgumentException("Wildcard CORS origins are not allowed");
-        }
-    }
 }
