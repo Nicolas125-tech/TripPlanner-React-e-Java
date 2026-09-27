@@ -1,0 +1,47 @@
+[
+  {
+    "city": "Paris",
+    "country": "France",
+    "price": 4500.0,
+    "rating": 4.8,
+    "category": "Cidade",
+    "description": "A Cidade Luz espera por você.",
+    "imageUrl": "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&q=80&w=800"
+  },
+  {
+    "city": "Tokyo",
+    "country": "Japan",
+    "price": 6200.0,
+    "rating": 4.9,
+    "category": "Cidade",
+    "description": "Futuro e tradição.",
+    "imageUrl": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&q=80&w=800"
+  },
+  {
+    "city": "Rio de Janeiro",
+    "country": "Brazil",
+    "price": 1800.0,
+    "rating": 4.7,
+    "category": "Praia",
+    "description": "Cidade Maravilhosa.",
+    "imageUrl": "https://images.unsplash.com/photo-1483729558449-99ef09a8c325?auto=format&fit=crop&q=80&w=800"
+  },
+  {
+    "city": "Dubai",
+    "country": "United Arab Emirates",
+    "price": 3200.0,
+    "rating": 4.6,
+    "category": "Cidade",
+    "description": "Luxo e modernidade no deserto.",
+    "imageUrl": "https://images.unsplash.com/photo-1512453328298-ce6bacd09c5a?auto=format&fit=crop&q=80&w=800"
+  },
+  {
+    "city": "Barcelona",
+    "country": "Spain",
+    "price": 2800.0,
+    "rating": 4.7,
+    "category": "Cidade",
+    "description": "Arte, arquitetura e praias.",
+    "imageUrl": "https://images.unsplash.com/photo-1562883714-2ecaafc3fed3?auto=format&fit=crop&q=80&w=800"
+  }
+]
