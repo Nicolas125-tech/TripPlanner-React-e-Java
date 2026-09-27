@@ -1,10 +1,11 @@
 import SearchBar from "./components/SearchBar";
 import React, { useState, useEffect } from 'react';
-import { secureStorage } from './utils/secureStorage';
 import { Map as MapIcon, Sun, Mountain, Building } from 'lucide-react';
 import Navbar from './components/Navbar';
 import TripCard from './components/TripCard';
 import MyTripCard from './components/MyTripCard';
+import CategoryPill from './components/CategoryPill';
+import { useTrips } from './context/TripContext';
 
 // ⚡ Bolt Performance Optimization:
 // Code-split Modals using React.lazy to reduce the initial JavaScript bundle size.
@@ -14,18 +15,6 @@ import MyTripCard from './components/MyTripCard';
 const AuthModal = React.lazy(() => import('./components/AuthModal'));
 const BookingModal = React.lazy(() => import('./components/BookingModal'));
 const DetailsModal = React.lazy(() => import('./components/DetailsModal'));
-import { mockDestinations } from './utils/fallbackData';
-import { useDebouncedStorage } from './hooks/useDebouncedStorage';
-import { useAbortController } from './hooks/useAbortController';
-import CategoryPill from './components/CategoryPill';
-
-// --- COMPONENTES AUXILIARES ---
-
-// --- COMPONENTES DE FORMULÁRIO (Para evitar re-render do App) ---
-
-
-// --- APP PRINCIPAL ---
-
 
 const TRIP_CATEGORIES = [
   { label: "Todos", icon: <MapIcon size={16} /> },
@@ -39,15 +28,19 @@ const App = () => {
   // ⚡ Bolt: Removed 'search' state to prevent unnecessary re-renders of App on every keystroke. State is now handled locally in SearchBar.
   const [categoryFilter, setCategoryFilter] = useState("Todos");
   
-  // Dados
-  const [destinations, setDestinations] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const {
+    destinations,
+    loading,
+    user,
+    myTrips,
+    favorites,
+    searchDestinations,
+    toggleFavorite: contextToggleFavorite,
+    login,
+    logout,
+    bookTrip
+  } = useTrips();
 
-  // Persistence
-  const [user, setUser] = useState(() => secureStorage.getItem('trip_user') || null);
-  const [myTrips, setMyTrips] = useState(() => secureStorage.getItem('trip_bookings') || []);
-  const [favorites, setFavorites] = useState(() => secureStorage.getItem('trip_favorites') || []);
-  
   // Modals state
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
@@ -64,82 +57,10 @@ const App = () => {
   const openBookingModal = React.useCallback(() => setShowBookingModal(true), []);
   const closeBookingModal = React.useCallback(() => setShowBookingModal(false), []);
 
-
-  // ⚡ Bolt Performance Optimization:
-  // Added a local cache (searchCache) for API responses.
-  // This avoids redundant network requests for identical searches (e.g., clearing the search bar or typing a previously searched term).
-  // It provides instant (0ms) results for cached queries, reducing server load and drastically improving perceived frontend responsiveness.
-  const searchCache = React.useRef(new Map());
-
-  // ⚡ Bolt Performance Optimization:
-  // Use custom hook to track and cancel in-flight API requests.
-  const { getNewController, isCurrentController } = useAbortController();
-
-  // Buscar dados da API JAVA
-  // ⚡ Bolt Performance Optimization:
-  // Wrapped performSearch in useCallback to prevent it from being recreated on every render.
-  // This ensures that the reference to performSearch is stable, preventing unnecessary re-renders
-  // of children components (like SearchBar) that receive it as a prop.
-  const performSearch = React.useCallback(async (searchTerm) => {
-    // ⚡ Bolt Performance Optimization:
-    // Normalized the search term (trimmed whitespace and lowercased) before generating the cache key.
-    // This dramatically increases cache hit rates by treating equivalent searches (like "Paris", "paris", and " Paris ")
-    // as identical, avoiding unnecessary API requests and subsequent React re-renders.
-    const normalizedTerm = searchTerm ? searchTerm.trim() : "";
-    const cacheKey = normalizedTerm.toLowerCase() || 'ALL';
-
-    // ⚡ Bolt Performance Optimization:
-    // Cancel previous pending network requests to prevent race conditions and save bandwidth.
-    const abortController = getNewController();
-
-    if (searchCache.current.has(cacheKey)) {
-      setDestinations(searchCache.current.get(cacheKey));
-      return;
-    }
-
-    setLoading(true);
-    try {
-      // Se tiver termo, busca específico. Se não, busca tudo.
-      const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
-      const url = normalizedTerm
-        ? `${baseUrl}/api/trips/search?query=${encodeURIComponent(normalizedTerm)}`
-        : `${baseUrl}/api/trips`;
-      
-      const res = await fetch(url, { signal: abortController.signal });
-      const data = await res.json();
-
-      searchCache.current.set(cacheKey, data);
-      setDestinations(data);
-    } catch (err) {
-      if (err.name === 'AbortError') {
-        return; // Silently exit if request was intentionally aborted
-      }
-      console.error("Erro ao buscar:", err);
-      setDestinations(mockDestinations);
-      // Fallback mantém os dados atuais
-    } finally {
-      if (isCurrentController(abortController)) {
-        setLoading(false);
-      }
-    }
-  }, [getNewController, isCurrentController]);
-
   // Carregamento inicial
   useEffect(() => {
-    performSearch("");
-  }, [performSearch]);
-
-  // ⚡ Bolt Performance Optimization:
-  // Wrapped sessionStorage I/O and JSON.stringify in debounced callbacks.
-  // This prevents expensive serialization and main thread blocking during rapid state updates.
-  // Each key gets its own debounced instance to prevent them from cancelling each other out.
-  const debouncedUserStorage = useDebouncedStorage('trip_user');
-  const debouncedBookingsStorage = useDebouncedStorage('trip_bookings');
-  const debouncedFavoritesStorage = useDebouncedStorage('trip_favorites', 300, true);
-
-  useEffect(() => debouncedUserStorage(user), [user, debouncedUserStorage]);
-  useEffect(() => debouncedBookingsStorage(myTrips), [myTrips, debouncedBookingsStorage]);
-  useEffect(() => debouncedFavoritesStorage(favorites), [favorites, debouncedFavoritesStorage]);
+    searchDestinations("");
+  }, [searchDestinations]);
 
   const showNotification = React.useCallback((msg) => {
     setNotification(msg);
@@ -147,39 +68,25 @@ const App = () => {
   }, []);
 
   const handleLogout = React.useCallback(() => {
-    setUser(null);
+    logout();
     showNotification("Logout realizado");
-  }, [showNotification]);
+  }, [logout, showNotification]);
 
   const handleLogin = React.useCallback((authFormData) => {
-    const userData = {
-      name: authFormData.name || "Visitante",
-      email: authFormData.email,
-      avatar: `https://ui-avatars.com/api/?name=${authFormData.name}&background=2563eb&color=fff`
-    };
-    setUser(userData);
+    const userData = login(authFormData.name, authFormData.email);
     setShowAuthModal(false);
     showNotification(`Bem-vindo, ${userData.name}!`);
-  }, [showNotification]);
+  }, [login, showNotification]);
 
   const toggleFavorite = React.useCallback((id, isCurrentlyFavorite) => {
-    setFavorites(prevFavorites => {
-      const newFavorites = [...prevFavorites];
-      const index = newFavorites.indexOf(id);
-      if (index > -1) {
-        newFavorites.splice(index, 1);
-      } else {
-        newFavorites.push(id);
-      }
-      return newFavorites;
-    });
+    contextToggleFavorite(id);
 
     if (isCurrentlyFavorite) {
       showNotification("Removido dos favoritos");
     } else {
       showNotification("Adicionado aos favoritos ❤️");
     }
-  }, [showNotification]);
+  }, [contextToggleFavorite, showNotification]);
 
   const handleDetailsClick = React.useCallback((dest) => {
     setSelectedDestination(dest);
@@ -191,18 +98,11 @@ const App = () => {
   // Updated to use functional state updates (prev => [...prev, newTrip]) to remove `myTrips` from the
   // dependency array, ensuring the callback reference remains perfectly stable even as new trips are booked.
   const confirmBooking = React.useCallback((bookingFormData) => {
-    const newTrip = {
-      ...selectedDestination,
-      bookingId: Date.now(),
-      ...bookingFormData,
-      totalPrice: selectedDestination.price * bookingFormData.guests,
-      status: 'Confirmado'
-    };
-    setMyTrips(prev => [...prev, newTrip]);
+    bookTrip(selectedDestination, bookingFormData);
     setShowBookingModal(false);
     setActiveTab('my-trips');
     showNotification("Viagem reservada com sucesso! ✈️");
-  }, [selectedDestination, showNotification]);
+  }, [bookTrip, selectedDestination, showNotification]);
 
   // ⚡ Bolt Performance Optimization:
   // Wrapped the destinations filter in `React.useMemo` to cache the filtered array
@@ -248,7 +148,7 @@ const App = () => {
         <div className={activeTab === 'home' ? 'block' : 'hidden'}>
           <div className="bg-blue-900 py-20 px-4 text-center text-white mb-10">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">Para onde você quer ir?</h1>
-            <SearchBar onSearch={performSearch} />
+            <SearchBar onSearch={searchDestinations} />
           </div>
 
           <main className="max-w-7xl mx-auto px-4">
