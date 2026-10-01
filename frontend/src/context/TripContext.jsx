@@ -1,5 +1,5 @@
 import { secureStorage } from '../utils/secureStorage';
-import { createContext, useContext, useState, useCallback, useMemo, useRef } from 'react';
+import { createContext, useContext, useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { useDebouncedStorage } from '../hooks/useDebouncedStorage';
 import { useAbortController } from '../hooks/useAbortController';
 
@@ -21,25 +21,24 @@ export const TripProvider = ({ children }) => {
   // Using setTimeout directly inside context update functions still queues multiple
   // macro-tasks on rapid state updates, causing redundant JSON serialization and I/O.
   const debouncedUserStorage = useDebouncedStorage('trip_user');
-
-  const updateUser = useCallback((newUser) => {
-    setUser(newUser);
-    debouncedUserStorage(newUser);
-  }, [debouncedUserStorage]);
-
   const debouncedBookingsStorage = useDebouncedStorage('trip_bookings');
-
-  const updateMyTrips = useCallback((trips) => {
-    setMyTrips(trips);
-    debouncedBookingsStorage(trips);
-  }, [debouncedBookingsStorage]);
-
   const debouncedFavoritesStorage = useDebouncedStorage('trip_favorites');
 
-  const updateFavorites = useCallback((favs) => {
-    setFavorites(favs);
-    debouncedFavoritesStorage(favs);
-  }, [debouncedFavoritesStorage]);
+  // ⚡ Bolt Performance Optimization:
+  // Using useEffect to persist state changes outside of updater functions
+  // maintains React's purity rules and ensures side-effects only happen
+  // when the respective state actually changes.
+  useEffect(() => {
+    debouncedUserStorage(user);
+  }, [user, debouncedUserStorage]);
+
+  useEffect(() => {
+    debouncedBookingsStorage(myTrips);
+  }, [myTrips, debouncedBookingsStorage]);
+
+  useEffect(() => {
+    debouncedFavoritesStorage(favorites);
+  }, [favorites, debouncedFavoritesStorage]);
 
   const { getNewController, isCurrentController } = useAbortController();
 
@@ -97,15 +96,17 @@ export const TripProvider = ({ children }) => {
 
   // Toggle favorito
   const toggleFavorite = useCallback((id) => {
-    const newFavorites = [...favorites];
-    const index = newFavorites.indexOf(id);
-    if (index > -1) {
-      newFavorites.splice(index, 1);
-    } else {
-      newFavorites.push(id);
-    }
-    updateFavorites(newFavorites);
-  }, [favorites, updateFavorites]);
+    setFavorites(prev => {
+      const newFavorites = [...prev];
+      const index = newFavorites.indexOf(id);
+      if (index > -1) {
+        newFavorites.splice(index, 1);
+      } else {
+        newFavorites.push(id);
+      }
+      return newFavorites;
+    });
+  }, []);
 
   // Login
   const login = useCallback((name, email) => {
@@ -114,14 +115,14 @@ export const TripProvider = ({ children }) => {
       email: email || "guest@tripplanner.com",
       avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(name || "Visitante")}&background=2563eb&color=fff`
     };
-    updateUser(userData);
+    setUser(userData);
     return userData;
-  }, [updateUser]);
+  }, []);
 
   // Logout
   const logout = useCallback(() => {
-    updateUser(null);
-  }, [updateUser]);
+    setUser(null);
+  }, []);
 
   // Reservar viagem
   const bookTrip = useCallback((trip, bookingData) => {
@@ -132,9 +133,14 @@ export const TripProvider = ({ children }) => {
       totalPrice: trip.price * bookingData.guests,
       status: 'Confirmado'
     };
-    updateMyTrips([...myTrips, newTrip]);
+    setMyTrips(prev => [...prev, newTrip]);
     return newTrip;
-  }, [myTrips, updateMyTrips]);
+  }, []);
+
+  // Re-added updateMyTrips to avoid breaking consumer components.
+  const updateMyTrips = useCallback((trips) => {
+    setMyTrips(trips);
+  }, []);
 
   // ⚡ Bolt Performance Optimization:
   // Wrapped the context value in `useMemo` to prevent unnecessary re-renders.
