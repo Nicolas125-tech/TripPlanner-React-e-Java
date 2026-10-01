@@ -132,3 +132,7 @@ cat .jules/bolt.md
 ## 2026-09-25 - [Performance Optimization] Enable ETag HTTP Caching
 **Learning:** Returning large, mostly static payloads (like lists of trips) over HTTP repeatedly consumes unnecessary bandwidth and slows down client rendering, even if the backend service itself is fast or cached in-memory.
 **Action:** Implement `ShallowEtagHeaderFilter` as a Spring `@Bean`. This automatically intercepts responses, computes an MD5 hash of the payload, and manages `ETag` and `If-None-Match` headers, allowing the server to return `304 Not Modified` with an empty body, saving significant network bandwidth.
+
+## 2026-10-01 - [Performance Optimization] Stable Context Callbacks via Functional State Updates
+**Learning:** When context actions (like `toggleFavorite` or `bookTrip`) rely on the current state (like `favorites` or `myTrips`), including that state in the `useCallback` dependency array causes the callback reference to change every time the state changes. This forces all components consuming the context to re-render, destroying the benefits of `React.memo` in list items and turning an O(1) operation into an O(N) re-render cascade.
+**Action:** Always use functional state updates (e.g., `setFavorites(prev => ... )`) inside context callbacks to eliminate the state from the dependency array, ensuring the callback reference remains completely stable across renders and preserving `React.memo` optimization.
