@@ -136,3 +136,6 @@ cat .jules/bolt.md
 ## 2026-10-01 - [Performance Optimization] Stable Context Callbacks via Functional State Updates
 **Learning:** When context actions (like `toggleFavorite` or `bookTrip`) rely on the current state (like `favorites` or `myTrips`), including that state in the `useCallback` dependency array causes the callback reference to change every time the state changes. This forces all components consuming the context to re-render, destroying the benefits of `React.memo` in list items and turning an O(1) operation into an O(N) re-render cascade.
 **Action:** Always use functional state updates (e.g., `setFavorites(prev => ... )`) inside context callbacks to eliminate the state from the dependency array, ensuring the callback reference remains completely stable across renders and preserving `React.memo` optimization.
+## 2026-10-01 - [Performance Optimization] Suppress Exception Stack Traces
+**Learning:** Generating a stack trace is an extremely expensive JVM operation. For business logic exceptions (like `ResourceNotFoundException`) that are used for control flow or API responses rather than debugging systemic failures, capturing the stack trace is a waste of CPU and memory.
+**Action:** Override the `fillInStackTrace()` method to return `this` (or `null`) in custom business exceptions to eliminate the overhead of stack trace generation.
