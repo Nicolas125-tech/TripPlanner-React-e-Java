@@ -139,3 +139,7 @@ cat .jules/bolt.md
 ## 2026-10-01 - [Performance Optimization] Suppress Exception Stack Traces
 **Learning:** Generating a stack trace is an extremely expensive JVM operation. For business logic exceptions (like `ResourceNotFoundException`) that are used for control flow or API responses rather than debugging systemic failures, capturing the stack trace is a waste of CPU and memory.
 **Action:** Override the `fillInStackTrace()` method to return `this` (or `null`) in custom business exceptions to eliminate the overhead of stack trace generation.
+
+## 2024-10-05 - [Performance Optimization] Method Injection for Security Credentials
+**Learning:** In Spring Security configurations, avoid field injection for sensitive credentials (e.g., `@Value("${ADMIN_PASSWORD}")` on a class field). Instead, use method injection (passing `@Value` as parameters to the `@Bean` method) so the raw credential string is not stored as a persistent state variable in the singleton bean, allowing it to be garbage collected after method execution.
+**Action:** Always use method injection for `@Value` sensitive configuration parameters that are only used during `@Bean` initialization to improve memory footprint and security footprint.

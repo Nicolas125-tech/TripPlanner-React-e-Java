@@ -9,7 +9,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -67,10 +66,8 @@ class SecurityConfigTest {
     @Test
     void userDetailsServiceBean_directInstantiation_shouldReturnInMemoryUserDetailsManagerWithAdmin() {
         SecurityConfig config = new SecurityConfig();
-        ReflectionTestUtils.setField(config, "adminUsername", "directAdmin");
-        ReflectionTestUtils.setField(config, "adminPassword", "directPass");
 
-        UserDetailsService manager = config.userDetailsService();
+        UserDetailsService manager = config.userDetailsService("directAdmin", "directPass");
 
         assertNotNull(manager);
         assertInstanceOf(InMemoryUserDetailsManager.class, manager);
