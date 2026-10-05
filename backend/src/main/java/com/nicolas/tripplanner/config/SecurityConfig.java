@@ -20,12 +20,6 @@ import org.springframework.security.config.Customizer;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Value("${ADMIN_USERNAME}")
-    private String adminUsername;
-
-    @Value("${ADMIN_PASSWORD}")
-    private String adminPassword;
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -45,7 +39,9 @@ public class SecurityConfig {
     }
 
     @Bean
-    public UserDetailsService userDetailsService() {
+    public UserDetailsService userDetailsService(
+            @Value("${ADMIN_USERNAME}") String adminUsername,
+            @Value("${ADMIN_PASSWORD}") String adminPassword) {
         UserDetails admin = User.builder()
             .username(adminUsername)
             .password(passwordEncoder().encode(adminPassword))
