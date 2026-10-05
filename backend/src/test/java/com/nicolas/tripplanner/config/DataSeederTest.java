@@ -59,4 +59,21 @@ class DataSeederTest {
         verify(tripRepository, times(1)).count();
         verify(tripRepository, never()).saveAll(any());
     }
+
+    @Test
+    void seedDatabase_shouldHandleException_whenObjectMappingFails() throws Exception {
+        // Arrange
+        when(tripRepository.count()).thenReturn(0L);
+        when(objectMapper.readValue(any(InputStream.class), any(TypeReference.class)))
+                .thenThrow(new RuntimeException("JSON parsing error"));
+
+        CommandLineRunner runner = dataSeeder.seedDatabase(tripRepository, objectMapper);
+
+        // Act
+        runner.run();
+
+        // Assert
+        verify(tripRepository, times(1)).count();
+        verify(tripRepository, never()).saveAll(any());
+    }
 }
