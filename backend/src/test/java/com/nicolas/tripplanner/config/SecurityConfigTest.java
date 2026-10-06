@@ -67,10 +67,8 @@ class SecurityConfigTest {
     @Test
     void userDetailsServiceBean_directInstantiation_shouldReturnInMemoryUserDetailsManagerWithAdmin() {
         SecurityConfig config = new SecurityConfig();
-        ReflectionTestUtils.setField(config, "adminUsername", "directAdmin");
-        ReflectionTestUtils.setField(config, "adminPassword", "directPass");
 
-        UserDetailsService manager = config.userDetailsService();
+        UserDetailsService manager = config.userDetailsService("directAdmin", "directPass");
 
         assertNotNull(manager);
         assertInstanceOf(InMemoryUserDetailsManager.class, manager);
