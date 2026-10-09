@@ -23,9 +23,11 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf
-                .csrfTokenRepository(new CookieCsrfTokenRepository())
-            )
+            .csrf(csrf -> {
+                CookieCsrfTokenRepository repository = CookieCsrfTokenRepository.withHttpOnlyFalse();
+                repository.setCookieCustomizer(customizer -> customizer.secure(true));
+                csrf.csrfTokenRepository(repository);
+            })
             .authorizeHttpRequests(authz -> authz
                 .requestMatchers(HttpMethod.GET, "/api/trips/**").permitAll() // Allow read operations
                 .requestMatchers(HttpMethod.POST, "/api/trips/**").hasRole("ADMIN")
