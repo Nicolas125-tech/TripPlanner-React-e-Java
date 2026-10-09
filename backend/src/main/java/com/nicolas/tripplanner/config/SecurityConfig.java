@@ -29,10 +29,10 @@ public class SecurityConfig {
                 csrf.csrfTokenRepository(repository);
             })
             .authorizeHttpRequests(authz -> authz
-                .requestMatchers(HttpMethod.GET, "/api/trips/**").permitAll() // Allow read operations
-                .requestMatchers(HttpMethod.POST, "/api/trips/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.PUT, "/api/trips/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/api/trips/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/api/trips", "/api/trips/*", "/api/trips/search", "/api/trips/category/*").permitAll() // Explicitly allow intended read operations
+                .requestMatchers(HttpMethod.POST, "/api/trips").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/trips/*").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/trips/*").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
             .httpBasic(Customizer.withDefaults()); // Use basic authentication
