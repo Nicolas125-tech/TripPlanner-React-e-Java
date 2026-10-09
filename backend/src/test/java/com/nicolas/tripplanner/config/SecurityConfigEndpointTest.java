@@ -35,6 +35,13 @@ class SecurityConfigEndpointTest {
     }
 
     @Test
+    void getUnknownTripSubpath_shouldRejectUnauthenticatedAccess() throws Exception {
+        // This validates our fix for overly permissive GET matching
+        mockMvc.perform(get("/api/trips/private/data"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
     void createTrip_shouldRejectUnauthenticatedAccess() throws Exception {
         mockMvc.perform(post("/api/trips").with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
