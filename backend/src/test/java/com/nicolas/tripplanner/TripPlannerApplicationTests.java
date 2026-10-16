@@ -5,6 +5,7 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.test.context.SpringBootTest;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest(properties = {"ADMIN_USERNAME=admin", "ADMIN_PASSWORD=admin"})
 class TripPlannerApplicationTests {
@@ -23,4 +24,9 @@ class TripPlannerApplicationTests {
         }
     }
 
+    @Test
+    void testApplicationInstantiation() {
+        TripPlannerApplication application = new TripPlannerApplication();
+        assertNotNull(application, "TripPlannerApplication instance should not be null");
+    }
 }
