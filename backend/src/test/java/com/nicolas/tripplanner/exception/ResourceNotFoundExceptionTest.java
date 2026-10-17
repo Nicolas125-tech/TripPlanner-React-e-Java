@@ -25,4 +25,10 @@ class ResourceNotFoundExceptionTest {
         assertEquals(expectedMessage, exception.getMessage());
         assertSame(expectedCause, exception.getCause());
     }
+
+    @Test
+    void testFillInStackTrace() {
+        ResourceNotFoundException exception = new ResourceNotFoundException("test");
+        assertEquals(0, exception.getStackTrace().length);
+    }
 }
