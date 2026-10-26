@@ -18,7 +18,7 @@ describe('Integration - Booking Flow', () => {
     sessionStorage.clear();
     // Default fetch success response
     global.fetch.mockResolvedValue({
-      json: () => Promise.resolve(mockDestinations),
+      ok: true, json: () => Promise.resolve(mockDestinations),
     });
   });
 
