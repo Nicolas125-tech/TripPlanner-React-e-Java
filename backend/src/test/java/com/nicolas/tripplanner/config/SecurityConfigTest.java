@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest
 @TestPropertySource(properties = {
     "ADMIN_USERNAME=testadmin",
-    "ADMIN_PASSWORD=testpass",
+    "ADMIN_PASSWORD=testpassword",
     "app.cors.allowed-origins=http://localhost:3000"
 })
 class SecurityConfigTest {
@@ -38,7 +38,7 @@ class SecurityConfigTest {
         assertEquals("testadmin", user.getUsername());
         assertTrue(user.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN")));
-        assertTrue(passwordEncoder.matches("testpass", user.getPassword()));
+        assertTrue(passwordEncoder.matches("testpassword", user.getPassword()));
     }
 
     @Test
@@ -67,7 +67,7 @@ class SecurityConfigTest {
     void userDetailsServiceBean_directInstantiation_shouldReturnInMemoryUserDetailsManagerWithAdmin() {
         SecurityConfig config = new SecurityConfig();
 
-        UserDetailsService manager = config.userDetailsService("directAdmin", "directPass");
+        UserDetailsService manager = config.userDetailsService("directAdmin", "directPassword");
 
         assertNotNull(manager);
         assertInstanceOf(InMemoryUserDetailsManager.class, manager);
@@ -79,6 +79,6 @@ class SecurityConfigTest {
                 .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN")));
 
         PasswordEncoder encoder = config.passwordEncoder();
-        assertTrue(encoder.matches("directPass", user.getPassword()));
+        assertTrue(encoder.matches("directPassword", user.getPassword()));
     }
 }
