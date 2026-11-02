@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @TestPropertySource(properties = {
     "ADMIN_USERNAME=testadmin",
-    "ADMIN_PASSWORD=testpass",
+    "ADMIN_PASSWORD=testpassword",
     "app.cors.allowed-origins=http://localhost:3000"
 })
 class SecurityConfigEndpointTest {

@@ -7,7 +7,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@SpringBootTest(properties = {"ADMIN_USERNAME=admin", "ADMIN_PASSWORD=admin"})
+@SpringBootTest(properties = {"ADMIN_USERNAME=admin", "ADMIN_PASSWORD=secure_admin_password"})
 class TripPlannerApplicationTests {
 
     @Test

@@ -44,6 +44,10 @@ public class SecurityConfig {
     public UserDetailsService userDetailsService(
             @Value("${ADMIN_USERNAME}") String adminUsername,
             @Value("${ADMIN_PASSWORD}") String adminPassword) {
+        if (adminUsername == null || adminUsername.trim().isEmpty() || adminPassword == null || adminPassword.length() < 8) {
+            throw new IllegalArgumentException("Admin credentials must be properly configured and password must be at least 8 characters long.");
+        }
+
         UserDetails admin = User.builder()
             .username(adminUsername)
             .password(passwordEncoder().encode(adminPassword))
