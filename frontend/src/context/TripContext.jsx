@@ -2,6 +2,7 @@ import { secureStorage } from '../utils/secureStorage';
 import { createContext, useContext, useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { useDebouncedStorage } from '../hooks/useDebouncedStorage';
 import { useAbortController } from '../hooks/useAbortController';
+import { generateAvatar } from '../utils/avatar';
 
 // Criar contexto
 const TripContext = createContext();
@@ -113,7 +114,7 @@ export const TripProvider = ({ children }) => {
     const userData = {
       name: name || "Visitante",
       email: email || "guest@tripplanner.com",
-      avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(name || "Visitante")}&background=2563eb&color=fff`
+      avatar: `${generateAvatar(name)}`
     };
     setUser(userData);
     return userData;
