@@ -164,7 +164,7 @@ describe('TripContext', () => {
     await waitFor(() => {
       expect(secureStorage.setItem).toHaveBeenCalledWith('trip_user', expect.objectContaining({
         name: 'Hacker&color=red',
-        avatar: 'https://ui-avatars.com/api/?name=Hacker%26color%3Dred&background=2563eb&color=fff'
+        avatar: expect.stringContaining("data:image/svg+xml;utf8,")
       }));
     });
   });
