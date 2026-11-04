@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.web.filter.ShallowEtagHeaderFilter;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EtagConfigTest {
 
