@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import { memo } from 'react';
 import { Plane } from 'lucide-react';
 
 const NAV_TABS = ['home', 'my-trips', 'favorites'];
