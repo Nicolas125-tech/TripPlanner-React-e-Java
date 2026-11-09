@@ -143,3 +143,6 @@ cat .jules/bolt.md
 ## 2024-10-05 - [Performance Optimization] Method Injection for Security Credentials
 **Learning:** In Spring Security configurations, avoid field injection for sensitive credentials (e.g., `@Value("${ADMIN_PASSWORD}")` on a class field). Instead, use method injection (passing `@Value` as parameters to the `@Bean` method) so the raw credential string is not stored as a persistent state variable in the singleton bean, allowing it to be garbage collected after method execution.
 **Action:** Always use method injection for `@Value` sensitive configuration parameters that are only used during `@Bean` initialization to improve memory footprint and security footprint.
+## 2026-11-08 - [Performance Optimization] Bounded Map Cache with LRU Strategy
+**Learning:** Using an unbounded `Map` to cache search results allows the cache to grow indefinitely as users perform numerous unique queries, which can lead to memory exhaustion and degraded performance over time in long-lived client sessions.
+**Action:** When using a built-in `Map` for caching, implement a simple LRU (Least Recently Used) strategy by refreshing the key on hit (`delete` then `set` to maintain insertion order) and evicting the oldest key (`map.delete(map.keys().next().value)`) when the cache exceeds a predefined size limit.
