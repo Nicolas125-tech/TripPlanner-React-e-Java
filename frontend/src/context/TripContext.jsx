@@ -61,7 +61,15 @@ export const TripProvider = ({ children }) => {
     const abortController = getNewController();
 
     if (searchCache.current.has(cacheKey)) {
-      setDestinations(searchCache.current.get(cacheKey));
+      // ⚡ Bolt Performance Optimization:
+      // Implemented LRU (Least Recently Used) cache strategy.
+      // Refresh the accessed key by deleting and re-inserting it to maintain its position
+      // as the most recently used in the Map's insertion order.
+      const cachedData = searchCache.current.get(cacheKey);
+      searchCache.current.delete(cacheKey);
+      searchCache.current.set(cacheKey, cachedData);
+
+      setDestinations(cachedData);
       setLoading(false);
       setError(null);
       return;
@@ -81,6 +89,13 @@ export const TripProvider = ({ children }) => {
       const data = await res.json();
 
       searchCache.current.set(cacheKey, data);
+      // ⚡ Bolt Performance Optimization:
+      // Enforce a maximum size limit (e.g., 20) on the search cache to prevent unbounded memory growth.
+      // If the limit is exceeded, evict the oldest entry (the first item in the Map's insertion order).
+      if (searchCache.current.size > 20) {
+        searchCache.current.delete(searchCache.current.keys().next().value);
+      }
+
       setDestinations(data);
     } catch (err) {
       if (err.name === 'AbortError') {

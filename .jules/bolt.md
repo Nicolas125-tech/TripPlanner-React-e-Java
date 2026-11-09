@@ -143,3 +143,6 @@ cat .jules/bolt.md
 ## 2024-10-05 - [Performance Optimization] Method Injection for Security Credentials
 **Learning:** In Spring Security configurations, avoid field injection for sensitive credentials (e.g., `@Value("${ADMIN_PASSWORD}")` on a class field). Instead, use method injection (passing `@Value` as parameters to the `@Bean` method) so the raw credential string is not stored as a persistent state variable in the singleton bean, allowing it to be garbage collected after method execution.
 **Action:** Always use method injection for `@Value` sensitive configuration parameters that are only used during `@Bean` initialization to improve memory footprint and security footprint.
+## 2024-11-08 - [Performance Optimization] LRU Cache Implementation
+**Learning:** To implement an efficient LRU cache in JavaScript without external libraries, utilize the built-in `Map` object's property of maintaining insertion order. Refresh an accessed key by deleting and re-inserting it, and evict the oldest entry using `map.delete(map.keys().next().value)` when a size limit is reached.
+**Action:** When implementing in-memory caching in JavaScript, always use an LRU strategy using native `Map` methods to manage memory efficiently.
