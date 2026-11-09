@@ -61,7 +61,13 @@ export const TripProvider = ({ children }) => {
     const abortController = getNewController();
 
     if (searchCache.current.has(cacheKey)) {
-      setDestinations(searchCache.current.get(cacheKey));
+      // ⚡ Bolt Performance Optimization:
+      // Refresh cache insertion order for LRU behavior by deleting and re-inserting
+      const data = searchCache.current.get(cacheKey);
+      searchCache.current.delete(cacheKey);
+      searchCache.current.set(cacheKey, data);
+
+      setDestinations(data);
       setLoading(false);
       setError(null);
       return;
@@ -80,6 +86,11 @@ export const TripProvider = ({ children }) => {
       
       const data = await res.json();
 
+      // ⚡ Bolt Performance Optimization:
+      // Implement LRU eviction to prevent unbounded memory growth
+      if (searchCache.current.size >= 20) {
+        searchCache.current.delete(searchCache.current.keys().next().value);
+      }
       searchCache.current.set(cacheKey, data);
       setDestinations(data);
     } catch (err) {
